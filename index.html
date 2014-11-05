@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8"/>
+ <title>Annonymous Surveys App</title>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha3.js"></script>
+<script type="text/javascript">
+	function hashfunction(pass)
+	{
+		var hash = CryptoJS.SHA3(pass.value);
+		pass.value = hash;
+	}
+</script>
+
+</head>
+<body>
+<div align="center">
+	<h1>Annonymous Surveys App</h1>	
+</div>
+<div align="center" ng-app>
+	<hr>
+	<form id="signInForm" method="post" action="signIn/">
+    	<label>Name:</label>
+    	<input type="text" ng-model="yourName" name="name" placeholder="Enter a name here">
+	<label>Password:</label>
+	<input type="password" ng-model="yourPass" name="password" placeholder="Enter a password here" onchange="hashfunction(this);">
+	<input type="submit" ng-model="yourSubmit" name="submit" value="Sign In">
+	</form>
+   	<hr>
+</div>
+
+</body>
