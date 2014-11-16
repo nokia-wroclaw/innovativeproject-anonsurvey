@@ -15,7 +15,7 @@ var Db = require('mongodb').Db,
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Annonymous Surveys' });
 });
 
 /* GET Hello World page. */
@@ -49,29 +49,35 @@ router.post('/adduser', function(req, res) {
 
     // Get our form values. These rely on the "name" attributes
     var userName = req.body.username;
+    var userSurname = req.body.usersurname;
     var userEmail = req.body.useremail;
     var userPassword = req.body.userpassword;
+    var userRepeatPassword = req.body.userrepeatpassword;
 
-    // Set our collection
-    var collection = db.get('usercollection');
 
-    // Submit to the DB
-    collection.insert({
-        "username" : userName,
-        "email" : userEmail,
-        "password" : userPassword
-    }, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
-        }
-        else {
-            // If it worked, set the header so the address bar doesn't still say /adduser
-            res.location("userlist");
-            // And forward to success page
-            res.redirect("userlist");
-        }
-    });
+        // Set our collection
+        var collection = db.get('usercollection');
+
+        // Submit to the DB
+        collection.insert({
+            "userstatus" : "A",  //user is active
+            "username" : userName,
+            "usersurname" : userSurname,
+            "useremail" : userEmail,
+            "userpassword" : userPassword
+        }, function (err, doc) {
+            if (err) {
+                // If it failed, return error
+                res.send("There was a problem adding the information to the database.");
+            }
+            else {
+                // If it worked, set the header so the address bar doesn't still say /adduser
+                res.location("profile");
+                // And forward to success page
+                res.redirect("profile");
+            }
+        });
+
 });
 
 
@@ -87,16 +93,16 @@ router.post('/profile', function(req, res) {
     var db = req.db;
 
     // Get our form values. These rely on the "name" attributes
-    var userEmail = req.body.email;
-    var userPassword = req.body.password;
+    var userEmail = req.body.useremail;
+    var userPassword = req.body.userpassword;
 
     // Set our collection
     var collection = db.get('usercollection');
 
-	collection.count({"email" : userEmail, "password" : userPassword},function(err, count){
+	collection.count({"useremail" : userEmail, "userpassword" : userPassword},function(err, count){
   		if(count==1)
   		{
-  			collection.find({"email" : userEmail, "password" : userPassword},function(e,docs){
+  			collection.find({"useremail" : userEmail, "userpassword" : userPassword},function(e,docs){
     		//console.log(docs.username);
   				res.render('profile', {
         				title: 'Your Profile',
@@ -106,10 +112,12 @@ router.post('/profile', function(req, res) {
   		}
   		else
   		{
+
   			// If it worked, set the header so the address bar doesn't still say /adduser
-            		res.location("userlist");
+            		res.location("/");
             		// And forward to success page
-            	res.redirect("userlist");
+            	res.redirect("/");
+                
   		}
 });
 
