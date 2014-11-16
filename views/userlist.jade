@@ -6,6 +6,8 @@ block content
     ul
         each user in userlist
             li
-                h1= user.email
+                h1= user.useremail
                 h2= user.username
-                h3= user.password
+                h3= user.userpassword
+
+                a(href="mailto:#{user.useremail}")= user.username
