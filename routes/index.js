@@ -72,9 +72,9 @@ router.post('/adduser', function(req, res) {
             }
             else {
                 // If it worked, set the header so the address bar doesn't still say /adduser
-                res.location("profile");
+                res.location("/");
                 // And forward to success page
-                res.redirect("profile");
+                res.redirect("/");
             }
         });
 
