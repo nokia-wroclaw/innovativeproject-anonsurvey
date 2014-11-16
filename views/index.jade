@@ -1,5 +1,20 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div(align='center')
+      h1 Annonymous Surveys App 
+      h2 Sign In
+      
+    div(align='center', ng-app='ng-app')
+      hr
+      form#signInForm(method='post', action='/profile')
+        label e-mail:
+        input(type='text', ng-model='yourName', name='useremail', placeholder='Enter a e-mail here')
+        br
+        label password:
+        input(type='password', ng-model='yourPass', name='userpassword', placeholder='Enter a password here')
+        br
+        input(type='submit', ng-model='yourSubmit', name='submit', value='Sign In')
+      hr
+      br
+      a(href="/newuser")= "Register"
