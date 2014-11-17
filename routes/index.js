@@ -119,8 +119,13 @@ router.post('/profile', function(req, res) {
             	res.redirect("/");
                 
   		}
+	});
+
 });
 
+/* GET Creator page. */
+router.get('/creator', function(req, res) {
+    res.render('creator', { title: 'Survey Creator' });
 });
 
 
