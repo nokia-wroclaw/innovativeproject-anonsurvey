@@ -1,0 +1,26 @@
+extends layout
+
+block content
+    div(align='center')
+      h1 Survey Creator 
+      h2 There is a place where you can create your survey!
+    div(align='center', ng-app='ng-app')
+      hr
+      form#signInForm(method='post', action='/addsurvey')
+        label Survey's name:
+        br
+        input(type='text', ng-model='yourSurveyName', name='email', placeholder='Survey\'s name')
+        hr
+        label Question:
+        br
+        input(type='text', ng-model='yourQuestion', name='password', placeholder='Question')
+        hr
+        label Answer:
+        br
+        input(type="radio" ng-model='yourAnswer' name="answer" value="yes" checked)
+        | Yes
+        br
+        input(type="radio" ng-model='yourAnswer' name="answer" value="no")
+        | No
+        hr
+        input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
