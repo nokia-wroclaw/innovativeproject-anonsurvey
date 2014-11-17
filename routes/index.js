@@ -95,6 +95,7 @@ router.post('/profile', function(req, res) {
     // Get our form values. These rely on the "name" attributes
     var userEmail = req.body.useremail;
     var userPassword = req.body.userpassword;
+    res.cookie('usermail', userEmail, { maxAge: 900000, httpOnly: true });
 
     // Set our collection
     var collection = db.get('usercollection');
