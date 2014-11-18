@@ -9,18 +9,26 @@ block content
       form#signInForm(method='post', action='/addsurvey')
         label Survey's name:
         br
-        input(type='text', ng-model='yourSurveyName', name='email', placeholder='Survey\'s name')
+        input(type='text', ng-model='yourSurveyName', name='surveyname', placeholder='Surveys name')
         hr
         label Question:
         br
-        input(type='text', ng-model='yourQuestion', name='password', placeholder='Question')
+        input(type='text', ng-model='yourQuestion', name='question', placeholder='Question')
         hr
         label Answer:
-        br
-        input(type="radio" ng-model='yourAnswer' name="answer" value="yes" checked)
-        | Yes
-        br
-        input(type="radio" ng-model='yourAnswer' name="answer" value="no")
-        | No
+        p#demo
+        p#demo2
         hr
         input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
+    script(type='text/javascript').
+      var list = '<select onchange="addanswer(this.value)"><option value=""></option><option value="radio">radio</option></select>';
+      var info = "Choose option of answer:<br>";
+      document.getElementById("demo").innerHTML = info+list;
+      function addanswer(w){
+        if(w== "")
+          document.getElementById("demo2").innerHTML = "";
+        else if(w=="radio")
+          var answer = '<input type="radio" name="answer" value="yes" checked>Yes<br><input type="radio" name="answer" value="no">No';
+          var answertype ='<input type="hidden" name="answertype" value='+w+'>'; 
+          document.getElementById("demo2").innerHTML = answer+answertype;
+      }

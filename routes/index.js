@@ -57,9 +57,11 @@ router.post('/adduser', function(req, res) {
 
         // Set our collection
         var collection = db.get('usercollection');
+        var userid = collection.count()+1    
 
         // Submit to the DB
         collection.insert({
+            "userid" : userid,
             "userstatus" : "A",  //user is active
             "username" : userName,
             "usersurname" : userSurname,
@@ -95,7 +97,7 @@ router.post('/profile', function(req, res) {
     // Get our form values. These rely on the "name" attributes
     var userEmail = req.body.useremail;
     var userPassword = req.body.userpassword;
-    res.cookie('usermail', userEmail, { maxAge: 900000, httpOnly: true });
+    res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
 
     // Set our collection
     var collection = db.get('usercollection');
@@ -127,6 +129,31 @@ router.post('/profile', function(req, res) {
 /* GET Creator page. */
 router.get('/creator', function(req, res) {
     res.render('creator', { title: 'Survey Creator' });
+});
+
+/* POST to Add Survey Service */
+router.post('/addsurvey', function(req, res) {
+
+    var surveyname = req.body.surveyname;
+    var question = req.body.question;
+    var answertype = req.body.answertype;
+    var useremail = req.cookies.useremail;
+    console.log(answertype);
+    console.log(question);
+    console.log(surveyname);
+    console.log(useremail);
+
+    var db = req.db;
+    var collection = db.get('surveycollection');
+    var surveyid = collection.count();
+    /*collection.insert({
+        "surveyname" : surveyname, 
+        "surveyowner" : user}
+        );
+    }
+    */
+
+
 });
 
 
