@@ -139,23 +139,70 @@ router.post('/addsurvey', function(req, res) {
     var question = req.body.question;
     var answertype = req.body.answertype;
     var useremail = req.cookies.useremail;
-    console.log(answertype);
-    console.log(question);
-    console.log(surveyname);
-    console.log(useremail);
+    //console.log(answertype);
+    //console.log(question);
+    //console.log(surveyname);
+    //console.log(useremail);
 
     var db = req.db;
     var collection = db.get('surveycollection');
-    var surveyid = collection.count();
-    /*collection.insert({
-        "surveyname" : surveyname, 
-        "surveyowner" : user}
-        );
-    }
-    */
-
-
+        collection.count({},function(err, count){
+            surveyid = count+1;  
+            // Submit to the DB
+            collection.insert({
+                "surveyname" : surveyname,
+                "surveyowner" : useremail,
+                "surveyid" : surveyid,
+                "questions" : [{
+                    "questionnumber" : 1,
+                    "question" : question,    
+                    "answertype" : answertype,
+                    "availbeanswers" : ["yes","no"],
+                    "answercount" : 2,
+                    "otheranswer" : false, 
+                }],
+                "questionscount" : 1
+            }, function (err, doc) {
+                if (err) {
+                    // If it failed, return error
+                    res.send("There was a problem adding the information to the database.");
+                }
+                else {
+                    // If it worked, set the header so the address bar doesn't still say /adduser
+                    res.location("/chooseuser");
+                    // And forward to success page
+                    res.redirect("/chooseuser?survey="+surveyid);
+                }
+            });
+        });
 });
 
+router.get('/chooseuser', function(req, res) {
+    var db = req.db;
+    var collection = db.get('usercollection');
+    var surveyid = req.query['survey'];
+    console.log(surveyid);
+    collection.find({},{},function(e,docs){
+        res.render('chooseuser', {title: 'Choose users who can answer from the list', getsurveyid : surveyid});
+    });
+});
+
+router.post('/adduserstosurvey', function(req, res) {
+    //console.log(req.body);
+    //console.log(req.body.email.length);
+    var db = req.db;
+    var collection = db.get('usersurveycollection');
+    var surveyid = req.body.surveyid;
+    var emails = req.body.email;
+    //console.log(emails);
+    for (i in emails) {
+        //console.log(emails[i]);
+        collection.insert({
+            "surveyid" : surveyid, 
+            "email" : emails[i]
+        }, function (err, doc) {});
+    }
+    res.render('adduserstosurvey', {title: 'Survey made'});
+});
 
 module.exports = router;

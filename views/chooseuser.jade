@@ -1,0 +1,30 @@
+extends layout
+
+block content
+    div(align='center')
+      h1 Survey Creator 
+      h2 There is a place where you can create your survey! step 2
+      h2 Survey ID: #{getsurveyid}
+    div(align='center', ng-app='ng-app')
+      hr
+      form
+        input#oneemail(type='text', ng-model='yourSurveyName', name='email', placeholder='email address')
+        input(type='button', ng-model='yourButton', name='emailsubmit', value='Add email to survey', onclick='addemailaddress()')
+        hr
+      form#addusertosurvey(method='post', action='/adduserstosurvey')
+        br
+        input(type='hidden', name='surveyid', value= getsurveyid)
+        div#demo
+        br
+        hr
+        input(type='submit', ng-model='yourSubmit', name='submit', value='Add emails to survey')
+    script(type='text/javascript').
+      var count = 0;
+      var allinput = "";
+      function addemailaddress(){
+          count++;
+          var email = document.getElementById("oneemail").value;
+          var input = '<input type="checkbox" name="email" value='+email+' checked>'+email+'<br>';
+          allinput = allinput + input;
+          document.getElementById("demo").innerHTML = allinput;
+      }
