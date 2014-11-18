@@ -3,7 +3,7 @@ extends layout
 block content
 	.container
 		h2.form-register-heading Please register your account
-		form.registerForm(name="adduser", method="post", action="/adduser")
+		form.registerForm(name="adduser",method="post",action="/adduser")
 		input.inputName.form-control(type="text", name="username",placeholder='Enter your name here')
 		input.inputSurname.form-control(type='text', name='usersurname', placeholder='Enter your surname here')
 		input.inputEmail.form-control(type="text", placeholder='Enter your e-mail here', name="useremail")
