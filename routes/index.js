@@ -57,29 +57,30 @@ router.post('/adduser', function(req, res) {
 
         // Set our collection
         var collection = db.get('usercollection');
-        var userid = collection.count()+1    
-
+        var userid=0;
+        collection.count({},function(err, count){
+            userid = count+1;  
         // Submit to the DB
-        collection.insert({
-            "userid" : userid,
-            "userstatus" : "A",  //user is active
-            "username" : userName,
-            "usersurname" : userSurname,
-            "useremail" : userEmail,
-            "userpassword" : userPassword
-        }, function (err, doc) {
-            if (err) {
-                // If it failed, return error
-                res.send("There was a problem adding the information to the database.");
-            }
-            else {
-                // If it worked, set the header so the address bar doesn't still say /adduser
-                res.location("/");
-                // And forward to success page
-                res.redirect("/");
-            }
+            collection.insert({
+                "userid" : userid,
+                "userstatus" : "A",  //user is active
+                "username" : userName,
+                "usersurname" : userSurname,
+                "useremail" : userEmail,
+                "userpassword" : userPassword
+            }, function (err, doc) {
+                if (err) {
+                    // If it failed, return error
+                    res.send("There was a problem adding the information to the database.");
+                }
+                else {
+                    // If it worked, set the header so the address bar doesn't still say /adduser
+                    res.location("/");
+                    // And forward to success page
+                    res.redirect("/");
+                }
+            });
         });
-
 });
 
 
