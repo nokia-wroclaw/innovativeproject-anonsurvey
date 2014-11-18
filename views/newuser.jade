@@ -1,13 +1,66 @@
 extends layout
 
 block content
-	.container
-		h2.form-register-heading Please register your account
-		form.registerForm(name="adduser", method="post", action="/adduser")
-		input.inputName.form-control(type="text", name="username",placeholder='Enter your name here')
-		input.inputSurname.form-control(type='text', name='usersurname', placeholder='Enter your surname here')
-		input.inputEmail.form-control(type="text", placeholder='Enter your e-mail here', name="useremail")
-		input.inputPassword.form-control(type='password', name='userpassword', placeholder='Enter your password here')
-		input.inputRepeatPassword.form-control(type='password', name='userrepeatpassword', placeholder='Repeat your password')
-		br
-		input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Register')
+    h1= title
+    form#formAddUser(name="adduser",method="post",action="/adduser")
+        label Name:
+        input#inputUserName(type="text", placeholder="name", name="username",onBlur="validateName(this.value)")
+        p#validname
+        hr
+        label Surname:
+        input#inputUserSurName(type="text", placeholder="surname", name="usersurname", onBlur="validateSurname(this.value)")
+        p#validsurname
+        hr
+        label current e-mail:
+        input#inputUserEmail(type="text", placeholder="email", name="useremail",onBlur="validateEmail(this.value)")
+        p#validEmail
+        hr
+        label Password:
+        input#inputUserPass(type="password", placeholder="password", name="userpassword")
+        hr
+        label Repeat password:
+        input#inputUserRepeatPass(type="password", placeholder="repeat password", name="userrepeatpassword",onBlur="validatePassword(this.value)")
+        p#validPass
+        br
+        input(type='submit', ng-model='yourSubmit', name='submit', value='OK')
+
+    script(type='text/javascript').
+        
+        function validateName(val){
+            reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
+            if (!val.match(reg)){
+                 document.getElementById("validname").innerHTML = "Enter the correct name";
+                 adduser.username.select();
+                 }
+                 else document.getElementById("validname").innerHTML = "";
+           
+        }
+         function validateSurname(val){
+            reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
+            if (!val.match(reg)){
+                 document.getElementById("validsurname").innerHTML = "Enter the correct surname";
+                 adduser.usersurname.select();
+                 }
+                 else document.getElementById("validsurname").innerHTML = "";
+           
+        }
+         function validateEmail(val){
+            reg = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/
+            if (!val.match(reg)){
+                 document.getElementById("validEmail").innerHTML = "Enter the correct e-mail";
+                 adduser.useremail.select();
+                 }
+                 else document.getElementById("validEmail").innerHTML = "";
+           
+        }
+         function validatePassword(val){
+
+            var pass =adduser.userpassword.value;
+          
+            if((val!=pass) | (val.length==0)){
+                 document.getElementById("validPass").innerHTML = "Enter the correct password";
+                 adduser.userpassword.select();
+                 }
+                 else document.getElementById("validPass").innerHTML = "";
+        }
+ 
