@@ -1,8 +1,22 @@
 extends layout
 
 block content
-    h1.
-        Profile's panel 
-    ul
-        each user in profile
-                h1=  user.username
+    div(align='center')
+        h1 Profile's panel
+            each user in profile
+                    h3 Hi  #{user.username}!
+        hr
+        h3 Your surveys:
+        ul
+        each survey in surveys
+                li #{survey.surveyname}   
+                    a(href='/completesurvey?survey='+survey.surveyid) Complete or Check | 
+                    a(href='/result?survey='+survey.surveyid) Result 
+        hr
+        h3 Surveys created by You:
+        ul
+        each osurvey in surveysowner
+                li #{osurvey.surveyname}  
+                    a(href='/result?survey='+osurvey.surveyid) Result 
+        hr
+        a(href='/creator') Create your own survey!

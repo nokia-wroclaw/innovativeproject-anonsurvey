@@ -89,43 +89,74 @@ router.get('/signin', function(req, res) {
     res.render('signin', { title: 'Sign In' });
 });
 
-/* POST to Verify Sign In Service */
-router.post('/profile', function(req, res) {
 
-    // Set our internal DB variable
+function profileFunction(req,res){
+        // Set our internal DB variable
     var db = req.db;
-
     // Get our form values. These rely on the "name" attributes
-    var userEmail = req.body.useremail;
-    var userPassword = req.body.userpassword;
-    res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
-
+    //console.log(req.body.useremail);
+    if(req.body.useremail != undefined){    
+        var userEmail = req.body.useremail;
+        var userPassword = req.body.userpassword;
+        res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
+        res.cookie('userpassword', userPassword, { maxAge: 900000, httpOnly: true });
+    }
+    else {
+        //console.log(req.cookies.useremail);
+        var userEmail = req.cookies.useremail;;
+        var userPassword = req.cookies.userpassword; 
+    }   
     // Set our collection
     var collection = db.get('usercollection');
 
-	collection.count({"useremail" : userEmail, "userpassword" : userPassword},function(err, count){
-  		if(count==1)
-  		{
-  			collection.find({"useremail" : userEmail, "userpassword" : userPassword},function(e,docs){
-    		//console.log(docs.username);
-  				res.render('profile', {
-        				title: 'Your Profile',
-            				"profile" : docs
-        			});
-  			});
-  		}
-  		else
-  		{
+    collection.count({"useremail" : userEmail, "userpassword" : userPassword},function(err, count){
+        if(count==1)
+        {
+            collection.find({"useremail" : userEmail, "userpassword" : userPassword},function(e,docs){
+            
+                var collection2 = db.get('usersurveycollection');
 
-  			// If it worked, set the header so the address bar doesn't still say /adduser
-            		res.location("/");
-            		// And forward to success page
-            	res.redirect("/");
+                collection2.find({"email" : userEmail},function(e,docs2) {
+                    var list = [];
+                    for (i=0; i<docs2.length; i++) {
                 
-  		}
-	});
+                        list[list.length] = parseInt(docs2[i].surveyid);
+                    }
+                    //console.log(list);
+                    //console.log(docs2.length);
 
-});
+                    var collection3 = db.get('surveycollection');
+
+                    collection3.find({"surveyid" : {$in : list}},function(e, docs3) {
+
+                        collection3.find({"surveyowner" : userEmail}, function(e, docs4){
+                            console.log(docs3);
+
+                            res.render('profile', {
+                            title: 'Your Profile',
+                                "profile" : docs,
+                                "surveys" : docs3,
+                                "surveysowner" : docs4,
+                            });
+                        });
+                    });
+                });
+            });
+        }
+        else
+        {
+            // If it worked, set the header so the address bar doesn't still say /adduser
+                res.location("/");
+                    // And forward to success page
+                res.redirect("/");
+        }
+    });
+};
+/* GET to Verify Sign In Service */
+router.get('/profile', profileFunction);
+
+/* POST to Verify Sign In Service */
+router.post('/profile', profileFunction);
 
 /* GET Creator page. */
 router.get('/creator', function(req, res) {
