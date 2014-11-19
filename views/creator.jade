@@ -19,10 +19,11 @@ block content
         p#demo
         p#demo2
         hr
-        input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
+        button.btn.btn-medium.btn-info(type="submit" form="signInForm" value="addsurvey") Add Survey
+        //input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
         br
         br
-        a.btn.btn-medium.btn-primary(href="/profile")= "Profile"
+      a.btn.btn-medium.btn-primary(href="/profile")= "Profile"
     script(type='text/javascript').
       var list = '<select onchange="addanswer(this.value)"><option value=""></option><option value="radio">radio</option></select>';
       var info = "Choose option of answer:<br>";

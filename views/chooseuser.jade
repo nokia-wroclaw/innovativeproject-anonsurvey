@@ -9,7 +9,8 @@ block content
       hr
       form
         input#oneemail(type='text', ng-model='yourSurveyName', name='email', placeholder='email address')
-        input(type='button', ng-model='yourButton', name='emailsubmit', value='Add email to survey', onclick='addemailaddress()')
+        &nbsp
+        input.btn.btn-medium.btn-success(type='button', ng-model='yourButton', name='emailsubmit', value='Add email to survey', onclick='addemailaddress()')
         hr
       form#addusertosurvey(method='post', action='/adduserstosurvey')
         br
@@ -17,7 +18,8 @@ block content
         div#demo
         br
         hr
-        input(type='submit', ng-model='yourSubmit', name='submit', value='Add emails to survey')
+        button.btn.btn-medium.btn-info(type="submit" form="oneemail" value="addemails") Add emails to survey
+        //input(type='submit', ng-model='yourSubmit', name='submit', value='Add emails to survey')
     script(type='text/javascript').
       var count = 0;
       var allinput = "";
