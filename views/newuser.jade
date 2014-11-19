@@ -14,7 +14,9 @@ block content
 			p#validPass
 			br
 			input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Register')
-		h3= error
+			br 
+		if error
+			.alert.alert-danger(role='alert')= error
 	script(type='text/javascript').
 		function validateName(val){
 		reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;

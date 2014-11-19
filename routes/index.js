@@ -156,7 +156,7 @@ function profileFunction(req,res){
         }
         else
         {
-                var ecom = "Incorrect data..... If you don't have an account - Sign up";
+                var ecom = "Incorrect data. If you don't have an account - Sign up";
                 res.render('index', { "error" : ecom });
         }
     });

@@ -10,6 +10,10 @@ block content
 			input#inputPassword.form-control(type='password', ng-model='yourPass', name='userpassword', placeholder='Enter your password here')
 			br
 			input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Sign In')
-			hr
+			br
+			br
 		a.btn.btn-medium.btn-primary(href="/newuser")= "Register"
-		h3= error
+		br
+		br
+		if error
+			.alert.alert-danger(role='alert')= error
