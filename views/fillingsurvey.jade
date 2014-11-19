@@ -1,0 +1,21 @@
+extends layout
+block content
+	div(align='center', class='jumbotron')
+		h2 Please answer following question:
+		ul
+			each q in question
+				lu
+					h1= q.questions[0].question
+
+					form#answer(method='post', action='/answertobase')
+						br
+						label Yes
+						input(type="radio", name="answer", "value" = "Yes", checked)
+						br
+						label No
+						input(type="radio", name="answer", "value" = "No" )
+						br
+						input(type='hidden', ng-model='yourHidden', name ='user' value = user)
+						input(type='hidden', ng-model='yourHidden', name ='surveyid' value = q.surveyid)
+						input(type='hidden', ng-model='yourHidden', name ='question' value = q.questions[0].question)
+						input(type='submit', ng-model='yourSubmit', name ="submit" value='Sumbit your answer!')
