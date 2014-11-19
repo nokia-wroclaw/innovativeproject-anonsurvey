@@ -1,0 +1,8 @@
+extends layout
+block content
+	div(align='center', class='jumbotron')
+			each q in answerlist
+					h2 Question:
+					h1= q.question
+					h2 Answer:
+					h1= q.answer
