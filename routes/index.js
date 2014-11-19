@@ -210,7 +210,7 @@ router.get('/chooseuser', function(req, res) {
     var db = req.db;
     var collection = db.get('usercollection');
     var surveyid = req.query['survey'];
-    console.log(surveyid);
+    //console.log(surveyid);
     collection.find({},{},function(e,docs){
         res.render('chooseuser', {title: 'Choose users who can answer from the list', getsurveyid : surveyid});
     });
@@ -223,7 +223,11 @@ router.post('/adduserstosurvey', function(req, res) {
     var collection = db.get('usersurveycollection');
     var surveyid = req.body.surveyid;
     var emails = req.body.email;
+    if( typeof emails === 'string' ) {
+        emails = [ emails ];
+    }
     //console.log(emails);
+    //console.log(emails.length);
     for (i in emails) {
         //console.log(emails[i]);
         collection.insert({
