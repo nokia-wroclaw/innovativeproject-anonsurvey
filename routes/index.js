@@ -60,7 +60,7 @@ function adduserFunction(req, res) {
     var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
     var regMail = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
 
-    if(userName.match(reg) & userSurname.match(reg) & userEmail.match(regMail) & userPassword==userRepeatPassword){
+    if(true){
     
         // Set our collection
         var collection = db.get('usercollection');
