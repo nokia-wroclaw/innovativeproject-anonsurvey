@@ -98,8 +98,6 @@ function profileFunction(req,res){
     if(req.body.useremail != undefined){    
         var userEmail = req.body.useremail;
         var userPassword = req.body.userpassword;
-        res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
-        res.cookie('userpassword', userPassword, { maxAge: 900000, httpOnly: true });
     }
     else {
         //console.log(req.cookies.useremail);
@@ -112,6 +110,8 @@ function profileFunction(req,res){
     collection.count({"useremail" : userEmail, "userpassword" : userPassword},function(err, count){
         if(count==1)
         {
+            res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
+            res.cookie('userpassword', userPassword, { maxAge: 900000, httpOnly: true });
             collection.find({"useremail" : userEmail, "userpassword" : userPassword},function(e,docs){
             
                 var collection2 = db.get('usersurveycollection');
