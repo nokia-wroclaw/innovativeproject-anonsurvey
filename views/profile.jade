@@ -24,7 +24,7 @@ block content
         a.btn.btn-medium.btn-success(href='/creator') Create your own survey!
     script(type='text/javascript').
         function writepassword(n){
-            var input = '<form action="/fillorcheck" method="post"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><input type="submit" name="yoursubmit" value="OK"></form><br>';
+            var input = '<form action="/fillorcheck" method="post" id="form1"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form1" value="OK">OK</button></form>';
             var x = document.getElementsByClassName("passwordfield"+n);
             x[0].innerHTML = input;
         }
