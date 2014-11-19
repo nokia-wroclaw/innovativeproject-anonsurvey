@@ -116,13 +116,10 @@ router.post('/profile', function(req, res) {
   		}
   		else
   		{
-
-  			// If it worked, set the header so the address bar doesn't still say /adduser
-            		res.location("/");
-            		// And forward to success page
-            	res.redirect("/");
-                
-  		}
+                    var ecom = "Incorrect data..... If you don't have an account - Sign up";
+                 res.render('index', { "error" : ecom });
+  		        
+        }
 	});
 
 });
