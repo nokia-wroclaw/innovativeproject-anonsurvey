@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-//var CryptoJS= require('crypto-js');
+var CryptoJS= require('crypto-js');
 
 var Db = require('mongodb').Db,
     MongoClient = require('mongodb').MongoClient,
@@ -43,7 +43,7 @@ router.get('/newuser', function(req, res) {
 
 
 /* POST to Add User Service */
-router.post('/adduser', adduserFunction);
+router.post('/adduser',adduserFunction);
 
 
 function adduserFunction(req, res) {
@@ -78,7 +78,7 @@ function adduserFunction(req, res) {
                         "username" : userName,
                         "usersurname" : userSurname,
                         "useremail" : userEmail,
-                        "userpassword" : userPassword
+                        "userpassword" : String(CryptoJS.SHA3(userPassword))
                     }, function (err, doc) {
                         if (err) {
                             // If it failed, return error
@@ -127,7 +127,7 @@ function profileFunction(req,res){
     // Set our collection
     var collection = db.get('usercollection');
 
-    collection.count({"useremail" : userEmail, "userpassword" : userPassword},function(err, count){
+    collection.count({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
         if(count==1)
         {
             res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
