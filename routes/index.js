@@ -1,6 +1,6 @@
 var express = require('express');
+var CryptoJS = require("crypto-js");
 var router = express.Router();
-//var CryptoJS= require('crypto-js');
 
 var Db = require('mongodb').Db,
     MongoClient = require('mongodb').MongoClient,
