@@ -258,4 +258,105 @@ router.post('/adduserstosurvey', function(req, res) {
     res.render('adduserstosurvey', {title: 'Survey made'});
 });
 
+router.post('/fillorcheck', function(req,res){
+
+        var db = req.db;
+
+        var useremail = req.cookies.useremail;
+
+        var userPassword = req.body.yourpassword;
+        var surveyId = req.body.yoursurveyid; 
+       
+        var stringToCheck = useremail + userPassword + surveyId;
+
+        var collection = db.get('surveyanswers');
+        collection.count( {"user" : stringToCheck },function(err, count){
+
+            if( count == 1 )
+                {    
+                    var collection = db.get('surveyanswers');
+                    var number = String(surveyId);
+                    
+                    collection.find( { surveyid : number, user : stringToCheck  } ,  function(e,docs) {
+                        console.log(docs);
+                        res.render('checkuseranswer', { 
+                            "answerlist" : docs
+                        }); 
+                    });
+
+                }
+                else //tutaj może się okazać że użytkownik wpisze złe hasło - wtedy go przekieruje i tak, do poprawy
+                {
+                    var collection = db.get('surveycollection');
+                    var number = parseInt(surveyId);
+                    collection.find({ "surveyid" : number }, function(e,docs) {
+                        res.render('fillingsurvey', {
+                            "question" : docs ,
+                            "user" : stringToCheck,
+                        });
+                    });
+                }
+        });
+
+});
+
+router.post('/answertobase', function(req,res){
+
+    var db = req.db;
+
+    var ans = req.body.answer;
+    var user = req.body.user;
+    var surveyid = req.body.surveyid;
+    var question = req.body.question;
+
+    var collection = db.get('surveyanswers');
+
+    collection.insert({
+                "user" : user,
+                "surveyid" : surveyid,
+                "question" : question,
+                "answer" : ans
+            }, function (err, doc) {
+                if (err) {
+                    res.send("There was a problem adding the information to the database.");
+                }
+            });
+    res.location("/profile");
+    res.redirect("/profile");
+
+});
+
+router.get('/result', function(req, res){
+
+    var surveyid = req.query['survey']; //Pobieranie numeru ankiety
+    var db = req.db;
+
+    var collection = db.get('surveyanswers');
+
+    collection.count({ "surveyid" :surveyid }, function(err, count){
+        if(count > 0)
+        {
+            collection.find( { "surveyid" : surveyid }, { "question" : 1 }, function(err, docs){
+                var question = docs;
+                var allResults = count;
+                    collection.count({ "surveyid" : surveyid, "answer" : "Yes"}, function(err, count){
+                        count = String(parseInt((count/allResults)*100)) + "%";
+                        var results = [question[0].question, allResults, count ];
+                        res.render('seeresults', {
+                            "result" : results 
+                        });
+
+                });
+            });
+        }
+        else
+        {
+
+        }
+        
+
+    });
+
+});
+
 module.exports = router;
