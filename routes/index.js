@@ -51,16 +51,16 @@ function adduserFunction(req, res) {
     var db = req.db;
 
     // Get our form values. These rely on the "name" attributes
-    var userName = req.body.username;
-    var userSurname = req.body.usersurname;
-    var userEmail = req.body.useremail;
-    var userPassword = req.body.userpassword;
-    var userRepeatPassword = req.body.userrepeatpassword;
+    var userName = String(req.body.username);
+    var userSurname = String(req.body.usersurname);
+    var userEmail = String(req.body.useremail);
+    var userPassword = String(req.body.userpassword);
+    var userRepeatPassword = String(req.body.userrepeatpassword);
 
     var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
     var regMail = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
 
-    if(true){
+    if((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (userPassword==userRepeatPassword) ){
     
         // Set our collection
         var collection = db.get('usercollection');
