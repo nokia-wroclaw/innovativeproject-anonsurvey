@@ -42,7 +42,10 @@ router.get('/newuser', function(req, res) {
 
 
 /* POST to Add User Service */
-router.post('/adduser', function(req, res) {
+router.post('/adduser', adduserFunction);
+
+
+function adduserFunction(req, res) {
 
     // Set our internal DB variable
     var db = req.db;
@@ -54,7 +57,11 @@ router.post('/adduser', function(req, res) {
     var userPassword = req.body.userpassword;
     var userRepeatPassword = req.body.userrepeatpassword;
 
+    var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
+    var regMail = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
 
+    if(true){
+    
         // Set our collection
         var collection = db.get('usercollection');
         var userid=0;
@@ -81,7 +88,11 @@ router.post('/adduser', function(req, res) {
                 }
             });
         });
-});
+    }
+    else
+    {var ecom = "Incorrect data.. Please, try again";
+                res.render('newuser', { "error" : ecom });}
+}
 
 
 /* GET Sign In page. */
