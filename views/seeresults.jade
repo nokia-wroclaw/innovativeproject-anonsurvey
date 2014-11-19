@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+	h1 Tymczasowa zakładka służąca do sprawdzania odpowiedzi/wypełniania ankiet
+
+	div(align='center', ng-app='ng-app')
+	hr
+	form#try(method='post', action='/fillorcheck')
+		label Survey ID:
+		br
+		input(type='text', ng-model='id', name='surveyid', placeholder='Please type survey\'s name')
+		hr
+		label Password:
+		br
+		input(type='text', ng-model='yourPassword', name='userpassword', placeholder='Please type password')
+		hr
+		input(type='submit', ng-model='yourSubmit', name='submit', value='Submit')
