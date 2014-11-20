@@ -265,37 +265,51 @@ router.post('/fillorcheck', function(req,res){
         var useremail = req.cookies.useremail;
 
         var userPassword = req.body.yourpassword;
+        var userpass = String(CryptoJS.SHA3(userPassword));
         var surveyId = req.body.yoursurveyid; 
        
         var stringToCheck = useremail + userPassword + surveyId;
+        stringToCheck = String(CryptoJS.SHA3(stringToCheck));
 
-        var collection = db.get('surveyanswers');
-        collection.count( {"user" : stringToCheck },function(err, count){
+        var collection = db.get('usercollection');
 
-            if( count == 1 )
-                {    
-                    var collection = db.get('surveyanswers');
-                    var number = String(surveyId);
+        collection.count( { "useremail" : useremail, "userpassword" : userpass }, function(err, count){
+        if(count == 1){
+
+            var collection = db.get('surveyanswers');
+
+            collection.count( {"user" : stringToCheck },function(err, count){
+
+                if( count == 1 )
+                    {    
+                        var collection = db.get('surveyanswers');
+                        var number = String(surveyId);
                     
-                    collection.find( { surveyid : number, user : stringToCheck  } ,  function(e,docs) {
-                        console.log(docs);
-                        res.render('checkuseranswer', { 
-                            "answerlist" : docs
-                        }); 
-                    });
+                        collection.find( { surveyid : number, user : stringToCheck  } ,  function(e,docs) {
+                            console.log(stringToCheck);
+                            res.render('checkuseranswer', { 
+                                "answerlist" : docs
+                            }); 
+                        });
 
-                }
-                else //tutaj może się okazać że użytkownik wpisze złe hasło - wtedy go przekieruje i tak, do poprawy
-                {
-                    var collection = db.get('surveycollection');
-                    var number = parseInt(surveyId);
-                    collection.find({ "surveyid" : number }, function(e,docs) {
-                        res.render('fillingsurvey', {
+                    }
+                    else //tutaj może się okazać że użytkownik wpisze złe hasło - wtedy go przekieruje i tak, do poprawy
+                    {
+                        var collection = db.get('surveycollection');
+                        var number = parseInt(surveyId);
+                        collection.find({ "surveyid" : number }, function(e,docs) {
+                            res.render('fillingsurvey', {
                             "question" : docs ,
                             "user" : stringToCheck,
+                            });
                         });
-                    });
-                }
+                    }
+            });
+        }
+        else
+        {
+            res.send("Incorrect password!");
+        }
         });
 
 });
