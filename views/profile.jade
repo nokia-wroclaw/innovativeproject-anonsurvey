@@ -22,6 +22,11 @@ block content
                     a.btn.btn-medium.btn-primary(href='/result?survey='+osurvey.surveyid) Result 
         hr
         a.btn.btn-medium.btn-success(href='/creator') Create your own survey!
+        br
+        br
+        a.btn.btn-medium.btn-info(href="/")= "Log out"
+        br
+        br 
     script(type='text/javascript').
         function writepassword(n){
             var input = '<form action="/fillorcheck" method="post" id="form1"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form1" value="OK">OK</button></form>';
