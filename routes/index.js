@@ -195,8 +195,10 @@ router.post('/addsurvey', function(req, res) {
         var answerslength = 0;
         switch(req.body.answertype[i]){
             case "text":
+
                 break;
             case "date":
+            
                 break;
             case "checkbox":
                 if(typeof req.body.answer[i] === 'string'){
