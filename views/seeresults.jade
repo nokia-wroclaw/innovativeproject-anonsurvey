@@ -2,12 +2,21 @@ extends layout
 	
 block content
 	div(align='center', class='jumbotron')
-		h1 Survey's question is:
-		h1= result[0]
-		h2= result[1] 
-		h1 persons participeted in this survey.
-		h2= result[2] 
-		h1 said "Yes".
+		if results
+			ul
+				each r in results
+					l1
+						h1 Surveyname: #{r.surveyname}
+						h2 Surveyowner: #{r.surveyowner}
+			h2 Answered #{count} respondents
+			h3 Results of the respondents:
+			ul
+				each r in results
+					each q in r.questions
+						li
+							h1 #{q.questionnumber}. #{q.question}	
+		if result
+			.alert.alert-danger(role='alert')= result							
 		br
 		br
 		a.btn.btn-medium.btn-info(href="/profile")= "Back"
