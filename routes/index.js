@@ -121,7 +121,7 @@ function profileFunction(req,res){
     }
     else {
         //console.log(req.cookies.useremail);
-        var userEmail = req.cookies.useremail;;
+        var userEmail = req.cookies.useremail;
         var userPassword = req.cookies.userpassword; 
     }   
     // Set our collection
@@ -345,35 +345,42 @@ router.get('/result', function(req, res){
     var surveyid = req.query['survey']; //Pobieranie numeru ankiety
     var db = req.db;
 
+    var collectionUser = db.get('usersurveycollection');
+
     var baseName = 'surveyanswers' + surveyid;
 
     var collection = db.get(baseName);
 
-    collection.count({}, function(err, count){
-        if(count > 0)
-        {
-            collection.find( {}, { "question" : 1 }, function(err, docs){
-                var question = docs;
-                var allResults = count;
-                    collection.count({ "answer" : "Yes"}, function(err, count){
-                        count = String(parseInt((count/allResults)*100)) + "%";
-                        var results = [question[0].question, allResults, count ];
-                        res.render('seeresults', {
-                            "result" : results 
-                        });
 
+    collectionUser.count({"surveyid" : surveyid,}, function(err, all){
+
+        collection.count({}, function(err, count){
+            if(count > all/2)
+            {
+                var collectionSurvey = db.get('surveycollection');
+                collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
+                    count = String(parseInt((count/all)*100)) + "%";        //ile udzielono odpowiedzi
+                        //collection.count({ "answer" : "Yes"}, function(err, count){
+                            console.log(docs);
+                           // var results = [question[0].question, allResults, count ];
+                            res.render('seeresults', {
+                                "count" : count, "results" : docs
+                            });
+
+                  //  });
                 });
-            });
-        }
-        else
-        {
-            res.send("There's no result.")
+            }
+            else
+            {   
+                var result = "There's no result. nie ma minimum";
+                res.render('seeresults', {
+                    "result" : result 
+                });
 
-        }
-        
-
+            }
+            
+        });
     });
-
 });
 
 module.exports = router;
