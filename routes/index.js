@@ -150,7 +150,7 @@ function profileFunction(req,res){
                     collection3.find({"surveyid" : {$in : list}},function(e, docs3) {
 
                         collection3.find({"surveyowner" : userEmail}, function(e, docs4){
-                            console.log(docs3);
+                            //console.log(docs3);
 
                             res.render('profile', {
                             title: 'Your Profile',
@@ -273,31 +273,31 @@ router.post('/fillorcheck', function(req,res){
 
         var collection = db.get('usercollection');
 
-        collection.count( { "useremail" : useremail, "userpassword" : userpass }, function(err, count){
+        collection.count( { "useremail" : useremail, "userpassword" : userpass }, function(err, count){ //sprawdzanie poprawności hasła
         if(count == 1){
 
-            var collection = db.get('surveyanswers');
+            var baseName = 'surveyanswers' + surveyId;
+            var collection = db.get(baseName);
 
-            collection.count( {"user" : stringToCheck },function(err, count){
+            collection.count( {"user" : stringToCheck },function(err, count){ //sprawdzanie czy już istnieją w bazie odpowiedzi tego użytkownika
 
                 if( count == 1 )
                     {    
-                        var collection = db.get('surveyanswers');
+                        var collection = db.get(baseName);
                         var number = String(surveyId);
                     
-                        collection.find( { surveyid : number, user : stringToCheck  } ,  function(e,docs) {
-                            console.log(stringToCheck);
+                        collection.find( { user : stringToCheck  } ,  function(e,docs) { //pobieranie odpowiedzi użytkownika z bazy
                             res.render('checkuseranswer', { 
                                 "answerlist" : docs
                             }); 
                         });
 
                     }
-                    else //tutaj może się okazać że użytkownik wpisze złe hasło - wtedy go przekieruje i tak, do poprawy
+                    else
                     {
                         var collection = db.get('surveycollection');
                         var number = parseInt(surveyId);
-                        collection.find({ "surveyid" : number }, function(e,docs) {
+                        collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
                             res.render('fillingsurvey', {
                             "question" : docs ,
                             "user" : stringToCheck,
@@ -317,17 +317,17 @@ router.post('/fillorcheck', function(req,res){
 router.post('/answertobase', function(req,res){
 
     var db = req.db;
-
     var ans = req.body.answer;
     var user = req.body.user;
     var surveyid = req.body.surveyid;
     var question = req.body.question;
 
-    var collection = db.get('surveyanswers');
+    var baseName = 'surveyanswers' + surveyid;
+    var collection = db.get(baseName);
 
     collection.insert({
                 "user" : user,
-                "surveyid" : surveyid,
+               // "surveyid" : surveyid, to pole usuwamy
                 "question" : question,
                 "answer" : ans
             }, function (err, doc) {
@@ -345,15 +345,17 @@ router.get('/result', function(req, res){
     var surveyid = req.query['survey']; //Pobieranie numeru ankiety
     var db = req.db;
 
-    var collection = db.get('surveyanswers');
+    var baseName = 'surveyanswers' + surveyid;
 
-    collection.count({ "surveyid" :surveyid }, function(err, count){
+    var collection = db.get(baseName);
+
+    collection.count({}, function(err, count){
         if(count > 0)
         {
-            collection.find( { "surveyid" : surveyid }, { "question" : 1 }, function(err, docs){
+            collection.find( {}, { "question" : 1 }, function(err, docs){
                 var question = docs;
                 var allResults = count;
-                    collection.count({ "surveyid" : surveyid, "answer" : "Yes"}, function(err, count){
+                    collection.count({ "answer" : "Yes"}, function(err, count){
                         count = String(parseInt((count/allResults)*100)) + "%";
                         var results = [question[0].question, allResults, count ];
                         res.render('seeresults', {
@@ -365,6 +367,7 @@ router.get('/result', function(req, res){
         }
         else
         {
+            res.send("There's no result.")
 
         }
         

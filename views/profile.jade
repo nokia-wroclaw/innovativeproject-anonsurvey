@@ -11,7 +11,7 @@ block content
         each survey in surveys
                 li #{survey.surveyname} 
                     input.btn.btn-medium.btn-info(type='button', name='emailsubmit', value='Fill or Check', onclick='writepassword('+survey.surveyid+')')
-                    &nbsp 
+                    &nbsp
                     a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Result
                     p(class='passwordfield'+survey.surveyid)
         hr
