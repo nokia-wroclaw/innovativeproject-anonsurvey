@@ -184,15 +184,54 @@ router.get('/creator', function(req, res) {
 /* POST to Add Survey Service */
 router.post('/addsurvey', function(req, res) {
 
-    var surveyname = req.body.surveyname;
-    var question = req.body.question;
-    var answertype = req.body.answertype;
     var useremail = req.cookies.useremail;
-    //console.log(answertype);
-    //console.log(question);
-    //console.log(surveyname);
-    //console.log(useremail);
-
+    
+    var surveyname = req.body.surveyname;
+    var countquest = req.body.countquest;
+      
+    var questions = [];
+    for(i=0;i<req.body.question.length; i++){
+        var answers = [];
+        var answerslength = 0;
+        switch(req.body.answertype[i]){
+            case "text":
+                break;
+            case "date":
+                break;
+            case "checkbox":
+                if(typeof req.body.answer[i] === 'string'){
+                    answers = [ req.body.answer[i] ];
+                    answerslength = 1;
+                }
+                else {
+                    answers = req.body.answer[i];
+                    answerslength = answers.length;
+                }
+                break;
+            case "radio":
+                if(typeof req.body.answer[i] === 'string'){
+                    answers = [ req.body.answer[i] ];
+                    answerslength = 1;
+                }
+                else {
+                    answers = req.body.answer[i];
+                    answerslength = answers.length;
+                }
+                break;
+        }
+        
+        questions[i] = {
+        "questionnumber" : i,
+        "question" : req.body.question[i],    
+        "answertype" : req.body.answertype[i],
+        "availbeanswers" : answers,
+        "answercount" : answerslength,
+        "otheranswer" : req.body.otheranswer[i],
+        }; 
+    }
+    console.log(questions);
+    
+    
     var db = req.db;
     var collection = db.get('surveycollection');
         collection.count({},function(err, count){
@@ -202,15 +241,8 @@ router.post('/addsurvey', function(req, res) {
                 "surveyname" : surveyname,
                 "surveyowner" : useremail,
                 "surveyid" : surveyid,
-                "questions" : [{
-                    "questionnumber" : 1,
-                    "question" : question,    
-                    "answertype" : answertype,
-                    "availbeanswers" : ["yes","no"],
-                    "answercount" : 2,
-                    "otheranswer" : false, 
-                }],
-                "questionscount" : 1
+                "questions" : questions,
+                "questionscount" : req.body.question.length
             }, function (err, doc) {
                 if (err) {
                     // If it failed, return error
