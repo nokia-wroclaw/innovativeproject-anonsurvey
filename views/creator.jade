@@ -1,38 +1,108 @@
 extends layout
 
 block content
-    div(align='center')
+    div(align='center', class='jumbotron')
       h1 Survey Creator 
       h2 There is a place where you can create your survey!
-    div(align='center', ng-app='ng-app')
-      hr
-      form#signInForm(method='post', action='/addsurvey')
-        label Survey's name:
-        br
-        input(type='text', ng-model='yourSurveyName', name='surveyname', placeholder='Surveys name')
+      div#form
         hr
-        label Question:
-        br
-        input(type='text', ng-model='yourQuestion', name='question', placeholder='Question')
-        hr
-        label Answer:
-        p#demo
-        p#demo2
-        hr
-        button.btn.btn-medium.btn-info(type="submit" form="signInForm" value="addsurvey") Add Survey
-        //input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
-        br
-        br
+        form#creator(method='post', action='/addsurvey')
+          label Survey's name:
+          br
+          input(type='text', ng-model='yourSurveyName', name='surveyname', placeholder='Surveys name')
+          hr
+          div#end
+          br
+          button(onclick='addquest()', type='button') Add question
+          hr
+          div#countquest
+          button.btn.btn-medium.btn-info(type="submit", form="creator", value="addsurvey") Add Survey
+          //input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
+          br
+          br  
       a.btn.btn-medium.btn-primary(href="/profile")= "Back"
     script(type='text/javascript').
-      var list = '<select onchange="addanswer(this.value)"><option value=""></option><option value="radio">radio</option></select>';
-      var info = "Choose option of answer:<br>";
-      document.getElementById("demo").innerHTML = info+list;
-      function addanswer(w){
-        if(w=="")
-          document.getElementById("demo2").innerHTML = "";
-        else if(w=="radio")
-          var answer = '<input type="radio" name="answer" value="yes" checked>Yes<br><input type="radio" name="answer" value="no">No';
-          var answertype ='<input type="hidden" name="answertype" value='+w+'>'; 
-          document.getElementById("demo2").innerHTML = answer+answertype;
+      var countquest = 0;
+      function addquest(){
+        var questname = '<label>Question '+(countquest+1)+':</label><br> \
+        <input type="text" ng-model="yourQuestion" name="question['+countquest.toString()+']" placeholder="Question"><br><br>';
+        var info = "Choose option of answer:<br>";
+        var list = '<select onchange="addanswer(this.value,'+countquest.toString()+')"> \
+        <option value=""></option> \
+        <option value="radio">radio</option> \
+        <option value="checkbox">checkbox</option> \
+        <option value="text">text</option> \
+        <option value="date">date</option> \
+        </select>';
+        var newquest = document.createElement("div");
+        var questno = "quest"+countquest;
+        newquest.setAttribute("id", questno);
+        var endquestno = "endquest"+countquest;
+        var endquestdiv = '<div id='+endquestno+'></div>';
+        newquest.innerHTML = '<hr>'+questname + info + list + endquestdiv;
+        div = document.getElementById("creator");
+        enddiv = document.getElementById("end");
+        div.insertBefore(newquest, enddiv);
+        countquest++;
+        document.getElementById("countquest").innerHTML = '<input type="hidden" name="countquest" value='+countquest.toString()+'>';
+      }
+      function addanswer(w,no){
+        var otherans = "";
+        var answer = "";
+        var answertype = "";
+        var button = "";
+        if(w=="radio") {
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available user\'s answer<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable user\'s answer<br><br>';
+          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          <br>';
+          answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
+          button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button>Add next answer</button>';
+        }
+        else if(w=="checkbox") {
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available user\'s answer<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable user\'s answer<br><br>';
+          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          <br>';
+          answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
+          button = '<button onclick=addnextanswer("checkbox",'+no.toString()+') type=button>Add next answer</button>';          
+        }
+        else if(w=="text") {
+          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+          answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Example" value="Example" readonly><br>';
+          answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="text">';  
+        }
+        else if(w=="date") {
+          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+          answer = '<input type="date" name="answer['+no.toString()+']" placeholder="Answer" value="Example" readonly><br>';
+          answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="date">';
+        }  
+        var answerno = "answer"+no.toString();
+        var elem = document.getElementById(answerno);
+        if(elem) elem.parentNode.removeChild(elem);
+        var newtype = document.createElement("div");
+        newtype.setAttribute("id", answerno);
+        var endanswerno = "endanswer"+no.toString();
+        var endanswerdiv = '<div id='+endanswerno+'></div>';
+        newtype.innerHTML = otherans + answer + answertype + endanswerdiv + button;
+        //alert("quest"+no.toString());
+        div = document.getElementById("quest"+no.toString());
+        enddiv = document.getElementById("endquest"+no.toString());
+        div.insertBefore(newtype, enddiv); 
+      }
+      function addnextanswer(w,no){
+        var answer = "";
+        if(w=="radio"){
+          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          <br>';
+        }
+        else if(w=="checkbox"){
+          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          <br>';
+        }
+        var newtype = document.createElement("div");
+        newtype.innerHTML = answer;
+        div = document.getElementById("answer"+no.toString());
+        enddiv = document.getElementById("endanswer"+no.toString());
+        div.insertBefore(newtype, enddiv); 
       }
