@@ -198,7 +198,11 @@ router.post('/addsurvey', function(req, res) {
 
                 break;
             case "date":
-            
+
+                break;
+            case "range":
+                answers = req.body.answer[i];
+                answerslength = answers.length;
                 break;
             case "checkbox":
                 if(typeof req.body.answer[i] === 'string'){
@@ -224,7 +228,7 @@ router.post('/addsurvey', function(req, res) {
         
         questions[i] = {
         "questionnumber" : i,
-        "question" : req.body.question[i],    
+        "question" : req.body.question[i],  
         "answertype" : req.body.answertype[i],
         "availbeanswers" : answers,
         "answercount" : answerslength,
@@ -243,6 +247,7 @@ router.post('/addsurvey', function(req, res) {
                 "surveyname" : surveyname,
                 "surveyowner" : useremail,
                 "surveyid" : surveyid,
+                "surveyend" : req.body.endofsurvey, 
                 "questions" : questions,
                 "questionscount" : req.body.question.length
             }, function (err, doc) {

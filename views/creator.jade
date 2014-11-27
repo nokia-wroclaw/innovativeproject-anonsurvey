@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    div(align='center', class='jumbotron')
+    div(align='center')
       h1 Survey Creator 
       h2 There is a place where you can create your survey!!
       div#form
@@ -10,6 +10,10 @@ block content
           label Survey's name:
           br
           input(type='text', ng-model='yourSurveyName', name='surveyname', placeholder='Surveys name')
+          br
+          label End of survey:
+          br
+          input(type='date', ng-model='yourSurveyEnd', name='endofsurvey', placeholder='End of survey')
           hr
           div#end
           br
@@ -29,9 +33,10 @@ block content
         var info = "Choose option of answer:<br>";
         var list = '<select onchange="addanswer(this.value,'+countquest.toString()+')"> \
         <option value=""></option> \
+        <option value="text">text</option> \
         <option value="radio">radio</option> \
         <option value="checkbox">checkbox</option> \
-        <option value="text">text</option> \
+        <option value="range">range</option> \
         <option value="date">date</option> \
         </select>';
         var newquest = document.createElement("div");
@@ -76,7 +81,13 @@ block content
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<input type="date" name="answer['+no.toString()+']" placeholder="Answer" value="Example" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="date">';
-        }  
+        }
+        else if(w=="range"){
+          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+          answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Min value">\
+          <input type="text" name="answer['+no.toString()+']" placeholder="Max value"><br>';
+          answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="range">';  
+        }
         var answerno = "answer"+no.toString();
         var elem = document.getElementById(answerno);
         if(elem) elem.parentNode.removeChild(elem);
