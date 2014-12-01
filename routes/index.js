@@ -379,6 +379,22 @@ router.post('/answertobase', function(req,res){
 
 });
 
+var odp =[];
+
+function CountFunction(wart,collection, docs , i, n){
+    var howManyAnswerInQuestion = docs[0].questions[i].answercount;
+    ww = collection.count({question : String(docs[0].questions[i].question), answer : String(docs[0].questions[i].availbeanswers[n])}, function(err,ans){ 
+                                           wart +="\n" + docs[0].questions[i].availbeanswers[n]+": " + ans+ "\n";
+                                  //         console.log(wart);
+                                            odp[i] =wart;
+                                    //        console.log(odp[i]);
+                                           n++;
+                                           if (n < howManyAnswerInQuestion) CountFunction(wart,collection, docs , i, n); 
+            });
+    
+    return wart;
+}
+
 router.get('/result', function(req, res){
 
     var surveyid = req.query['survey']; //Pobieranie numeru ankiety
@@ -393,17 +409,42 @@ router.get('/result', function(req, res){
 
     collectionUser.count({"surveyid" : surveyid,}, function(err, all){
 
-        collection.count({}, function(err, count){
-            if(count > all/2)
+        collection.count({}, function(err, countt){
+            if(countt > all/2)
             {
+                //var odp =[];
                 var collectionSurvey = db.get('surveycollection');
                 collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
-                    count = String(parseInt((count/all)*100)) + "%";        //ile udzielono odpowiedzi
+                    count = String(parseInt((countt/all)*100)) + "%";        //ile udzielono odpowiedzi
                         //collection.count({ "answer" : "Yes"}, function(err, count){
-                            console.log(docs);
+                            var howManyQuestions =parseInt(docs[0].questionscount);
+                            
+                            for (var i = 0; i < howManyQuestions; i++) {
+                                odp[i]="";
+                                if ((docs[0].questions[i].answertype=="radio") || (docs[0].questions[i].answertype=="checkbox"))
+                                {
+                                    w= CountFunction(odp[i],collection, docs , i,0);
+                                    //console.log(odp[i]);
+                                    
+                                }
+                                else
+                                {
+                                    wart = collection.find({ question : String(docs[0].questions[i].question)},{answer : 1},function(err,find){
+                                        for(h=0;h<countt;h++){
+                                            odp[i]+="\n" + find[h].answer+ "\n";
+                                        };
+                                            });
+                                }
+
+                            };
+                            
+                          //  var i=0; n=0;
+                            //  functionCountAnswer(collection,docs,i,n)
+                          //  collection.count({"question" : String(docs[0].questions[0+i].question), "answer" : String(docs[0].questions[0+i].availbeanswers[0+n])}, function(err,ans){ console.log(ans);});
+                           //     console.log(odp[0]);      
                            // var results = [question[0].question, allResults, count ];
                             res.render('seeresults', {
-                                "count" : count, "results" : docs
+                                "count" : count, "results" : docs, "odp" : odp 
                             });
 
                   //  });
