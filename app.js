@@ -6,9 +6,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var mongo = require('mongodb');
-var MONGOHQ_URL = "mongodb://heroku:LncAc7TMmnXxrWbsJ9IM7oMO5YE2msuSwINYWf7tVjNU0GEuTQbYn2QoGvDeiNjM5FXHLFg46PzA9sYkIolqCQ@dogen.mongohq.com:10080/app32152226"
 var monk = require('monk');
-var db = monk(MONGOHQ_URL);
+var mongoUri = process.env.MONGOLAB_URI || 'localhost:27017/annonsurvey';
+var db = monk(mongoUri);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
