@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var mongo = require('mongodb');
-var MONGOHQ_URL = "mongodb://jestemwiciu@gmail.com:370D5y7C68A@dogen.mongohq.com:10080/app32152226"
+var MONGOHQ_URL = "mongodb://heroku:LncAc7TMmnXxrWbsJ9IM7oMO5YE2msuSwINYWf7tVjNU0GEuTQbYn2QoGvDeiNjM5FXHLFg46PzA9sYkIolqCQ@dogen.mongohq.com:10080/app32152226"
 var monk = require('monk');
 var db = monk(MONGOHQ_URL);
 
