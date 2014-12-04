@@ -15,6 +15,10 @@ block content
 					each q in r.questions
 						li
 							h1 #{q.questionnumber}. #{q.question}	
+							h2 Reply:
+							- for (var n=0; n < q.answercount; n++)
+								li
+									h3 #{q.availbeanswers[n]}
 		if result
 			.alert.alert-danger(role='alert')= result							
 		br
