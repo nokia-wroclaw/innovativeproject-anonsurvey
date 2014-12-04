@@ -417,15 +417,26 @@ router.get('/result', function(req, res){
 
     var collection = db.get(baseName);
 
-
     collectionUser.count({"surveyid" : surveyid,}, function(err, all){
 
         collection.count({}, function(err, countt){
-            if(countt > all/2)
-            {
-                //var odp =[];
-                var collectionSurvey = db.get('surveycollection');
+
+            var collectionSurvey = db.get('surveycollection');
                 collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
+
+                    var sy = parseInt(docs[0].surveyend[0]+docs[0].surveyend[1]+docs[0].surveyend[2]+docs[0].surveyend[3]);
+                    var sm = parseInt(docs[0].surveyend[5]+docs[0].surveyend[6]);
+                    var sd = parseInt(docs[0].surveyend[8]+docs[0].surveyend[9]);
+                    
+                    var T = new Date();
+                    var y = parseInt(T.getFullYear());
+                    var m = parseInt(T.getMonth()+1);
+                    var d = parseInt(T.getDay());
+
+            if((countt > all/2) || ((y<=sy)&&(m<=sm)&&(d<=sd)))
+            {
+                    collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
+
                     count = String(parseInt((countt/all)*100)) + "%";        //ile udzielono odpowiedzi
                         //collection.count({ "answer" : "Yes"}, function(err, count){
                             var howManyQuestions =parseInt(docs[0].questionscount);
@@ -469,6 +480,7 @@ router.get('/result', function(req, res){
                 });
 
             }
+            });
             
         });
     });
