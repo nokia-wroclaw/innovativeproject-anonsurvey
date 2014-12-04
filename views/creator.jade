@@ -9,17 +9,16 @@ block content
         form#creator(method='post', action='/addsurvey')
           label Survey's name:
           br
-          input(type='text', ng-model='yourSurveyName', name='surveyname', placeholder='Surveys name')
+          input#surveyquest(type='text', ng-model='yourSurveyName', name='surveyname', required, pattern="[^<>]+", title="Only text", placeholder='Surveys name')
           br
           label End of survey:
           br
-          input(type='date', ng-model='yourSurveyEnd', name='endofsurvey', placeholder='End of survey')
+          input#surveyenddate(type='date', ng-model='yourSurveyEnd', name='endofsurvey', required, placeholder='End of survey')
           hr
           div#end
           br
           button(onclick='addquest()', type='button') Add question
           hr
-          div#countquest
           button.btn.btn-medium.btn-info(type="submit", form="creator", value="addsurvey") Add Survey
           //input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
           br
@@ -27,29 +26,31 @@ block content
       a.btn.btn-medium.btn-primary(href="/profile")= "Back"
     script(type='text/javascript').
       var countquest = 0;
+      var countanswer = 0;
       function addquest(){
-        var questname = '<label>Question '+(countquest+1)+':</label><br> \
-        <input type="text" ng-model="yourQuestion" name="question['+countquest.toString()+']" placeholder="Question"><br><br>';
+        var queststart = '<label>Question:</label><br>';
+        var questname = '<input type="text" ng-model="yourQuestion" name="question['+countquest.toString()+']" required placeholder="Question"><br><br>';
         var info = "Choose option of answer:<br>";
-        var list = '<select onchange="addanswer(this.value,'+countquest.toString()+')"> \
+        var list = '<select onchange="addanswer(this.value,'+countquest.toString()+')" required pattern="[a-z]+"> \
         <option value=""></option> \
         <option value="text">text</option> \
+        <option value="textarea">textarea</option> \
         <option value="radio">radio</option> \
         <option value="checkbox">checkbox</option> \
         <option value="range">range</option> \
         <option value="date">date</option> \
         </select>';
+        var questno = "quest"+countquest.toString();
+        var questdelete = '<a href="javascript:deletequest('+questno+')">Delete this question</a>';
         var newquest = document.createElement("div");
-        var questno = "quest"+countquest;
         newquest.setAttribute("id", questno);
         var endquestno = "endquest"+countquest;
         var endquestdiv = '<div id='+endquestno+'></div>';
-        newquest.innerHTML = '<hr>'+questname + info + list + endquestdiv;
+        newquest.innerHTML = '<hr>' + queststart + questname + info + list + endquestdiv + questdelete;
         div = document.getElementById("creator");
         enddiv = document.getElementById("end");
         div.insertBefore(newquest, enddiv);
         countquest++;
-        document.getElementById("countquest").innerHTML = '<input type="hidden" name="countquest" value='+countquest.toString()+'>';
       }
       function addanswer(w,no){
         var otherans = "";
@@ -59,7 +60,7 @@ block content
         if(w=="radio") {
           otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available user\'s answer<br>\
           <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable user\'s answer<br><br>';
-          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
           button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button>Add next answer</button>';
@@ -67,7 +68,7 @@ block content
         else if(w=="checkbox") {
           otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available user\'s answer<br>\
           <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable user\'s answer<br><br>';
-          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
           button = '<button onclick=addnextanswer("checkbox",'+no.toString()+') type=button>Add next answer</button>';          
@@ -77,6 +78,11 @@ block content
           answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Example" value="Example" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="text">';  
         }
+        else if(w=="textarea") {
+          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+          answer = '<textarea rows="4" cols="50" name="answer['+no.toString()+']" form="creator" readonly>Example Example Example</textarea><br>';
+          answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="textarea">';  
+        }
         else if(w=="date") {
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<input type="date" name="answer['+no.toString()+']" placeholder="Answer" value="Example" readonly><br>';
@@ -84,8 +90,8 @@ block content
         }
         else if(w=="range"){
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Min value">\
-          <input type="text" name="answer['+no.toString()+']" placeholder="Max value"><br>';
+          answer = '<input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Min value">\
+          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Max value"><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="range">';  
         }
         var answerno = "answer"+no.toString();
@@ -111,9 +117,18 @@ block content
           answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
           <br>';
         }
+        var answerno = "answ"+countanswer.toString();
+        var answerdelete = '<a href="javascript:deletequest('+answerno+')">Delete this answer</a>';
         var newtype = document.createElement("div");
-        newtype.innerHTML = answer;
+        newtype.setAttribute("id", answerno);
+        newtype.innerHTML = answer + answerdelete;
         div = document.getElementById("answer"+no.toString());
         enddiv = document.getElementById("endanswer"+no.toString());
-        div.insertBefore(newtype, enddiv); 
+        div.insertBefore(newtype, enddiv);
+        countanswer++; 
       }
+      function deletequest(v){
+        var elem = document.getElementById(v.id);
+        if(elem) elem.parentNode.removeChild(elem);
+      }
+

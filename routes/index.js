@@ -188,13 +188,23 @@ router.post('/addsurvey', function(req, res) {
     
     var surveyname = req.body.surveyname;
     var countquest = req.body.countquest;
-      
+    //console.log(req.body.question.length);
+    //console.log(req.body.answertype[0]);
+    //console.log(req.body.answertype[1]);
+    //console.log(req.body.answertype[2]);
+    //console.log(req.body.answertype[3]);
+    //console.log(req.body.answer[0]);
+    //console.log(req.body.answer[1]);
+    
     var questions = [];
     for(i=0;i<req.body.question.length; i++){
         var answers = [];
         var answerslength = 0;
         switch(req.body.answertype[i]){
             case "text":
+
+                break;
+            case "textarea":
 
                 break;
             case "date":
@@ -263,6 +273,7 @@ router.post('/addsurvey', function(req, res) {
                 }
             });
         });
+        
 });
 
 router.get('/chooseuser', function(req, res) {

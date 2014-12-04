@@ -7,15 +7,15 @@ block content
       h2 Survey ID: #{getsurveyid}
     div(align='center', ng-app='ng-app')
       hr
-      form
-        input#oneemail(type='text', ng-model='yourSurveyName', name='email', placeholder='email address')
-        &nbsp
-        input.btn.btn-medium.btn-success(type='button', ng-model='yourButton', name='emailsubmit', value='Add email to survey', onclick='addemailaddress()')
-        hr
+      textarea#emails(rows='10', cols='50', name='emails')
+      br
+      button.btn.btn-medium.btn-success(type='submit', ng-model='yourButton', name='emailsubmit', onclick='addemailaddress()') Add emails
+      hr
       form#addusertosurvey(method='post', action='/adduserstosurvey')
         br
         input(type='hidden', name='surveyid', value= getsurveyid)
-        div#demo
+        div#emailsform
+          div#endemailsform
         br
         hr
         button.btn.btn-medium.btn-info(type="submit" form="addusertosurvey" value="addemails") Add emails to survey
@@ -26,12 +26,22 @@ block content
         br
         //input(type='submit', ng-model='yourSubmit', name='submit', value='Add emails to survey')
     script(type='text/javascript').
-      var count = 0;
-      var allinput = "";
       function addemailaddress(){
-          count++;
-          var email = document.getElementById("oneemail").value;
-          var input = '<input type="checkbox" name="email" value='+email+' checked>'+email+'<br>';
-          allinput = allinput + input;
-          document.getElementById("demo").innerHTML = allinput;
+          var allinput = "";
+          var input = "";
+          var regexmail = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
+          var emails = document.getElementById("emails").value;
+          var res = emails.split(/[-;,' '\n]/);
+          for(var i = 0; i< res.length;i++){
+              if(res[i].match(regexmail)){
+                  input = '<input type="checkbox" name="email" value='+res[i]+' checked>'+res[i]+'<br>';
+                  allinput = allinput + input;
+              }
+          }
+          var newtype = document.createElement("div");
+          //newtype.setAttribute("id", answerno);
+          newtype.innerHTML = allinput;
+          var div = document.getElementById("emailsform");
+          var enddiv = document.getElementById("endemailsform");
+          div.insertBefore(newtype, enddiv); 
       }
