@@ -1,21 +1,52 @@
 extends layout
 block content
+	require('\hey.js')
 	div(align='center', class='jumbotron')
-		h2 Please answer following question:
-		ul
-			each q in question
-				lu
-					h1= q.questions[0].question
+		h2 Please answer following questions:
+		div#form
+			hr
+			form#answer(method='post', action='/answertobase')
+					ul
+						each r in result
+							each q in r.questions
+								l1
+									if q.answertype == "radio"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+										- for (var n=0; n < q.answercount; n++)
+											- var answ = q.availbeanswers[n]
+											label=answ
+											input(type="radio" name=ansNumber value=answ)
+											br
 
-					form#answer(method='post', action='/answertobase')
-						br
-						label Yes
-						input(type="radio", name="answer", "value" = "Yes", checked)
-						br
-						label No
-						input(type="radio", name="answer", "value" = "No" )
-						br
-						input(type='hidden', ng-model='yourHidden', name ='user' value = user)
-						input(type='hidden', ng-model='yourHidden', name ='surveyid' value = q.surveyid)
-						input(type='hidden', ng-model='yourHidden', name ='question' value = q.questions[0].question)
-						input(type='submit', ng-model='yourSubmit', name ="submit" value='Sumbit your answer!')
+									if q.answertype == "checkbox"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+										- for (var n=0; n < q.answercount; n++)
+											- var answ = q.availbeanswers[n]
+											label=answ
+											input(type="checkbox" name=ansNumber value=answ)
+											br
+
+									if q.answertype == "text"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											input(type="text" name=ansNumber)
+
+									if q.answertype == "range"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											input(type="range" name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] )
+
+									if q.answertype == "date"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											input(type="date" name=ansNumber)
+
+									if q.answertype == "textarea"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											textarea(rows="4" cols="50" name=ansNumber form="answer")
+
+
+								
