@@ -1,22 +1,31 @@
 extends layout
 block content
-	require('\hey.js')
 	div(align='center', class='jumbotron')
 		h2 Please answer following questions:
 		div#form
 			hr
 			form#answer(method='post', action='/answertobase')
+
 					ul
+						input(type='hidden' name ='user' value = user form="answer")
+						- var id = result[0].surveyid
+						input(type='hidden', name ='surveyid' value = id form="answer")
+						- var amount = result[0].questionscount
+						input(type='hidden', name ='questionsamount' value = amount )
+						br
 						each r in result
 							each q in r.questions
 								l1
+									- var question = "question" + q.questionnumber.toString();
+									input(type='hidden' name = question value = q.question form="answer")
+
 									if q.answertype == "radio"
 										h1 #{q.question}
 										- var ansNumber = "ans" + q.questionnumber.toString();
 										- for (var n=0; n < q.answercount; n++)
 											- var answ = q.availbeanswers[n]
 											label=answ
-											input(type="radio" name=ansNumber value=answ)
+											input(type="radio" name = ansNumber value = answ form="answer" checked)
 											br
 
 									if q.answertype == "checkbox"
@@ -25,18 +34,18 @@ block content
 										- for (var n=0; n < q.answercount; n++)
 											- var answ = q.availbeanswers[n]
 											label=answ
-											input(type="checkbox" name=ansNumber value=answ)
+											input(type="checkbox" name=ansNumber value=answ form="answer")
 											br
 
 									if q.answertype == "text"
 										h1 #{q.question}
 										- var ansNumber = "ans" + q.questionnumber.toString();
-											input(type="text" name=ansNumber)
+											input(type="text" name=ansNumber form="answer")
 
 									if q.answertype == "range"
 										h1 #{q.question}
 										- var ansNumber = "ans" + q.questionnumber.toString();
-											input(type="range" name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] )
+											input(type="range" name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] form="answer")
 
 									if q.answertype == "date"
 										h1 #{q.question}
@@ -46,7 +55,11 @@ block content
 									if q.answertype == "textarea"
 										h1 #{q.question}
 										- var ansNumber = "ans" + q.questionnumber.toString();
-											textarea(rows="4" cols="50" name=ansNumber form="answer")
+										textarea(rows="4" cols="50" name=ansNumber form="answer")
+					input(type="submit" name="Sumbit" value='Done!' form="answer")
+				
+
+				
 
 
 								

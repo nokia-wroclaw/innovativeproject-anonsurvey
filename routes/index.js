@@ -244,9 +244,7 @@ router.post('/addsurvey', function(req, res) {
         "answercount" : answerslength,
         "otheranswer" : req.body.otheranswer[i],
         }; 
-    }
-    console.log(questions);
-    
+    }    
     
     var db = req.db;
     var collection = db.get('surveycollection');
@@ -367,24 +365,35 @@ router.post('/fillorcheck', function(req,res){
 router.post('/answertobase', function(req,res){
 
     var db = req.db;
-    var ans = req.body.answer;
-    var user = req.body.user;
-    var surveyid = req.body.surveyid;
-    var question = req.body.question;
-
-    var baseName = 'surveyanswers' + surveyid;
+    var user = req.body.user; //Pobieranie hasha użytkownika
+    var surveyid = req.body.surveyid; //Pobieranie numeru ankiety
+    var questionsamount = req.body.questionsamount; //pobieranie ilości pytań
+    var baseName = 'surveyanswers' + surveyid; //sklejanie z numerem, żeby stworzyć bazę odpowiedzi danej ankiety
     var collection = db.get(baseName);
 
+    var answers = [], //Tu będziemy przechowywać pytania i odpowiedzi na nie
+    questions = [];
+
+
+    for(i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
+        var strAnswer = "ans" + String(i);
+        var strQuestion = "question" + String(i);
+        var ans = req.param(strAnswer,"No answer"); //Jeżeli nie ma odpowiedzi na to pytanie, to do bazy zapisujemy "No answer"
+        var question = req.param(strQuestion);
+        answers[i] = ans; //Tworzymy tabelę, której kolejnymi komórkami są odpowiedzi na pytania, numerowane od zera zgodnie z wcześniej przyjętą konwencją.
+        questions[i] = question;
+    }                       
+    
     collection.insert({
                 "user" : user,
-               // "surveyid" : surveyid, to pole usuwamy
-                "question" : question,
-                "answer" : ans
+                "answers" : answers
+                "questions" : questions
             }, function (err, doc) {
                 if (err) {
                     res.send("There was a problem adding the information to the database.");
                 }
             });
+     // Trzeba dodać jakieś powiadomienie w stylu: Dziękujemy za wypełenie ankiey
     res.location("/profile");
     res.redirect("/profile");
 
