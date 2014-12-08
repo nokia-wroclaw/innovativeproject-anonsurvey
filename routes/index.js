@@ -386,8 +386,9 @@ router.post('/answertobase', function(req,res){
     
     collection.insert({
                 "user" : user,
-                "answers" : answers
-                "questions" : questions
+                "answers" : answers,
+                "questions" : questions,
+                "questionsamount" : questionsamount
             }, function (err, doc) {
                 if (err) {
                     res.send("There was a problem adding the information to the database.");
