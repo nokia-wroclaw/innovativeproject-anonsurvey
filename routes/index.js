@@ -349,7 +349,7 @@ router.post('/fillorcheck', function(req,res){
                         var number = parseInt(surveyId);
                         collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
                             res.render('fillingsurvey', {
-                            "question" : docs ,
+                            "result" : docs ,
                             "user" : stringToCheck,
                             });
                         });
