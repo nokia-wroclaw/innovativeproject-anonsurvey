@@ -22,20 +22,28 @@ block content
 									if q.answertype == "radio"
 										h1 #{q.question}
 										- var ansNumber = "ans" + q.questionnumber.toString();
-										- for (var n=0; n < q.answercount; n++)
-											- var answ = q.availbeanswers[n]
-											label=answ
-											input(type="radio" name = ansNumber value = answ form="answer" checked)
+											- for (var n=0; n < q.answercount; n++)
+												- var answ = q.availbeanswers[n]
+												label=answ
+												input(type="radio" name = ansNumber value = answ form="answer" checked)
+												br
+											- if(q.otheranswer == "true")
+											label You can also type your own answer(Answers above will not be written down):
 											br
+											input(type="text" name = ansNumber form="answer")
 
 									if q.answertype == "checkbox"
 										h1 #{q.question}
 										- var ansNumber = "ans" + q.questionnumber.toString();
-										- for (var n=0; n < q.answercount; n++)
-											- var answ = q.availbeanswers[n]
-											label=answ
-											input(type="checkbox" name=ansNumber value=answ form="answer")
+											- for (var n=0; n < q.answercount; n++)
+												- var answ = q.availbeanswers[n]
+												label=answ
+												input(type="checkbox" name=ansNumber value=answ form="answer")
+												br
+											- if(q.otheranswer == "true")
+											label You can also type your own answer:
 											br
+											input(type="text" name = ansNumber form="answer")
 
 									if q.answertype == "text"
 										h1 #{q.question}

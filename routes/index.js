@@ -394,7 +394,7 @@ router.post('/answertobase', function(req,res){
                     res.send("There was a problem adding the information to the database.");
                 }
             });
-     // Trzeba dodać jakieś powiadomienie w stylu: Dziękujemy za wypełenie ankiey
+     // Trzeba dodać jakieś powiadomienie w stylu: Dziękujemy za wypełenie ankiety
     res.location("/profile");
     res.redirect("/profile");
 
