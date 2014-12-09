@@ -1,21 +1,73 @@
 extends layout
 block content
 	div(align='center', class='jumbotron')
-		h2 Please answer following question:
-		ul
-			each q in question
-				lu
-					h1= q.questions[0].question
+		h2 Please answer following questions:
+		div#form
+			hr
+			form#answer(method='post', action='/answertobase')
 
-					form#answer(method='post', action='/answertobase')
+					ul
+						input(type='hidden' name ='user' value = user form="answer")
+						- var id = result[0].surveyid
+						input(type='hidden', name ='surveyid' value = id form="answer")
+						- var amount = result[0].questionscount
+						input(type='hidden', name ='questionsamount' value = amount )
 						br
-						label Yes
-						input(type="radio", name="answer", "value" = "Yes", checked)
-						br
-						label No
-						input(type="radio", name="answer", "value" = "No" )
-						br
-						input(type='hidden', ng-model='yourHidden', name ='user' value = user)
-						input(type='hidden', ng-model='yourHidden', name ='surveyid' value = q.surveyid)
-						input(type='hidden', ng-model='yourHidden', name ='question' value = q.questions[0].question)
-						input(type='submit', ng-model='yourSubmit', name ="submit" value='Sumbit your answer!')
+						each r in result
+							each q in r.questions
+								l1
+									- var question = "question" + q.questionnumber.toString();
+									input(type='hidden' name = question value = q.question form="answer")
+
+									if q.answertype == "radio"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											- for (var n=0; n < q.answercount; n++)
+												- var answ = q.availbeanswers[n]
+												label=answ
+												input(type="radio" name = ansNumber value = answ form="answer" checked)
+												br
+											- if(q.otheranswer == "true")
+											label You can also type your own answer(Answers above will not be written down):
+											br
+											input(type="text" name = ansNumber form="answer")
+
+									if q.answertype == "checkbox"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											- for (var n=0; n < q.answercount; n++)
+												- var answ = q.availbeanswers[n]
+												label=answ
+												input(type="checkbox" name=ansNumber value=answ form="answer")
+												br
+											- if(q.otheranswer == "true")
+											label You can also type your own answer:
+											br
+											input(type="text" name = ansNumber form="answer")
+
+									if q.answertype == "text"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											input(type="text" name=ansNumber form="answer")
+
+									if q.answertype == "range"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											input(type="range" name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] form="answer")
+
+									if q.answertype == "date"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+											input(type="date" name=ansNumber)
+
+									if q.answertype == "textarea"
+										h1 #{q.question}
+										- var ansNumber = "ans" + q.questionnumber.toString();
+										textarea(rows="4" cols="50" name=ansNumber form="answer")
+					input(type="submit" name="Sumbit" value='Done!' form="answer")
+				
+
+				
+
+
+								

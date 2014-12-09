@@ -244,9 +244,7 @@ router.post('/addsurvey', function(req, res) {
         "answercount" : answerslength,
         "otheranswer" : req.body.otheranswer[i],
         }; 
-    }
-    console.log(questions);
-    
+    }    
     
     var db = req.db;
     var collection = db.get('surveycollection');
@@ -349,7 +347,7 @@ router.post('/fillorcheck', function(req,res){
                         var number = parseInt(surveyId);
                         collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
                             res.render('fillingsurvey', {
-                            "question" : docs ,
+                            "result" : docs ,
                             "user" : stringToCheck,
                             });
                         });
@@ -367,24 +365,36 @@ router.post('/fillorcheck', function(req,res){
 router.post('/answertobase', function(req,res){
 
     var db = req.db;
-    var ans = req.body.answer;
-    var user = req.body.user;
-    var surveyid = req.body.surveyid;
-    var question = req.body.question;
-
-    var baseName = 'surveyanswers' + surveyid;
+    var user = req.body.user; //Pobieranie hasha użytkownika
+    var surveyid = req.body.surveyid; //Pobieranie numeru ankiety
+    var questionsamount = req.body.questionsamount; //pobieranie ilości pytań
+    var baseName = 'surveyanswers' + surveyid; //sklejanie z numerem, żeby stworzyć bazę odpowiedzi danej ankiety
     var collection = db.get(baseName);
 
+    var answers = [], //Tu będziemy przechowywać pytania i odpowiedzi na nie
+    questions = [];
+
+
+    for(i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
+        var strAnswer = "ans" + String(i);
+        var strQuestion = "question" + String(i);
+        var ans = req.param(strAnswer,"No answer"); //Jeżeli nie ma odpowiedzi na to pytanie, to do bazy zapisujemy "No answer"
+        var question = req.param(strQuestion);
+        answers[i] = ans; //Tworzymy tabelę, której kolejnymi komórkami są odpowiedzi na pytania, numerowane od zera zgodnie z wcześniej przyjętą konwencją.
+        questions[i] = question;
+    }                       
+    
     collection.insert({
                 "user" : user,
-               // "surveyid" : surveyid, to pole usuwamy
-                "question" : question,
-                "answer" : ans
+                "answers" : answers,
+                "questions" : questions,
+                "questionsamount" : questionsamount
             }, function (err, doc) {
                 if (err) {
                     res.send("There was a problem adding the information to the database.");
                 }
             });
+     // Trzeba dodać jakieś powiadomienie w stylu: Dziękujemy za wypełenie ankiety
     res.location("/profile");
     res.redirect("/profile");
 
@@ -417,15 +427,26 @@ router.get('/result', function(req, res){
 
     var collection = db.get(baseName);
 
-
     collectionUser.count({"surveyid" : surveyid,}, function(err, all){
 
         collection.count({}, function(err, countt){
-            if(countt > all/2)
-            {
-                //var odp =[];
-                var collectionSurvey = db.get('surveycollection');
+
+            var collectionSurvey = db.get('surveycollection');
                 collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
+
+                    var sy = parseInt(docs[0].surveyend[0]+docs[0].surveyend[1]+docs[0].surveyend[2]+docs[0].surveyend[3]);
+                    var sm = parseInt(docs[0].surveyend[5]+docs[0].surveyend[6]);
+                    var sd = parseInt(docs[0].surveyend[8]+docs[0].surveyend[9]);
+                    
+                    var T = new Date();
+                    var y = parseInt(T.getFullYear());
+                    var m = parseInt(T.getMonth()+1);
+                    var d = parseInt(T.getDay());
+
+            if((countt > all/2) || ((y<=sy)&&(m<=sm)&&(d<=sd)))
+            {
+                    collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
+
                     count = String(parseInt((countt/all)*100)) + "%";        //ile udzielono odpowiedzi
                         //collection.count({ "answer" : "Yes"}, function(err, count){
                             var howManyQuestions =parseInt(docs[0].questionscount);
@@ -469,6 +490,7 @@ router.get('/result', function(req, res){
                 });
 
             }
+            });
             
         });
     });

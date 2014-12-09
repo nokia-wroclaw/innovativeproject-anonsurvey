@@ -8,16 +8,17 @@ block content
 					l1
 						h1 Surveyname: #{r.surveyname}
 						h2 Surveyowner: #{r.surveyowner}
+						h3 Surveyend: #{r.surveyend}
 			h2 Answered #{count} respondents
 			h3 Results of the respondents:
 			ul
 				each r in results
 					each q in r.questions
-						li
+						l1
 							h1 #{q.questionnumber}. #{q.question}	
 							h2 Reply:
 							- for (var n=0; n < q.answercount; n++)
-								li
+								l1
 									h3 #{q.availbeanswers[n]}
 		if result
 			.alert.alert-danger(role='alert')= result							
