@@ -58,16 +58,16 @@ block content
         var answertype = "";
         var button = "";
         if(w=="radio") {
-          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available user\'s answer<br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable user\'s answer<br><br>';
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
           answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
           button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button>Add next answer</button>';
         }
         else if(w=="checkbox") {
-          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available user\'s answer<br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable user\'s answer<br><br>';
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
           answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
@@ -110,11 +110,11 @@ block content
       function addnextanswer(w,no){
         var answer = "";
         if(w=="radio"){
-          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
         }
         else if(w=="checkbox"){
-          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" placeholder="Answer">\
+          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
         }
         var answerno = "answ"+countanswer.toString();

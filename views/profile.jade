@@ -19,7 +19,8 @@ block content
         ul
         each osurvey in surveysowner
                 li #{osurvey.surveyname}  
-                    a.btn.btn-medium.btn-primary(href='/result?survey='+osurvey.surveyid) Result 
+                    a.btn.btn-medium.btn-primary(href='/result?survey='+osurvey.surveyid) Result
+                    p 
         hr
         a.btn.btn-medium.btn-success(href='/creator') Create your own survey!
         br
