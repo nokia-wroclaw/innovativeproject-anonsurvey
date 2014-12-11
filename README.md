@@ -1,4 +1,4 @@
-innovativeproject-annonsurvey
+innovativeproject-anonsurvey
 =============================
 
 Innovative Projects - Anonymous surveys
