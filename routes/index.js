@@ -464,7 +464,7 @@ router.post('/adduserstosurvey', function(req, res) {
                 var to = emails[j].toString();
                 console.log("info "+to);
                 var sub = "Magic Survey App - You have new invite to fill survey";
-                var text = "Open this link: \nlocalhost:3000/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
+                var text = "Open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
                 sendmail(to, sub, text);
             }
             else{
@@ -472,7 +472,7 @@ router.post('/adduserstosurvey', function(req, res) {
                 var to = emails[j].toString();
                 //console.log("reg "+to);
                 var sub = "Magic Survey App - You have invite to fill survey";
-                var text = "Register and then open this link: \nlocalhost:3000/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
+                var text = "Register and then open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
                 sendmail(to, sub, text);
             }
             j++;
