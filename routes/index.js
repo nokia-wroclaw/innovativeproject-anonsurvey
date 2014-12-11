@@ -223,7 +223,12 @@ router.get('/creator', function(req, res) {
 /*Link to survey*/
 router.get('/gotosurvey', function(req, res){
     
-    var surveyid = req.query['id'] 
+    var surveyid = req.query['id'];
+    if(surveyid == undefined || surveyid == "")
+    {
+        res.send("No no. of survey");
+        return;
+    } 
     var db = req.db;
     // Get our form values. These rely on the "name" attributes
     //console.log(req.body.useremail);
@@ -252,8 +257,8 @@ router.get('/gotosurvey', function(req, res){
 
             collection2.find({"surveyid" : parseInt(surveyid)}, function(err,doc){
 
-                //console.log(doc[0].whoanswer);
                 var collection3 = db.get('usersurveycollection');
+                //console.log(doc[0].whoanswer);
                 if(doc[0].whoanswer == "invited"){
 
                     collection3.count({"surveyid" : surveyid, "email" : userEmail}, function(err,count3){
