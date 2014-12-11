@@ -14,6 +14,22 @@ block content
           label End of survey:
           br
           input#surveyenddate(type='date', ng-model='yourSurveyEnd', name='endofsurvey', required, placeholder='End of survey')
+          br
+          label Who can answer?
+          br
+          input(type='radio', ng-model='yourWhoAnswer', name='whoanswer', checked, value="invited")
+          |  Only invited  
+          input(type='radio', ng-model='yourWhoAnswer', name='whoanswer', value="everybody")
+          |  Everybody 
+          br
+          label Who can see result?
+          br
+          input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', checked, value="everywhoanswer")
+          |  Everybody who answer 
+          input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="everybody")
+          |  Everybody 
+          input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="onlyyou")
+          |  Only you 
           hr
           div#end
           br

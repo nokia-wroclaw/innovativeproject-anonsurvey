@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var CryptoJS= require('crypto-js');
+var nodemailer = require('nodemailer');
 
 var Db = require('mongodb').Db,
     MongoClient = require('mongodb').MongoClient,
@@ -16,13 +17,40 @@ var Db = require('mongodb').Db,
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Annonymous Surveys' });
+    var gotosurveyid = req.query["gotosurvey"];
+    res.render('index', { title: 'Annonymous Surveys',
+        gotosurvey : gotosurveyid
+    });
 });
 
 /* GET Hello World page. */
 router.get('/helloworld', function(req, res) {
-    res.render('helloworld', { title: 'Hello, World!' })
+    
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'magic.survey.app@gmail.com',
+            pass: 'magic2014'
+        }
+    }); 
+
+    var mailOptions = {
+    from: 'magic.survey.app@gmail.com',    
+    to: 'ma0pla@gmail.com', // list of receivers
+    subject: 'Welcome to Magic Survey App', // Subject line
+    text: 'Welcome to Magic Survey App!!!', // plaintext body
+    };
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            console.log(error);
+        }else{
+            console.log('Message sent: ' + info.response);
+        }
+    });
+    //res.render('helloworld', { title: 'Hello, World!' })
 });
+
 
 /* GET Userlist page. */
 router.get('/userlist', function(req, res) {
@@ -59,7 +87,7 @@ function adduserFunction(req, res) {
     var userRepeatPassword = String(req.body.userrepeatpassword);
 
     var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
-    var regMail = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
+    var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
 
     if((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (userPassword==userRepeatPassword) ){
     
@@ -113,9 +141,12 @@ router.get('/signin', function(req, res) {
 function profileFunction(req,res){
         // Set our internal DB variable
     var db = req.db;
+    
+    var gotosurveyid = req.body.gotosurveyid;
+    //console.log("go to survey id: "+gotosurveyid);
     // Get our form values. These rely on the "name" attributes
     //console.log(req.body.useremail);
-    if(req.body.useremail != undefined){    
+    if(req.body.useremail != undefined ){    
         var userEmail = req.body.useremail;
         var userPassword = req.body.userpassword;
     }
@@ -132,6 +163,14 @@ function profileFunction(req,res){
         {
             res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
             res.cookie('userpassword', userPassword, { maxAge: 900000, httpOnly: true });
+            console.log("go to survey id: "+gotosurveyid);
+            if(gotosurveyid != undefined && gotosurveyid != ""){
+                // If it worked, set the header so the address bar doesn't still say /adduser
+                res.location("/gotosurvey");
+                // And forward to success page
+                res.redirect("/gotosurvey?id="+gotosurveyid);
+                return;
+            }
             collection.find({"useremail" : userEmail, "userpassword" : userPassword},function(e,docs){
             
                 var collection2 = db.get('usersurveycollection');
@@ -179,6 +218,79 @@ router.post('/profile', profileFunction);
 /* GET Creator page. */
 router.get('/creator', function(req, res) {
     res.render('creator', { title: 'Survey Creator' });
+});
+
+/*Link to survey*/
+router.get('/gotosurvey', function(req, res){
+    
+    var surveyid = req.query['id'] 
+    var db = req.db;
+    // Get our form values. These rely on the "name" attributes
+    //console.log(req.body.useremail);
+    if(req.cookies.useremail == undefined){    
+        // If it worked, set the header so the address bar doesn't still say /adduser
+        res.location("/");
+        // And forward to success page
+        res.redirect("/?gotosurvey="+surveyid);
+        return;
+    }
+    else {
+        //console.log(req.cookies.useremail);
+        var userEmail = req.cookies.useremail;
+        var userPassword = req.cookies.userpassword;
+        //console.log(userEmail); 
+       // console.log(surveyid); 
+    }   
+    // Set our collection
+    var collection = db.get('usercollection');
+
+    collection.count({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
+        if(count==1){
+
+            //console.log(count);
+            var collection2 = db.get('surveycollection');
+
+            collection2.find({"surveyid" : parseInt(surveyid)}, function(err,doc){
+
+                //console.log(doc[0].whoanswer);
+                var collection3 = db.get('usersurveycollection');
+                if(doc[0].whoanswer == "invited"){
+
+                    collection3.count({"surveyid" : surveyid, "email" : userEmail}, function(err,count3){
+                        console.log(count3);
+                        if(count3>0){
+                            res.render('gotosurvey', {
+                                "surveyid" : surveyid,
+                            });
+                        }
+                        else{
+                            res.send("You are not invited to fill this survey");
+                        }
+
+                    });
+                }
+                else if(doc[0].whoanswer == "everybody"){
+
+                        collection3.insert({"surveyid" : surveyid, "email" : userEmail}, function(err,doc3){
+                            if (err) {
+                            // If it failed, return error
+                            res.send("There was a problem adding the information to the database.");
+                        }
+                        else {
+                            res.render('gotosurvey', {
+                                "surveyid" : surveyid,
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            res.send("Is problem with you");
+            return;
+        }
+
+    });
 });
 
 /* POST to Add Survey Service */
@@ -255,7 +367,9 @@ router.post('/addsurvey', function(req, res) {
                 "surveyname" : surveyname,
                 "surveyowner" : useremail,
                 "surveyid" : surveyid,
-                "surveyend" : req.body.endofsurvey, 
+                "surveyend" : req.body.endofsurvey,
+                "whoanswer" : req.body.whoanswer,
+                "whoseeresult" : req.body.whoseeresult, 
                 "questions" : questions,
                 "questionscount" : req.body.question.length
             }, function (err, doc) {
@@ -284,11 +398,40 @@ router.get('/chooseuser', function(req, res) {
     });
 });
 
+/* GET Hello World page. */
+function sendmail(aemail, asubject, atext) {
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'magic.survey.app@gmail.com',
+            pass: 'magic2014'
+        }
+    }); 
+    //console.log(aemail);
+    //console.log(asubject);
+    //console.log(atext);
+
+    var mailOptions = {
+    from: 'magic.survey.app@gmail.com',    
+    to: aemail.toString(), // list of receivers
+    subject: asubject.toString(), // Subject line
+    text: atext.toString(), // plaintext body
+    };
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            console.log(error);
+        }else{
+            console.log('Message sent: ' + info.response);
+        }
+    });
+    //res.render('helloworld', { title: 'Hello, World!' })
+};
+
 router.post('/adduserstosurvey', function(req, res) {
     //console.log(req.body);
     //console.log(req.body.email.length);
     var db = req.db;
-    var collection = db.get('usersurveycollection');
     var surveyid = req.body.surveyid;
     var emails = req.body.email;
     if( typeof emails === 'string' ) {
@@ -296,6 +439,9 @@ router.post('/adduserstosurvey', function(req, res) {
     }
     //console.log(emails);
     //console.log(emails.length);
+    var collection = db.get('usersurveycollection');
+    var collection2 = db.get('usercollection');
+    var to = [];
     for (i in emails) {
         //console.log(emails[i]);
         collection.insert({
@@ -303,6 +449,34 @@ router.post('/adduserstosurvey', function(req, res) {
             "email" : emails[i]
         }, function (err, doc) {});
     }
+    var j = 0;
+    function loop(){
+        if(j<emails.length){
+            collection2.count({"useremail" : emails[j].toString()},function(err, count){
+            if(count>0){
+                //info
+                //console.log()
+                var to = emails[j].toString();
+                console.log("info "+to);
+                var sub = "Magic Survey App - You have new invite to fill survey";
+                var text = "Open this link: \nlocalhost:3000/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
+                sendmail(to, sub, text);
+            }
+            else{
+                //rejestrcyjny
+                var to = emails[j].toString();
+                //console.log("reg "+to);
+                var sub = "Magic Survey App - You have invite to fill survey";
+                var text = "Register and then open this link: \nlocalhost:3000/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
+                sendmail(to, sub, text);
+            }
+            j++;
+            loop();
+            });
+        }
+    }
+    loop();
+
     res.render('adduserstosurvey', {title: 'Survey made'});
 });
 
@@ -495,5 +669,6 @@ router.get('/result', function(req, res){
         });
     });
 });
+
 
 module.exports = router;

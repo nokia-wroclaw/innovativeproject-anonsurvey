@@ -3,13 +3,13 @@ extends layout
 block content
     div(align='center')
       h1 Survey Creator 
-      h2 There is a place where you can create your survey! step 2
+      h2 Write e-mails can answer of your survey! step 2
       h2 Survey ID: #{getsurveyid}
     div(align='center', ng-app='ng-app')
       hr
       textarea#emails(rows='10', cols='50', name='emails')
       br
-      button.btn.btn-medium.btn-success(type='submit', ng-model='yourButton', name='emailsubmit', onclick='addemailaddress()') Add emails
+      button.btn.btn-medium.btn-success(type='submit', ng-model='yourButton', name='emailsubmit', onclick='addemailaddress()') Add emails to list
       hr
       form#addusertosurvey(method='post', action='/adduserstosurvey')
         br
@@ -29,7 +29,7 @@ block content
       function addemailaddress(){
           var allinput = "";
           var input = "";
-          var regexmail = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
+          var regexmail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
           var emails = document.getElementById("emails").value;
           var res = emails.split(/[-;,' '\n]/);
           for(var i = 0; i< res.length;i++){

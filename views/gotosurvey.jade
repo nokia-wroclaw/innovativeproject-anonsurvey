@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    div(align='center')
+      h2 Enter your password
+    div(align='center', ng-app='ng-app')
+      form#form1(action='/fillorcheck', method='post')
+        input(type='hidden', name='yoursurveyid', value=surveyid)
+        input(type='password', name='yourpassword', placeholder='Enter you password here')
+        button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
