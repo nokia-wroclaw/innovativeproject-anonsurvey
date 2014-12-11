@@ -89,7 +89,7 @@ function adduserFunction(req, res) {
     var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
     var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
 
-    if((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (userPassword==userRepeatPassword) ){
+    if((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (!userPassword=="") && (userPassword==userRepeatPassword) ){
     
         // Set our collection
         var collection = db.get('usercollection');
@@ -574,21 +574,79 @@ router.post('/answertobase', function(req,res){
 
 });
 
-var odp =[];
 
-function CountFunction(wart,collection, docs , i, n){
+function CountFunctionRadio(all,wart,collection, docs , i, n){
     var howManyAnswerInQuestion = docs[0].questions[i].answercount;
-    ww = collection.count({question : String(docs[0].questions[i].question), answer : String(docs[0].questions[i].availbeanswers[n])}, function(err,ans){ 
-                                           wart +="\n" + docs[0].questions[i].availbeanswers[n]+": " + ans+ "\n";
-                                  //         console.log(wart);
-                                            odp[i] =wart;
-                                    //        console.log(odp[i]);
-                                           n++;
-                                           if (n < howManyAnswerInQuestion) CountFunction(wart,collection, docs , i, n); 
-            });
-    
-    return wart;
+    collection.find({}, function(err,ans){ 
+            how =0;
+            for (h=0;h<all;h++){
+                if (String(ans[h].answers[i][0])==String(docs[0].questions[i].availbeanswers[n])) how++;
+            }
+           wart +="\n" + docs[0].questions[i].availbeanswers[n]+": " + how+ "\n";
+          //  odp[i] =wart;
+           // console.log(odp[i]);
+           n++;
+           if (n < howManyAnswerInQuestion) CountFunctionRadio(all,wart,collection, docs , i, n); 
+       return wart;                                
+    });
 }
+
+function CountFunctionCheckbox(all,wart,collection, docs , i, n){
+    var howManyAnswerInQuestion = docs[0].questions[i].answercount;
+    collection.find({}, function(err,ans){ 
+            how =0;
+            for (h=0;h<all;h++){
+                for (l=0;l<howManyAnswerInQuestion;l++){
+                if (String(ans[h].answers[i][l])==String(docs[0].questions[i].availbeanswers[n])) how++;
+                }
+            }
+           wart +="\n" + docs[0].questions[i].availbeanswers[n]+": " + how+ "\n";
+            //odp[i] =wart;
+            //console.log(odp[i]);
+           n++;
+           if (n < howManyAnswerInQuestion) CountFunctionCheckbox(all,wart,collection, docs , i, n); 
+        return wart;                               
+    });
+}
+
+function CountFunctionRange(all,wart,collection, docs , i, n){
+    collection.find({}, function(err,ans){ 
+            how =0;
+            for (h=0;h<all;h++){
+                if (String(ans[h].answers[i][0])==String(n)) how++;
+            }
+           wart +="\n" + n +": " + how+ "\n";
+         //   odp[i] =wart;
+          //  console.log(odp[i]);
+           n++;
+           if (n <= docs[0].questions[i].availbeanswers[1]) CountFunctionRange(all,wart,collection, docs , i, n); 
+         return wart;                              
+    });
+}
+
+function CountFunctionDate(all,wart,collection, docs , i, n){
+    collection.find({},function(err,find){
+            for(h=0;h<all;h++){
+                wart+="\n" + find[h].answers[i]+ "\n";
+            };
+           // odp[i]=wart;
+           // console.log(odp[i]);
+        return wart;
+    });
+}
+
+
+function CountFunctionText(countt,wart,collection,i){
+    collection.find({},function(err,find){
+            for(h=0;h<countt;h++){
+                wart+="\n" + find[h].answers[i]+ "\n";
+            };
+           // odp[i]=wart;
+           // console.log(odp[i]);
+        return wart;
+    });
+}
+
 
 router.get('/result', function(req, res){
 
@@ -600,6 +658,8 @@ router.get('/result', function(req, res){
     var baseName = 'surveyanswers' + surveyid;
 
     var collection = db.get(baseName);
+
+    var odp = [];
 
     collectionUser.count({"surveyid" : surveyid,}, function(err, all){
 
@@ -617,43 +677,35 @@ router.get('/result', function(req, res){
                     var m = parseInt(T.getMonth()+1);
                     var d = parseInt(T.getDay());
 
-            if((countt > all/2) || ((y<=sy)&&(m<=sm)&&(d<=sd)))
+            if((countt > all/2) || ((y>=sy)&&(m>=sm)&&(d>=sd)))
             {
                     collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
 
                     count = String(parseInt((countt/all)*100)) + "%";        //ile udzielono odpowiedzi
-                        //collection.count({ "answer" : "Yes"}, function(err, count){
+                     
                             var howManyQuestions =parseInt(docs[0].questionscount);
                             
                             for (var i = 0; i < howManyQuestions; i++) {
                                 odp[i]="";
-                                if ((docs[0].questions[i].answertype=="radio") || (docs[0].questions[i].answertype=="checkbox"))
-                                {
-                                    w= CountFunction(odp[i],collection, docs , i,0);
-                                    //console.log(odp[i]);
-                                    
-                                }
-                                else
-                                {
-                                    wart = collection.find({ question : String(docs[0].questions[i].question)},{answer : 1},function(err,find){
-                                        for(h=0;h<countt;h++){
-                                            odp[i]+="\n" + find[h].answer+ "\n";
-                                        };
-                                            });
-                                }
+                                if (docs[0].questions[i].answertype=="radio") odp[i]=CountFunctionRadio(countt,odp[i],collection, docs , i,0);
 
+                                if (docs[0].questions[i].answertype=="checkbox") odp[i]=CountFunctionCheckbox(countt,odp[i],collection, docs , i,0);
+
+                                if (docs[0].questions[i].answertype=="range") odp[i]=CountFunctionRange(countt,odp[i],collection, docs , i,docs[0].questions[i].availbeanswers[0]);
+
+                                if (docs[0].questions[i].answertype=="date") odp[i]=CountFunctionDate(countt,odp[i],collection, docs , i,0);
+                             
+                                else odp[i]=CountFunctionText(countt,odp[i],collection,i);
+
+                                console.log(odp[i]);
+                               
                             };
                             
-                          //  var i=0; n=0;
-                            //  functionCountAnswer(collection,docs,i,n)
-                          //  collection.count({"question" : String(docs[0].questions[0+i].question), "answer" : String(docs[0].questions[0+i].availbeanswers[0+n])}, function(err,ans){ console.log(ans);});
-                           //     console.log(odp[0]);      
-                           // var results = [question[0].question, allResults, count ];
                             res.render('seeresults', {
                                 "count" : count, "results" : docs, "odp" : odp 
                             });
 
-                  //  });
+                  
                 });
             }
             else
