@@ -15,59 +15,69 @@ block content
 						br
 						each r in result
 							each q in r.questions
-								l1
-									- var question = "question" + q.questionnumber.toString();
-									input(type='hidden' name = question value = q.question form="answer")
+								- var question = "question" + q.questionnumber.toString();
+								hr
+								div(id=question)
+									l1
+										input(type='hidden' name = question value = q.question form="answer")
 
-									if q.answertype == "radio"
-										h1 #{q.question}
-										- var ansNumber = "ans" + q.questionnumber.toString();
-											- for (var n=0; n < q.answercount; n++)
-												- var answ = q.availbeanswers[n]
-												label=answ
-												input(type="radio" name = ansNumber value = answ form="answer" checked)
-												br
-											- if(q.otheranswer == "true")
-											label You can also type your own answer(Answers above will not be written down):
-											br
-											input(type="text" name = ansNumber form="answer")
+										if q.answertype == "radio"
+											h1 #{q.question}
+											- var ansNumber = "ans" + q.questionnumber.toString();
+												- for (var n=0; n < q.answercount; n++)
+													- var answ = q.availbeanswers[n]
+													label=answ
+													input(type="radio" name = ansNumber value = answ form="answer" checked)
+													br
+												- if(q.otheranswer == "true")
+													label You can also type your own answer:
+													br
+													input(type="text" name=ansNumber form="answer" placeHolder="Your answer" onchange='disRadio("#{ansNumber}")' )
 
-									if q.answertype == "checkbox"
-										h1 #{q.question}
-										- var ansNumber = "ans" + q.questionnumber.toString();
-											- for (var n=0; n < q.answercount; n++)
-												- var answ = q.availbeanswers[n]
-												label=answ
-												input(type="checkbox" name=ansNumber value=answ form="answer")
-												br
-											- if(q.otheranswer == "true")
-											label You can also type your own answer:
-											br
-											input(type="text" name = ansNumber form="answer")
+										if q.answertype == "checkbox"
+											h1 #{q.question}
+											- var ansNumber = "ans" + q.questionnumber.toString();
+												- for (var n=0; n < q.answercount; n++)
+													- var answ = q.availbeanswers[n]
+													label=answ
+													input(type="checkbox" name=ansNumber value=answ form="answer")
+													br
+												- if(q.otheranswer == "true")
+													- var divId = "question" + q.questionnumber.toString();
+													button( onclick = 'addans("#{divId}","#{ansNumber}")', type='button', placeHolder="Your answer") Add your answers!
 
-									if q.answertype == "text"
-										h1 #{q.question}
-										- var ansNumber = "ans" + q.questionnumber.toString();
-											input(type="text" name=ansNumber form="answer")
+										if q.answertype == "text"
+											h1 #{q.question}
+											- var ansNumber = "ans" + q.questionnumber.toString();
+												input(type="text" name=ansNumber form="answer")
 
-									if q.answertype == "range"
-										h1 #{q.question}
-										- var ansNumber = "ans" + q.questionnumber.toString();
-											input(type="range" name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] form="answer")
+										if q.answertype == "range"
+											h1 #{q.question}
+											- var ansNumber = "ans" + q.questionnumber.toString();
+												input(type="range" name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] form="answer")
 
-									if q.answertype == "date"
-										h1 #{q.question}
-										- var ansNumber = "ans" + q.questionnumber.toString();
-											input(type="date" name=ansNumber)
+										if q.answertype == "date"
+											h1 #{q.question}
+											- var ansNumber = "ans" + q.questionnumber.toString();
+												input(type="date" name=ansNumber)
 
-									if q.answertype == "textarea"
-										h1 #{q.question}
-										- var ansNumber = "ans" + q.questionnumber.toString();
-										textarea(rows="4" cols="50" name=ansNumber form="answer")
-					input(type="submit" name="Sumbit" value='Done!' form="answer")
-				
-
-				
-
-
-								
+										if q.answertype == "textarea"
+											h1 #{q.question}
+											- var ansNumber = "ans" + q.questionnumber.toString();
+											textarea(rows="4" cols="50" name=ansNumber form="answer")
+						input(type="submit" name="Sumbit" value='Done!' form="answer")
+	script(type='text/javascript').
+		function addans(question, name){
+			var znacznik = document.createElement('input');
+			znacznik.setAttribute('type', 'text' );
+			znacznik.setAttribute('name', name);
+			znacznik.setAttribute('style', 'display: block');
+			var pattern = "[^<>]+";
+			znacznik.required = true;
+			znacznik.setAttribute('pattern', pattern );
+			var answer = document.getElementById(question);
+			answer.appendChild(znacznik);
+		}	
+		function disRadio(ans){	
+			alert(ans);
+		}		

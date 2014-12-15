@@ -137,6 +137,17 @@ router.get('/signin', function(req, res) {
     res.render('signin', { title: 'Sign In' });
 });
 
+function makeID()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 40; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
 
 function profileFunction(req,res){
         // Set our internal DB variable
@@ -161,6 +172,8 @@ function profileFunction(req,res){
     collection.count({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
         if(count==1)
         {
+            var sessionId = makeID();
+            res.cookie('sessionId', sessionId, { maxAge: 900000, httpOnly: true });
             res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
             res.cookie('userpassword', userPassword, { maxAge: 900000, httpOnly: true });
             console.log("go to survey id: "+gotosurveyid);
