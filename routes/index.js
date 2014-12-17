@@ -627,45 +627,6 @@ function CountFunctionCheckbox(all,wart,collection, docs , i, n){
     });
 }
 
-function CountFunctionRange(all,wart,collection, docs , i, n){
-    collection.find({}, function(err,ans){ 
-            how =0;
-            for (h=0;h<all;h++){
-                if (String(ans[h].answers[i][0])==String(n)) how++;
-            }
-           wart +="\n" + n +": " + how+ "\n";
-         //   odp[i] =wart;
-          //  console.log(odp[i]);
-           n++;
-           if (n <= docs[0].questions[i].availbeanswers[1]) CountFunctionRange(all,wart,collection, docs , i, n); 
-         return wart;                              
-    });
-}
-
-function CountFunctionDate(all,wart,collection, docs , i, n){
-    collection.find({},function(err,find){
-            for(h=0;h<all;h++){
-                wart+="\n" + find[h].answers[i]+ "\n";
-            };
-           // odp[i]=wart;
-           // console.log(odp[i]);
-        return wart;
-    });
-}
-
-
-function CountFunctionText(countt,wart,collection,i){
-    collection.find({},function(err,find){
-            for(h=0;h<countt;h++){
-                wart+="\n" + find[h].answers[i]+ "\n";
-            };
-           // odp[i]=wart;
-           // console.log(odp[i]);
-        return wart;
-    });
-}
-
-
 router.get('/result', function(req, res){
 
     var surveyid = req.query['survey']; //Pobieranie numeru ankiety
@@ -695,34 +656,159 @@ router.get('/result', function(req, res){
                     var m = parseInt(T.getMonth()+1);
                     var d = parseInt(T.getDay());
 
-            if((countt > all/2) || ((y>=sy)&&(m>=sm)&&(d>=sd)))
+            if((countt > all/2) || (y>sy) || ((y=sy)&&(m>sm)) ||((y=sy)&&(m=sm)&&(d>=sd)))
             {
                     collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
 
                     count = String(parseInt((countt/all)*100)) + "%";        //ile udzielono odpowiedzi
                      
                             var howManyQuestions =parseInt(docs[0].questionscount);
+
+                            var i=0;
+                            h=0;
+                            odp[i]=""
+                            n=0;
+                            how =0;
+                            h=0;
+                            l=0;
+
+                    collection.find({},function(err,find){
+
+                    function CountFunction(){
+
+                            if (i<howManyQuestions){
+
+                                    if (docs[0].questions[i].answertype=="date"){
+                                        
+                                                if (h<countt){
+                                                        if (h==0) odp[i]+=find[h].answers[i];
+                                                        else odp[i]+="\n" +find[h].answers[i];
+                                                        h++;
+                                                        CountFunction();
+                                                }
+                                                else h=0;
+                                                i++;
+                                                odp[i]="";
+                                                CountFunction();
+                                        
+
+                                    }
+
+                                    else if (docs[0].questions[i].answertype=="radio"){
+
+                                        var howManyAnswerInQuestion = docs[0].questions[i].answercount;
+
+                                        if (n < howManyAnswerInQuestion){ 
+                                                
+                                                if (h<countt){
+                                                    if (String(find[h].answers[i][0])==String(docs[0].questions[i].availbeanswers[n])) how++;
+                                                    h++;
+                                                    CountFunction();
+                                                }
+                                                else{
+                                                h=0;
+                                                if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                how=0;
+                                                n++;
+                                                CountFunction();
+                                                }
+                                        }
+                                        else{
+                                        n=0;
+                                        i++;
+                                        odp[i]="";
+                                        CountFunction();
+                                        }
+                                    }
+
+                                    else if (docs[0].questions[i].answertype=="checkbox"){
+
+                                        var howManyAnswerInQuestion = docs[0].questions[i].answercount;
+
+                                        if (n < howManyAnswerInQuestion){
+                                                
+                                                
+                                                if (h<countt){
+                                                    if (l<find[h].answers[i].length){
+                                                        if (String(find[h].answers[i][l])==String(docs[0].questions[i].availbeanswers[n])) how++;
+                                                        l++;
+                                                        CountFunction();
+                                                    }
+                                                    else{ 
+                                                    l=0;
+                                                    h++;
+                                                    CountFunction();
+                                                    }
+                                                }
+                                                else{
+                                                h=0;
+                                                if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                how=0;
+                                                n++;
+                                                CountFunction();
+                                                }
+                                        }
+                                        else{
+                                        n=0;
+                                        i++;
+                                        odp[i]="";
+                                        CountFunction();
+                                        }
+                                    }
+
+                                    else if (docs[0].questions[i].answertype=="range"){
+
+                                            p=parseInt(docs[0].questions[i].availbeanswers[0]);
+                                            co=parseInt(p+n);
+                                                
+                                                if (co<=docs[0].questions[i].availbeanswers[1]){
+                                                    if (h<countt){
+                                                            if (String(find[h].answers[i][0])==String(co)) how++;
+                                                            h++;
+                                                            CountFunction();
+                                                    }
+                                                    else h=0;
+                                                    if (n==0) odp[i] +=co +":" + how;
+                                                    else odp[i]+="\n" + co +":" + how;
+                                                    how=0;
+                                                    n++;
+                                                    CountFunction();
+                                                }
+                                                else n=0;    
+                                                i++;
+                                                odp[i]="";
+                                                CountFunction();
+                                    }
+
+                                    else {
+                                                if (h<countt){
+                                                        if (h==0) odp[i]+=find[h].answers[i];
+                                                        else odp[i]+="\n" +find[h].answers[i];
+                                                        h++;
+                                                        CountFunction();
+                                                }
+                                                else h=0;
+                                                i++;
+                                                odp[i]="";
+                                                CountFunction();
+
+
+                                    }
+                            }
+                    }
+                            i=0;
+                            CountFunction();                         
                             
-                            for (var i = 0; i < howManyQuestions; i++) {
-                                odp[i]="";
-                                if (docs[0].questions[i].answertype=="radio") odp[i]=CountFunctionRadio(countt,odp[i],collection, docs , i,0);
+                            console.log(odp[0]);
+                          //  console.log(odp[1]);
 
-                                if (docs[0].questions[i].answertype=="checkbox") odp[i]=CountFunctionCheckbox(countt,odp[i],collection, docs , i,0);
-
-                                if (docs[0].questions[i].answertype=="range") odp[i]=CountFunctionRange(countt,odp[i],collection, docs , i,docs[0].questions[i].availbeanswers[0]);
-
-                                if (docs[0].questions[i].answertype=="date") odp[i]=CountFunctionDate(countt,odp[i],collection, docs , i,0);
-                             
-                                else odp[i]=CountFunctionText(countt,odp[i],collection,i);
-
-                                console.log(odp[i]);
-                               
-                            };
                             
                             res.render('seeresults', {
                                 "count" : count, "results" : docs, "odp" : odp 
                             });
-
+                    });
                   
                 });
             }
