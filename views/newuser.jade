@@ -39,7 +39,7 @@ block content
 		else document.getElementById("validsurname").innerHTML = "";
 		}
 		function validateEmail(val){
-		reg = /^[a-zA-Z0-9]{1,30}@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/
+		reg =  /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
 		if (!val.match(reg)){
 		document.getElementById("validEmail").innerHTML = "Enter the correct e-mail";
 		adduser.useremail.select();

@@ -233,6 +233,80 @@ router.get('/creator', function(req, res) {
     res.render('creator', { title: 'Survey Creator' });
 });
 
+/* GET Change Password page. */
+router.get('/changepassword', function(req, res) {
+    res.render('changepassword', { title: 'Change your password' });
+});
+
+function changepassword(req,res,email,oldpass,newpass,next){
+    var db = req.db;
+    var collection = db.get('usercollection');
+
+    collection.update({"useremail" : email, "userstatus" : {$in : ["A","N"]},"userpassword" : String(CryptoJS.SHA3(oldpass))}, {$set: {"userpassword" : String(CryptoJS.SHA3(newpass))}},function(err, count, status){
+            //console.log(count);
+            //console.log(status);
+            next(req,res,email,oldpass,newpass);
+    });
+};
+function changehash(req,res,email,oldpass,newpass){
+    //console.log(email);
+    //console.log(oldpass);
+    //console.log(newpass);
+    var db = req.db;
+    var collection = db.get('usersurveycollection');
+    collection.find({"email" : email},function(err,doc){
+        var i = 0;
+        function loop2(){
+            if(i<doc.length){
+
+                var stringToCheck = email + oldpass + doc[i].surveyid;
+                stringToCheck = String(CryptoJS.SHA3(stringToCheck));
+
+                var newStringToCheck = email + newpass + doc[i].surveyid;
+                newStringToCheck = String(CryptoJS.SHA3(newStringToCheck));
+
+                var collectionloop = db.get("surveyanswers"+doc[i].surveyid);
+
+                collectionloop.update({"user" : stringToCheck},{$set: {"user" : newStringToCheck}},function(err, count, status){
+                    //console.log(count+","+doc[i].surveyid+","+doc[i].email+","+email);
+                    i++;
+                    loop2();
+                });
+            }
+            else{
+                res.send("Password is changed");
+            }
+        }
+        loop2();
+    });
+};
+
+/* GET Creator page. */
+router.post('/changepassword2', function(req, res) {
+    var email = req.cookies.useremail;
+    var oldpass = req.body.oldpass;
+    var newpass = req.body.newpass;
+    var newpass2 = req.body.newpass2;
+    if((newpass != "") && (newpass==newpass2)){
+        var db = req.db;
+        var collection = db.get("usercollection");
+
+        collection.count({"useremail" : email, "userstatus" : {$in : ["A","N"]},"userpassword" : String(CryptoJS.SHA3(oldpass))},function(err, count){//$in:[A,N]
+            if(count==1){
+                changepassword(req,res,email,oldpass,newpass,changehash);
+            }
+            else{
+                res.send("Incorret current password");
+            }
+        });
+    }
+    else {
+        res.send("Incorret new password");
+    }
+    //res.location("/profile");
+    //res.redirect("/profile");
+});
+
 /*Link to survey*/
 router.get('/gotosurvey', function(req, res){
     
@@ -476,7 +550,7 @@ router.post('/adduserstosurvey', function(req, res) {
                 //console.log()
                 var to = emails[j].toString();
                 console.log("info "+to);
-                var sub = "Magic Survey App - You have new invite to fill survey";
+                var sub = "Magic Survey App - You have new invitation to fill survey";
                 var text = "Open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
                 sendmail(to, sub, text);
             }
@@ -484,7 +558,7 @@ router.post('/adduserstosurvey', function(req, res) {
                 //rejestrcyjny
                 var to = emails[j].toString();
                 //console.log("reg "+to);
-                var sub = "Magic Survey App - You have invite to fill survey";
+                var sub = "Magic Survey App - You have a invitation to fill survey";
                 var text = "Register and then open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
                 sendmail(to, sub, text);
             }

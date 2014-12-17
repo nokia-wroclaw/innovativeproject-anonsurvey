@@ -13,7 +13,7 @@ block content
           br
           label End of survey:
           br
-          input#surveyenddate(type='date', ng-model='yourSurveyEnd', name='endofsurvey', required, placeholder='End of survey')
+          input#surveyenddate(type='date', ng-model='yourSurveyEnd', name='endofsurvey', required, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
           br
           label Who can answer?
           br
@@ -35,7 +35,8 @@ block content
           br
           button(onclick='addquest()', type='button') Add question
           hr
-          button.btn.btn-medium.btn-info(type="submit", form="creator", value="addsurvey") Add Survey
+          div#errorinfo
+          button.btn.btn-medium.btn-info(type="submit", form="creator", value="addsurvey" onclick="return valid()") Add Survey
           //input(type='submit', ng-model='yourSubmit', name='submit', value='Add Survey')
           br
           br  
@@ -43,6 +44,7 @@ block content
     script(type='text/javascript').
       var countquest = 0;
       var countanswer = 0;
+      var noquest = 0;
       function addquest(){
         var queststart = '<label>Question:</label><br>';
         var questname = '<input type="text" ng-model="yourQuestion" name="question['+countquest.toString()+']" required placeholder="Question"><br><br>';
@@ -67,6 +69,8 @@ block content
         enddiv = document.getElementById("end");
         div.insertBefore(newquest, enddiv);
         countquest++;
+        noquest++;
+        if(noquest==1) valid();
       }
       function addanswer(w,no){
         var otherans = "";
@@ -107,7 +111,8 @@ block content
         else if(w=="range"){
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Min value">\
-          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Max value"><br>';
+          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Max value">\
+          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Step"><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="range">';  
         }
         var answerno = "answer"+no.toString();
@@ -145,6 +150,25 @@ block content
       }
       function deletequest(v){
         var elem = document.getElementById(v.id);
-        if(elem) elem.parentNode.removeChild(elem);
+        if(elem){
+          elem.parentNode.removeChild(elem);
+          noquest--;
+          if(noquest==0) valid();
+        }
+      }
+      function valid(){
+        if(noquest==0){
+          div = document.getElementById("errorinfo");
+          div.removeAttribute("hidden");
+          div.setAttribute("class", "alert alert-danger");
+          div.setAttribute("role","alert");
+          div.innerHTML = "No question!";
+          return false;
+        }
+        else{
+          div = document.getElementById("errorinfo");
+          div.setAttribute("hidden","hidden");
+          return true;
+        }
       }
 
