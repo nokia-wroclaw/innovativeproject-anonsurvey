@@ -152,7 +152,7 @@ block content
         var elem = document.getElementById(v.id);
         if(elem){
           elem.parentNode.removeChild(elem);
-          noquest--;
+          if(v.id[0]=='q') noquest--;
           if(noquest==0) valid();
         }
       }

@@ -399,7 +399,11 @@ router.post('/addsurvey', function(req, res) {
     //console.log(req.body.answertype[3]);
     //console.log(req.body.answer[0]);
     //console.log(req.body.answer[1]);
-    
+    var enddate = new Date(req.body.endofsurvey);
+    enddate.setHours(23);
+    enddate.setMinutes(59);
+    enddate.setSeconds(59);
+
     var questions = [];
     for(i=0;i<req.body.question.length; i++){
         var answers = [];
@@ -459,7 +463,10 @@ router.post('/addsurvey', function(req, res) {
                 "surveyname" : surveyname,
                 "surveyowner" : useremail,
                 "surveyid" : surveyid,
+                "surveystatus" : "active",
+                "surveystart" : new Date(),
                 "surveyend" : req.body.endofsurvey,
+                "surveyend2" : enddate,
                 "whoanswer" : req.body.whoanswer,
                 "whoseeresult" : req.body.whoseeresult, 
                 "questions" : questions,
@@ -538,7 +545,8 @@ router.post('/adduserstosurvey', function(req, res) {
         //console.log(emails[i]);
         collection.insert({
             "surveyid" : surveyid, 
-            "email" : emails[i]
+            "email" : emails[i],
+            "status" : "active"
         }, function (err, doc) {});
     }
     var j = 0;
@@ -740,7 +748,7 @@ router.get('/result', function(req, res){
 
                             var i=0;
                             h=0;
-                            odp[i]=""
+                            odp[i]="";
                             n=0;
                             how =0;
                             h=0;
