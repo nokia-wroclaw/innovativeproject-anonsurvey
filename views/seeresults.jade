@@ -15,11 +15,10 @@ block content
 				each r in results
 					each q in r.questions
 						l1
-							h1 #{q.questionnumber}. #{q.question}	
+							h1 #{q.questionnumber+1}. #{q.question}	
 							h2 Reply:
-							- for (var n=0; n < q.answercount; n++)
-								l1
-									h3 #{q.availbeanswers[n]}
+								h3 #{odp[q.questionnumber]}	
+								
 		if result
 			.alert.alert-danger(role='alert')= result							
 		br
