@@ -392,13 +392,6 @@ router.post('/addsurvey', function(req, res) {
     
     var surveyname = req.body.surveyname;
     var countquest = req.body.countquest;
-    //console.log(req.body.question.length);
-    //console.log(req.body.answertype[0]);
-    //console.log(req.body.answertype[1]);
-    //console.log(req.body.answertype[2]);
-    //console.log(req.body.answertype[3]);
-    //console.log(req.body.answer[0]);
-    //console.log(req.body.answer[1]);
     var enddate = new Date(req.body.endofsurvey);
     enddate.setHours(23);
     enddate.setMinutes(59);
@@ -639,25 +632,69 @@ router.post('/fillorcheck', function(req,res){
 router.post('/answertobase', function(req,res){
 
     var db = req.db;
+    
     var user = req.body.user; //Pobieranie hasha użytkownika
     var surveyid = req.body.surveyid; //Pobieranie numeru ankiety
     var questionsamount = req.body.questionsamount; //pobieranie ilości pytań
-    var baseName = 'surveyanswers' + surveyid; //sklejanie z numerem, żeby stworzyć bazę odpowiedzi danej ankiety
-    var collection = db.get(baseName);
-
+    var collection = db.get('surveycollection'); 
+    
     var answers = [], //Tu będziemy przechowywać pytania i odpowiedzi na nie
     questions = [];
 
+    for(var i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
 
-    for(i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
+        var newAnswersAmount = 0;
         var strAnswer = "ans" + String(i);
         var strQuestion = "question" + String(i);
         var ans = req.param(strAnswer,"No answer"); //Jeżeli nie ma odpowiedzi na to pytanie, to do bazy zapisujemy "No answer"
+
+        //sprawdzamy, czy użytkownik udzielił swoich odpowiedzi w radiobuttonach i checkboxach
+        strAnswer += "User"; 
+        var ansUser = req.param(strAnswer,"No answer");
+        console.log(ansUser);
+        console.log(typeof ansUser)
+
         var question = req.param(strQuestion);
-        answers[i] = ans; //Tworzymy tabelę, której kolejnymi komórkami są odpowiedzi na pytania, numerowane od zera zgodnie z wcześniej przyjętą konwencją.
-        questions[i] = question;
-    }                       
-    
+       
+        if( ansUser == 'No answer' || ansUser == ''){ //Tutaj sprawdzamy czy użytkownik udzielił własnych odpowiedzi i dodajemy je do bazy
+            answers[i] = ans;        //Jeżeli nie to zapisujemy po prostu jego odpowiedzi do bazy
+        }  else {                   //update, dodatkowe odpowiedzi w ankiecie. Obsługa w zalezności od ilości udzielonych odpowiedzi.
+            var number = parseInt(surveyid);
+            if(typeof ansUser == "string") {
+                collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $addToSet: {"questions.$.availbeanswers": ansUser}});
+                newAnswersAmount++; 
+            } else {
+                for(var k = 0; k < ansUser.length; k++){
+                    collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $addToSet: {"questions.$.availbeanswers": ansUser[k]}});
+                    newAnswersAmount++; 
+                }
+            }
+
+            var j = 0;
+            var answersArray = [];
+            if(ans != 'No answer' && typeof ans == 'object') {
+                Array.prototype.push.apply(answersArray,ans);
+                j = ans.length;
+            }
+            else {
+                if( !(ans =='No answer') ){
+                    answersArray[0] = ans;
+                    j++;
+                }
+            }
+            if(typeof ansUser == 'string') answersArray[j] = ansUser;
+            else Array.prototype.push.apply(answersArray,ansUser);
+
+            answers[i] = answersArray;          
+        }
+
+        //update ilości odpowiedzi
+        if(newAnswersAmount > 0) collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $inc: {"questions.$.answercount": newAnswersAmount }});
+        questions[i] = question;   
+    }        
+
+    var baseName = 'surveyanswers' + surveyid; //sklejanie z numerem, żeby stworzyć bazę odpowiedzi danej ankiety
+    var collection = db.get(baseName);              
     collection.insert({
                 "user" : user,
                 "answers" : answers,

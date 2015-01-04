@@ -26,21 +26,22 @@ block content
 											- var ansNumber = "ans" + q.questionnumber.toString();
 												- for (var n=0; n < q.answercount; n++)
 													- var answ = q.availbeanswers[n]
-													label=answ
 													input(type="radio" name = ansNumber value = answ form="answer" checked)
+													label=answ
 													br
 												- if(q.otheranswer == "true")
-													label You can also type your own answer:
+													- var textFieldName = ansNumber + "User"
+													label Or type your own answer:
 													br
-													input(type="text" name=ansNumber form="answer" placeHolder="Your answer" onchange='disRadio("#{ansNumber}")' )
+													input(type="text" name = textFieldName form="answer" placeHolder="Your answer" onblur = 'disableRadioButtons("#{ansNumber}")')
 
 										if q.answertype == "checkbox"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
 												- for (var n=0; n < q.answercount; n++)
 													- var answ = q.availbeanswers[n]
-													label=answ
 													input(type="checkbox" name=ansNumber value=answ form="answer")
+													label=answ
 													br
 												- if(q.otheranswer == "true")
 													- var divId = "question" + q.questionnumber.toString();
@@ -68,6 +69,7 @@ block content
 						input(type="submit" name="Sumbit" value='Done!' form="answer")
 	script(type='text/javascript').
 		function addans(question, name){
+			name = name + "User";
 			var znacznik = document.createElement('input');
 			znacznik.setAttribute('type', 'text' );
 			znacznik.setAttribute('name', name);
@@ -78,6 +80,18 @@ block content
 			var answer = document.getElementById(question);
 			answer.appendChild(znacznik);
 		}	
-		function disRadio(ans){	
-			alert(ans);
+		function disableRadioButtons(ans){
+			var textFieldName = ans + "User"
+			var textField = document.getElementsByName(textFieldName);
+			if(textField[0].value != ''){
+				var radioButtons = document.getElementsByName(ans);
+				for (var i = 0; i < radioButtons.length; i++) {
+					radioButtons[i].disabled = true;
+				}
+			} else {
+				var radioButtons = document.getElementsByName(ans);
+				for (var i = 0; i < radioButtons.length; i++) {
+					radioButtons[i].disabled = false;
+				}
+			}
 		}		
