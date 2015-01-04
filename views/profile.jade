@@ -7,7 +7,7 @@ block content
                     h3 Hi  #{user.username}!
         hr
         div.row
-            div.col-md-9.col-md-push-3 .col-md-9 .col-md-push-3
+            div.col-md-6
                 h3 Your surveys:
                 ul
                 each survey in surveys
@@ -16,7 +16,7 @@ block content
                             | &nbsp
                             a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Result
                             p(class='passwordfield'+survey.surveyid)
-            div.col-md-3.col-md-pull-9 .col-md-3 .col-md-pull-9                
+            div.col-md-6                
                 h3 Surveys created by You:
                 ul
                 each osurvey in surveysowner
