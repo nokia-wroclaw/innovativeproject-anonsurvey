@@ -6,31 +6,33 @@ block content
             each user in profile
                     h3 Hi  #{user.username}!
         hr
-        h3 Your surveys:
-        ul
-        each survey in surveys
-                li #{survey.surveyname} 
-                    input.btn.btn-medium.btn-info(type='button', name='emailsubmit', value='Fill or Check', onclick='writepassword('+survey.surveyid+')')
-                    | &nbsp
-                    a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Result
-                    p(class='passwordfield'+survey.surveyid)
-        hr
-        h3 Surveys created by You:
-        ul
-        each osurvey in surveysowner
-                li #{osurvey.surveyname}  
-                    a.btn.btn-medium.btn-primary(href='/result?survey='+osurvey.surveyid) Result
-                    | &nbsp
-                    a.btn.btn-medium.btn-primary(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
-                    p 
-        hr
-        a.btn.btn-medium.btn-success(href='/creator') Create your own survey!
-        hr
-        a.btn.btn-medium.btn-success(href='/changepassword') Change password
-        br
-        a.btn.btn-medium.btn-info(href="/")= "Log out"
-        br
-        br 
+        div.row
+            div.col-md-9.col-md-push-3 .col-md-9 .col-md-push-3
+                h3 Your surveys:
+                ul
+                each survey in surveys
+                        li #{survey.surveyname} 
+                            input.btn.btn-medium.btn-info(type='button', name='emailsubmit', value='Fill or Check', onclick='writepassword('+survey.surveyid+')')
+                            | &nbsp
+                            a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Result
+                            p(class='passwordfield'+survey.surveyid)
+            div.col-md-3.col-md-pull-9 .col-md-3 .col-md-pull-9                
+                h3 Surveys created by You:
+                ul
+                each osurvey in surveysowner
+                        li #{osurvey.surveyname}  
+                            a.btn.btn-medium.btn-primary(href='/result?survey='+osurvey.surveyid) Result
+                            | &nbsp
+                            a.btn.btn-medium.btn-primary(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
+                            p 
+            hr
+            a.btn.btn-medium.btn-success(href='/creator') Create your own survey!
+            hr
+            a.btn.btn-medium.btn-success(href='/changepassword') Change password
+            br
+            a.btn.btn-medium.btn-info(href="/")= "Log out"
+            br
+            br 
     script(type='text/javascript').
         function writepassword(n){
             var input = '<form action="/fillorcheck" method="post" id="form1"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form1" value="OK">OK</button></form>';
