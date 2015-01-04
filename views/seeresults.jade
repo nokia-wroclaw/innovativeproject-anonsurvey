@@ -3,22 +3,39 @@ extends layout
 block content
 	div(align='center', class='jumbotron')
 		if results
-			ul
-				each r in results
-					l1
-						h1 Surveyname: #{r.surveyname}
-						h2 Surveyowner: #{r.surveyowner}
-						h3 Surveyend: #{r.surveyend}
-			h2 Answered #{count} respondents
-			h3 Results of the respondents:
-			ul
+		each r in results
+			div.col-md-3(align='left')
+				h4 
+					| Survey name:  
+					strong #{r.surveyname}
+			div.col-md-3(align='left')
+				h4
+					| Owner: 
+					strong #{r.surveyowner}
+			div.col-md-3(align='left')
+				h4
+					| End of survey: 
+					strong #{r.surveyend}
+			div.col-md-3(align='left')
+				h4
+					| Percentage answered: 
+					strong #{count}
+			div(align='center', class='jumbotron')
+				div.col-md-12(align='center')								
+					h2 Results of the respondents:
+				div.col-md-6(align='left')
+					h2 Questions
+				div.col-md-6(align='center')
+					h2 Answers
+
 				each r in results
 					each q in r.questions
-						l1
-							h1 #{q.questionnumber+1}. #{q.question}	
-							h2 Reply:
+						div(align='center', class='row')
+							div.col-md-6(align='left')
+								h3 #{q.questionnumber+1}. #{q.question}
+							div.col-md-6(align='left')
 								h3 #{odp[q.questionnumber]}	
-								
+						hr(style='color:#000000')														
 		if result
 			.alert.alert-danger(role='alert')= result							
 		br

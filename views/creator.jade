@@ -9,7 +9,7 @@ block content
         form#creator(method='post', action='/addsurvey')
           label Survey's name:
           br
-          input#surveyquest(type='text', ng-model='yourSurveyName', name='surveyname', required, pattern="[^<>]+", title="Only text", placeholder='Surveys name')
+          input#surveyquest(type='text', ng-model='yourSurveyName', name='surveyname', maxlength="38", required, pattern="[^<>]+", title="Only text", placeholder='Surveys name')
           br
           label End of survey:
           br

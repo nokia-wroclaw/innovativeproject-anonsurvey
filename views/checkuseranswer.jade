@@ -2,12 +2,18 @@ extends layout
 block content
 	div(align='center', class='jumbotron')
 		p You have filled this survey. Those are your answers.
+		div(align='center', class='row')
+			div.col-md-6(align='left')
+				h2 Questions
+			div.col-md-6(align='center')
+				h2 Answers
 			each q in answerlist
+				div(align='center', class='row')
 					- for(var n = 0; n < q.questionsamount; n++)
-						hr
-						h1= q.questions[n]
-						label Your answer(s):
-						h2= q.answers[n]
+						div.col-md-6(align='left')
+							h3= q.questions[n]
+						div.col-md-6(align='center')
+							h3= q.answers[n]
 		br
 		br
 		a.btn.btn-medium.btn-info(href="/profile")= "Back"
