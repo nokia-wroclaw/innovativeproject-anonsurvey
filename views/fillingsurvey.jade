@@ -45,43 +45,69 @@ block content
 													br
 												- if(q.otheranswer == "true")
 													- var divId = "question" + q.questionnumber.toString();
-													button( onclick = 'addans("#{divId}","#{ansNumber}")', type='button', placeHolder="Your answer") Add your answers!
+														button( onclick = 'addans("#{divId}","#{ansNumber}"); this.i++;' type='button', placeHolder="Your answer") Add your answers!
 
 										if q.answertype == "text"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
-												input(type="text" name=ansNumber form="answer")
+												input(type="text" name=ansNumber form="answer" required)
 
 										if q.answertype == "range"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
 											- var outputName = ansNumber + "Out";
 												label Min = #{q.availbeanswers[0]}, Max = #{q.availbeanswers[1]}, Step = #{q.availbeanswers[2]}
-												input(type="range" id = ansNumber value = q.availbeanswers[0] name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] step = q.availbeanswers[2]  form="answer" oninput = 'changeOutput("#{ansNumber}")' ) 
+												input(type="range" id = ansNumber value = q.availbeanswers[0] name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] step = q.availbeanswers[2]  form="answer" onchange = 'changeOutput("#{ansNumber}")' ) 
 												output(name = outputName for = ansNumber value = q.availbeanswers[0])
 
 										if q.answertype == "date"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
-												input(type="date" name=ansNumber)
+												input(type="date" name=ansNumber required)
 
 										if q.answertype == "textarea"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
 											textarea(rows="4" cols="50" name=ansNumber form="answer")
+						br
+						br
 						input(type="submit" name="Sumbit" value='Done!' form="answer")
 	script(type='text/javascript').
+		function deleteAns(name){
+			alert(name);
+			
+		}
 		function addans(question, name){
+
+			var uniqueId = 0;
 			name = name + "User";
+
 			var znacznik = document.createElement('input');
 			znacznik.setAttribute('type', 'text' );
 			znacznik.setAttribute('name', name);
 			znacznik.setAttribute('style', 'display: block');
+
 			var pattern = "[^<>]+";
 			znacznik.required = true;
 			znacznik.setAttribute('pattern', pattern );
+
 			var answer = document.getElementById(question);
+			
+			uniqueId = answer.childElementCount - 1;
+			uniqueName = name + String(uniqueId);
+			znacznik.setAttribute('id', uniqueName);
+
 			answer.appendChild(znacznik);
+		
+			var deleteAnswer = document.createElement('input');
+			deleteAnswer.setAttribute('type', 'button');
+			deleteAnswer.setAttribute('value', 'Delete this answer!');
+
+			uniqueId = answer.childElementCount - 1;
+			name = name + String(uniqueId);
+			deleteAnswer.setAttribute('id', name);
+			answer.appendChild(deleteAnswer);
+			deleteAnswer.setAttribute('onclick', "deleteAns()" );	
 		}	
 		function disableRadioButtons(ans){
 			var textFieldName = ans + "User"
@@ -104,3 +130,4 @@ block content
 			var output = document.getElementsByName(outputName);
 			output[0].value = value;
 		}	
+		

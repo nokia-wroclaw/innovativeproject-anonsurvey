@@ -596,29 +596,36 @@ router.post('/fillorcheck', function(req,res){
 
             collection.count( {"user" : stringToCheck },function(err, count){ //sprawdzanie czy już istnieją w bazie odpowiedzi tego użytkownika
 
-                if( count == 1 )
-                    {    
-                        var collection = db.get(baseName);
-                        var number = String(surveyId);
-                    
-                        collection.find( { user : stringToCheck  } ,  function(e,docs) { //pobieranie odpowiedzi użytkownika z bazy
+                if( count == 1 ){
+
+                    collection = db.get('surveycollection');
+                    var number = parseInt(surveyId);
+                    var questions = [];
+                    collection.find({ "surveyid" : number }, function(e, docs1){ //Getting questions from database
+
+                        for (var j = 0; j < docs1[0].questions.length; j++) questions.push(docs1[0].questions[j].question);
+                        collection = db.get(baseName);
+                        
+                        collection.find( { user : stringToCheck  } ,  function(e,docs2) { //pobieranie odpowiedzi użytkownika z bazy
                             res.render('checkuseranswer', { 
-                                "answerlist" : docs
+                                "answerlist" : docs2,
+                                "questionlist" : questions
                             }); 
                         });
+                    });
 
-                    }
-                    else
-                    {
-                        var collection = db.get('surveycollection');
-                        var number = parseInt(surveyId);
-                        collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
-                            res.render('fillingsurvey', {
-                            "result" : docs ,
-                            "user" : stringToCheck,
-                            });
+                }
+                else
+                {
+                    var collection = db.get('surveycollection');
+                    var number = parseInt(surveyId);
+                    collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
+                        res.render('fillingsurvey', {
+                        "result" : docs ,
+                        "user" : stringToCheck,
                         });
-                    }
+                    });
+                }
             });
         }
         else
@@ -638,23 +645,17 @@ router.post('/answertobase', function(req,res){
     var questionsamount = req.body.questionsamount; //pobieranie ilości pytań
     var collection = db.get('surveycollection'); 
     
-    var answers = [], //Tu będziemy przechowywać pytania i odpowiedzi na nie
-    questions = [];
+    var answers = []; //Tu będziemy przechowywać pytania i odpowiedzi na nie
 
     for(var i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
 
         var newAnswersAmount = 0;
         var strAnswer = "ans" + String(i);
-        var strQuestion = "question" + String(i);
         var ans = req.param(strAnswer,"No answer"); //Jeżeli nie ma odpowiedzi na to pytanie, to do bazy zapisujemy "No answer"
 
         //sprawdzamy, czy użytkownik udzielił swoich odpowiedzi w radiobuttonach i checkboxach
         strAnswer += "User"; 
         var ansUser = req.param(strAnswer,"No answer");
-        console.log(ansUser);
-        console.log(typeof ansUser)
-
-        var question = req.param(strQuestion);
        
         if( ansUser == 'No answer' || ansUser == ''){ //Tutaj sprawdzamy czy użytkownik udzielił własnych odpowiedzi i dodajemy je do bazy
             answers[i] = ans;        //Jeżeli nie to zapisujemy po prostu jego odpowiedzi do bazy
@@ -689,8 +690,7 @@ router.post('/answertobase', function(req,res){
         }
 
         //update ilości odpowiedzi
-        if(newAnswersAmount > 0) collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $inc: {"questions.$.answercount": newAnswersAmount }});
-        questions[i] = question;   
+        if(newAnswersAmount > 0) collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $inc: {"questions.$.answercount": newAnswersAmount }});  
     }        
 
     var baseName = 'surveyanswers' + surveyid; //sklejanie z numerem, żeby stworzyć bazę odpowiedzi danej ankiety
@@ -698,7 +698,6 @@ router.post('/answertobase', function(req,res){
     collection.insert({
                 "user" : user,
                 "answers" : answers,
-                "questions" : questions,
                 "questionsamount" : questionsamount
             }, function (err, doc) {
                 if (err) {
