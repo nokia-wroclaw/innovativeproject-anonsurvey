@@ -55,7 +55,10 @@ block content
 										if q.answertype == "range"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
-												input(type="range" name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] form="answer")
+											- var outputName = ansNumber + "Out";
+												label Min = #{q.availbeanswers[0]}, Max = #{q.availbeanswers[1]}, Step = #{q.availbeanswers[2]}
+												input(type="range" id = ansNumber value = q.availbeanswers[0] name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] step = q.availbeanswers[2]  form="answer" oninput = 'changeOutput("#{ansNumber}")' ) 
+												output(name = outputName for = ansNumber value = q.availbeanswers[0])
 
 										if q.answertype == "date"
 											h1 #{q.question}
@@ -94,4 +97,10 @@ block content
 					radioButtons[i].disabled = false;
 				}
 			}
-		}		
+		}	
+		function changeOutput(ans){
+			var value = document.getElementById(ans).value;
+			var outputName = ans + "Out";
+			var output = document.getElementsByName(outputName);
+			output[0].value = value;
+		}	
