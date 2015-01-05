@@ -33,7 +33,7 @@ block content
 													- var textFieldName = ansNumber + "User"
 													label Or type your own answer:
 													br
-													input(type="text" name = textFieldName form="answer" placeHolder="Your answer" onblur = 'disableRadioButtons("#{ansNumber}")')
+													input(type="text" name = textFieldName form="answer" placeHolder="Your answer" oninput = 'disableRadioButtons("#{ansNumber}")')
 
 										if q.answertype == "checkbox"
 											h1 #{q.question}
@@ -50,7 +50,7 @@ block content
 										if q.answertype == "text"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
-												input(type="text" name=ansNumber form="answer" required)
+												input(type="text" name=ansNumber form="answer" required )
 
 										if q.answertype == "range"
 											h1 #{q.question}
@@ -63,20 +63,16 @@ block content
 										if q.answertype == "date"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
-												input(type="date" name=ansNumber required)
+												input(type="date" name=ansNumber required )
 
 										if q.answertype == "textarea"
 											h1 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
-											textarea(rows="4" cols="50" name=ansNumber form="answer")
+											textarea(rows="4" cols="50" name=ansNumber form="answer" required )
 						br
 						br
 						input(type="submit" name="Sumbit" value='Done!' form="answer")
 	script(type='text/javascript').
-		function deleteAns(name){
-			alert(name);
-			
-		}
 		function addans(question, name){
 
 			var uniqueId = 0;
@@ -94,8 +90,8 @@ block content
 			var answer = document.getElementById(question);
 			
 			uniqueId = answer.childElementCount - 1;
-			uniqueName = name + String(uniqueId);
-			znacznik.setAttribute('id', uniqueName);
+			uniqueName1 = name + "_" + String(uniqueId);
+			znacznik.setAttribute('id', uniqueName1);
 
 			answer.appendChild(znacznik);
 		
@@ -104,10 +100,27 @@ block content
 			deleteAnswer.setAttribute('value', 'Delete this answer!');
 
 			uniqueId = answer.childElementCount - 1;
-			name = name + String(uniqueId);
-			deleteAnswer.setAttribute('id', name);
+			var uniqueName2 = name + "_" + String(uniqueId);
+			deleteAnswer.setAttribute('id', uniqueName2);
 			answer.appendChild(deleteAnswer);
-			deleteAnswer.setAttribute('onclick', "deleteAns()" );	
+
+			deleteAnswer.onclick = function(){
+
+				var name = this.id;
+				var parentNodeId = this.parentNode.id;
+				
+				var number = name.slice(name.indexOf("_")+1);
+				number--;
+
+				var textFieldId = name.slice(0,name.indexOf("_")+1) + String(number);
+
+				var div = document.getElementById(parentNodeId);
+				var textField =  document.getElementById(textFieldId);
+				var button =  document.getElementById(name);
+
+				div.removeChild(textField);
+				div.removeChild(button);
+			}	
 		}	
 		function disableRadioButtons(ans){
 			var textFieldName = ans + "User"
