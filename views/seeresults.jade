@@ -2,31 +2,36 @@ extends layout
 	
 block content
 	div(align='center', class='jumbotron')
+		if verifypass
+			form#form1(action='/result', method='post')
+				input(type='hidden', name='yourresultid', value=verifypass)
+				input(type='password', name='yourpassword', placeholder='Enter you password here')
+				button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
 		if results
-		each r in results
-			div.col-md-3(align='left')
-				h4 
-					| Survey name:  
-					strong #{r.surveyname}
-			div.col-md-3(align='left')
-				h4
-					| Owner: 
-					strong #{r.surveyowner}
-			div.col-md-3(align='left')
-				h4
-					| End of survey: 
-					strong #{r.surveyend}
-			div.col-md-3(align='left')
-				h4
-					| Percentage answered: 
-					strong #{count}
-			div(align='center', class='jumbotron')
-				div.col-md-12(align='center')								
-					h2 Results of the respondents:
-				div.col-md-6(align='left')
-					h2 Questions
-				div.col-md-6(align='center')
-					h2 Answers
+			each r in results
+				div.col-md-3(align='left')
+					h4 
+						| Survey name:  
+						strong #{r.surveyname}
+				div.col-md-3(align='left')
+					h4
+						| Owner: 
+						strong #{r.surveyowner}
+				div.col-md-3(align='left')
+					h4
+						| End of survey: 
+						strong #{r.surveyend}
+				div.col-md-3(align='left')
+					h4
+						| Percentage answered: 
+						strong #{count}
+				div(align='center', class='jumbotron')
+					div.col-md-12(align='center')								
+						h2 Results of the respondents:
+					div.col-md-6(align='left')
+						h2 Questions
+					div.col-md-6(align='center')
+						h2 Answers
 
 				each r in results
 					each q in r.questions

@@ -18,8 +18,10 @@ var Db = require('mongodb').Db,
 /* GET home page. */
 router.get('/', function(req, res) {
     var gotosurveyid = req.query["gotosurvey"];
+    var gotoresultid = req.query["gotoresult"];
     res.render('index', { title: 'Annonymous Surveys',
-        gotosurvey : gotosurveyid
+        gotosurvey : gotosurveyid,
+        gotoresult : gotoresultid
     });
 });
 
@@ -154,6 +156,7 @@ function profileFunction(req,res){
     var db = req.db;
     
     var gotosurveyid = req.body.gotosurveyid;
+    var gotoresultid = req.body.gotoresultid;
     //console.log("go to survey id: "+gotosurveyid);
     // Get our form values. These rely on the "name" attributes
     //console.log(req.body.useremail);
@@ -176,7 +179,7 @@ function profileFunction(req,res){
             res.cookie('sessionId', sessionId, { maxAge: 900000, httpOnly: true });
             res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
             res.cookie('userpassword', userPassword, { maxAge: 900000, httpOnly: true });
-            console.log("go to survey id: "+gotosurveyid);
+            //console.log("go to survey id: "+gotosurveyid);
             if(gotosurveyid != undefined && gotosurveyid != ""){
                 // If it worked, set the header so the address bar doesn't still say /adduser
                 res.location("/gotosurvey");
@@ -184,7 +187,14 @@ function profileFunction(req,res){
                 res.redirect("/gotosurvey?id="+gotosurveyid);
                 return;
             }
-            collection.find({"useremail" : userEmail, "userpassword" : userPassword},function(e,docs){
+            else if(gotoresultid != undefined && gotoresultid != ""){
+                // If it worked, set the header so the address bar doesn't still say /adduser
+                res.location("/result");
+                // And forward to success page
+                res.redirect("/result?survey="+gotoresultid);
+                return;
+            }
+            collection.find({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(e,docs){
             
                 var collection2 = db.get('usersurveycollection');
 
@@ -747,8 +757,105 @@ function CountFunctionCheckbox(all,wart,collection, docs , i, n){
 }
 
 router.get('/result', function(req, res){
+    
+    var resultid = req.query['survey'];
+    if(resultid == undefined || resultid == "")
+    {
+        res.send("No no. of survey");
+        return;
+    } 
+    // Get our form values. These rely on the "name" attributes
+    //console.log(req.body.useremail);
+    if(req.cookies.useremail == undefined){    
+        // If it worked, set the header so the address bar doesn't still say /adduser
+        res.location("/");
+        // And forward to success page
+        res.redirect("/?gotoresult="+resultid);
+        return;
+    }
+    else {
+        //console.log(req.cookies.useremail);
+        var userEmail = req.cookies.useremail;
+        var userPassword = req.cookies.userpassword;
+        //console.log(userEmail); 
+       // console.log(surveyid); 
+    }   
+    // Set our collection
+    var db = req.db;
+    var collection = db.get('usercollection');
+
+    collection.count({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
+        if(count==1){
+
+            //console.log(count);
+            var collection2 = db.get('surveycollection');
+
+            collection2.find({"surveyid" : parseInt(resultid)}, function(err,doc){
+
+                //owner of survey
+                if(doc[0].whoseeresult == "onlyyou" && doc[0].surveyowner == userEmail){
+
+                    result(req,res);
+                }
+                else if(doc[0].whoseeresult == "everybody"){
+
+                    result(req,res);
+                }
+                else if(doc[0].whoseeresult == "everywhoanswer"){
+
+                    res.render('seeresults', {
+                        "verifypass" : resultid
+                    });
+                }
+                else {
+                    res.send("You dont have access to see result of this survey");
+                    return;
+                }   
+            });
+        }
+        else {
+            res.send("Is problem with you");
+            return;
+        }
+
+    });
+});
+
+router.post('/result', function(req, res){
+    
+    var resultid = req.body.yourresultid;
+    if(resultid == undefined || resultid == "")
+    {
+        res.send("No no. of survey");
+        return;
+    } 
+    var userPassword = req.body.yourpassword;
+    var userEmail = req.cookies.useremail;
+
+    var stringToCheck = userEmail + userPassword + resultid;
+    stringToCheck = String(CryptoJS.SHA3(stringToCheck));
+
+    var db = req.db;
+    var baseName = 'surveyanswers' + resultid;
+    var collection = db.get(baseName);
+
+    collection.count( {"user" : stringToCheck },function(err, count){ //sprawdzanie czy już istnieją w bazie odpowiedzi tego użytkownika
+        if(count==1){
+            result(req,res);
+        } 
+        else{
+            res.send("You dont have access to see result of this survey - wrong password or no filled survey");
+            return;
+        }   
+    });
+});
+
+function result(req, res){
 
     var surveyid = req.query['survey']; //Pobieranie numeru ankiety
+    if(surveyid == undefined || surveyid == ""){
+        surveyid = req.body.yourresultid;
+    }
     var db = req.db;
 
     var collectionUser = db.get('usersurveycollection');
@@ -943,7 +1050,7 @@ router.get('/result', function(req, res){
             
         });
     });
-});
+};
 
 
 module.exports = router;

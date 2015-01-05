@@ -12,10 +12,16 @@ block content
                 ul
                 each survey in surveys
                         li #{survey.surveyname} 
-                            input.btn.btn-medium.btn-info(type='button', name='emailsubmit', value='Fill or Check', onclick='writepassword('+survey.surveyid+')')
+                            input.btn.btn-medium.btn-info(type='button', name='fillorcheck', value='Fill or Check', onclick='writepassword('+survey.surveyid+')')
                             | &nbsp
-                            a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Result
-                            p(class='passwordfield'+survey.surveyid)
+                            if(survey.whoseeresult == "everywhoanswer")
+                                //input.btn.btn-medium.btn-primary(type='button', name='emailsubmit', value='Every who answer', onclick='writepasswordtoresult('+survey.surveyid+')')
+                                a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Every who answer
+                            else if(survey.whoseeresult == "everybody")
+                                a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Everybody
+                            else if(survey.whoseeresult == "onlyyou") 
+                            div(class='passwordfield'+survey.surveyid)
+                            p
             div.col-md-6(align='left')            
                 h3 Surveys created by You:
                 ul
@@ -40,7 +46,12 @@ block content
         br 
     script(type='text/javascript').
         function writepassword(n){
-            var input = '<form action="/fillorcheck" method="post" id="form1"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form1" value="OK">OK</button></form>';
+            var input = '<br><form action="/fillorcheck" method="post" id="form1"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form1" value="fillorcheck">Fill or Check</button></form>';
+            var x = document.getElementsByClassName("passwordfield"+n);
+            x[0].innerHTML = input;
+        }
+        function writepasswordtoresult(n){
+            var input = '<form action="/result?survey='+n+'" method="post" id="form2"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form2" value="checkresult">Check result</button></form>';
             var x = document.getElementsByClassName("passwordfield"+n);
             x[0].innerHTML = input;
         }

@@ -5,6 +5,7 @@ block content
 		h2.form-signin-heading Please sign in
 		form.signInForm(method='post', action='/profile')
 			input(type='hidden', ng-model='yourSurveyId', name='gotosurveyid', value=gotosurvey)
+			input(type='hidden', ng-model='yourResultId', name='gotoresultid', value=gotoresult)
 			label.sr-only(for='inputEmail') E-mail:
 			input#inputEmail.form-control(type='text', ng-model='yourName', name='useremail', placeholder='Enter your e-mail here')
 			label.sr-only(for='inputPassword') Password:
