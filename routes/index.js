@@ -101,7 +101,7 @@ function adduserFunction(req, res) {
                 var userid=0;
                 collection.count({},function(err, count){
                     userid = count+1;  
-                // Submit to the DB
+                    // Submit to the DB
                     collection.insert({
                         "userid" : userid,
                         "userstatus" : "A",  //user is active
@@ -133,6 +133,34 @@ function adduserFunction(req, res) {
                 res.render('newuser', { "error" : ecom });}
 }
 
+
+/* GET Forgot Password page. */
+router.get('/forgotpassword', function(req, res) {
+    res.render('forgotpassword', { title: 'Forgot Password' });
+});
+
+/* POST Forgot Password Next Step page. */
+router.post('/forgotpassword2', function(req, res) {
+
+    var youremail = req.body.youremail;
+
+    var db = req.db;
+    var collection = db.get('usercollection');
+    collection.count({"useremail" : youremail},function(err, count){
+        if(count==0){
+            res.send("There is not e-mail in our database - You can register");
+        }
+        else{
+            collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
+            console.log(doc);
+            res.render('forgotpassword2', { 
+                title: 'Forgot Password',
+                info: doc[0] 
+            });
+            });
+        }
+    });
+});
 
 /* GET Sign In page. */
 router.get('/signin', function(req, res) {
@@ -401,14 +429,21 @@ router.post('/addsurvey', function(req, res) {
     var useremail = req.cookies.useremail;
     
     var surveyname = req.body.surveyname;
-    var countquest = req.body.countquest;
+    var quest = req.body.question;
+    console.log(quest);
+    var startdate = new Date(req.body.startofsurvey);
+    startdate.setHours(0);
+    startdate.setMinutes(0);
+    startdate.setSeconds(1);
     var enddate = new Date(req.body.endofsurvey);
     enddate.setHours(23);
     enddate.setMinutes(59);
     enddate.setSeconds(59);
-
+    if( typeof quest === 'string' ) {
+        quest = [ quest ];
+    }
     var questions = [];
-    for(i=0;i<req.body.question.length; i++){
+    for(i=0;i<quest.length; i++){
         var answers = [];
         var answerslength = 0;
         switch(req.body.answertype[i]){
@@ -467,7 +502,7 @@ router.post('/addsurvey', function(req, res) {
                 "surveyowner" : useremail,
                 "surveyid" : surveyid,
                 "surveystatus" : "active",
-                "surveystart" : new Date(),
+                "surveystart" : startdate,
                 "surveyend" : req.body.endofsurvey,
                 "surveyend2" : enddate,
                 "whoanswer" : req.body.whoanswer,
@@ -483,7 +518,7 @@ router.post('/addsurvey', function(req, res) {
                     // If it worked, set the header so the address bar doesn't still say /adduser
                     res.location("/chooseuser");
                     // And forward to success page
-                    res.redirect("/chooseuser?survey="+surveyid);
+                    res.redirect("/chooseuser?survey="+surveyid+"&start="+startdate);
                 }
             });
         });
@@ -494,9 +529,14 @@ router.get('/chooseuser', function(req, res) {
     var db = req.db;
     var collection = db.get('usercollection');
     var surveyid = req.query['survey'];
+    var startdate = req.query['start'];
     //console.log(surveyid);
     collection.find({},{},function(e,docs){
-        res.render('chooseuser', {title: 'Choose users who can answer from the list', getsurveyid : surveyid});
+        res.render('chooseuser', {
+            title: 'Choose users who can answer from the list', 
+            getsurveyid : surveyid,
+            getstartdate : startdate
+        });
     });
 });
 
@@ -535,7 +575,9 @@ router.post('/adduserstosurvey', function(req, res) {
     //console.log(req.body.email.length);
     var db = req.db;
     var surveyid = req.body.surveyid;
+    var startdate = req.body.startdate;
     var emails = req.body.email;
+    console.log(req.body.email);
     if( typeof emails === 'string' ) {
         emails = [ emails ];
     }
@@ -549,7 +591,8 @@ router.post('/adduserstosurvey', function(req, res) {
         collection.insert({
             "surveyid" : surveyid, 
             "email" : emails[i],
-            "status" : "active"
+            "status" : "active",
+            "adddate" : startdate
         }, function (err, doc) {});
     }
     var j = 0;

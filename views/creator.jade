@@ -11,11 +11,15 @@ block content
             label Survey's name:
             br
             input#surveyquest(type='text', ng-model='yourSurveyName', name='surveyname', maxlength="38", size="25", required, pattern="[^<>]+", title="Only text", placeholder='Surveys name')
-          div.col-md-3(align='left')
+          div.col-md-2(align='left')
+            label Start of survey:
+            br
+            input#surveystartdate(type='date', ng-model='yourSurveyStart', name='startofsurvey', size="10", required, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
+          div.col-md-2(align='left')
             label End of survey:
             br
             input#surveyenddate(type='date', ng-model='yourSurveyEnd', name='endofsurvey', size="10", required, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
-          div.col-md-3(align='left')          
+          div.col-md-2(align='left')          
             label Who can answer?
             br
             input(type='radio', ng-model='yourWhoAnswer', name='whoanswer', checked, value="invited")
@@ -23,7 +27,7 @@ block content
             br  
             input(type='radio', ng-model='yourWhoAnswer', name='whoanswer', value="everybody")
             |  Everybody 
-          div.col-md-3(align='left')   
+          div.col-md-2(align='left')   
             label Who can see result?
             br
             input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', checked, value="everywhoanswer")
@@ -34,9 +38,9 @@ block content
             br 
             input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="onlyyou")
             |  Only you
-        div.col-md-4#col1(align='center', class = 'jumbotron')    
-        div.col-md-4#col2(align='center', class = 'jumbotron')    
-        div.col-md-4#col3(align='center', class = 'jumbotron') 
+          div.col-md-4#col1(align='center', class = 'jumbotron')    
+          div.col-md-4#col2(align='center', class = 'jumbotron')    
+          div.col-md-4#col3(align='center', class = 'jumbotron') 
     div(align='center', class = 'row')             
     div#buttons(align='center', class = 'jumbotron')
       div#errorinfo
@@ -88,7 +92,6 @@ block content
         }
         countquest++;
         noquest++;
-
         if(noquest==1) valid();
       }
       function addanswer(w,no){
@@ -97,16 +100,16 @@ block content
         var answertype = "";
         var button = "";
         if(w=="radio") {
-          //otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
-          //<input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
           answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
           button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button class="btn btn-default"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>';
         }
         else if(w=="checkbox") {
-          //otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
-          //<input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
           answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
@@ -115,17 +118,17 @@ block content
         //'<button onclick=addnextanswer("checkbox",'+no.toString()+') type=button>Add next answer</button>';  
         else if(w=="text") {
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          //answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Example" value="Here goes the answer" readonly><br>';
+          answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Example" value="Here goes the answer" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="text">';  
         }
         else if(w=="textarea") {
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          //answer = '<textarea rows="4" cols="50" name="answer['+no.toString()+']" form="creator" readonly>Here goes very long answer</textarea><br>';
+          answer = '<textarea rows="4" cols="30" name="answer['+no.toString()+']" form="creator" readonly>Here goes very long answer</textarea><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="textarea">';  
         }
         else if(w=="date") {
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          //answer = '<input type="date" name="answer['+no.toString()+']" placeholder="Answer" value="Example" readonly><br>';
+          answer = '<input type="date" name="answer['+no.toString()+']" placeholder="Answer" value="Example" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="date">';
         }
         else if(w=="range"){
