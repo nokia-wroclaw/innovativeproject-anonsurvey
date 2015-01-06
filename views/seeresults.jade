@@ -2,6 +2,11 @@ extends layout
 
 block content
 	div(align='center', class='jumbotron')
+		if verifypass
+			form#form1(action='/result', method='post')
+				input(type='hidden', name='yourresultid', value=verifypass)
+				input(type='password', name='yourpassword', placeholder='Enter you password here')
+				button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
 		if results
 			each r in results
 				div.col-md-3(align='left')
