@@ -1,12 +1,7 @@
 extends layout
-	
+
 block content
 	div(align='center', class='jumbotron')
-		if verifypass
-			form#form1(action='/result', method='post')
-				input(type='hidden', name='yourresultid', value=verifypass)
-				input(type='password', name='yourpassword', placeholder='Enter you password here')
-				button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
 		if results
 			each r in results
 				div.col-md-3(align='left')
@@ -33,14 +28,19 @@ block content
 					div.col-md-6(align='center')
 						h2 Answers
 
-				each r in results
-					each q in r.questions
-						div(align='center', class='row')
-							div.col-md-6(align='left')
-								h3 #{q.questionnumber+1}. #{q.question}
-							div.col-md-6(align='left')
-								h3 #{odp[q.questionnumber]}	
-						hr(style='color:#000000')														
+					each r in results
+						each q in r.questions
+							div(align='center', class='row')
+								div.col-md-6(align='left')
+									h3 #{q.questionnumber+1}. #{q.question}
+								div.col-md-6(align='left')
+									h3 #{odp[q.questionnumber]}	
+									if ile[q.questionnumber].length>1
+										button(onclick='drawCharts(#{q.questionnumber},#{ile[q.questionnumber]})', type='button') Draw Charts	
+										div(id=q.questionnumber)
+											div(id=(q.questionnumber+'list'))
+										div(id=q.questionnumber+'chart')
+							hr(style='color:#000000')									
 		if result
 			.alert.alert-danger(role='alert')= result							
 		br
@@ -48,3 +48,47 @@ block content
 		a.btn.btn-medium.btn-info(href="/profile")= "Back"
 		br
 		br
+		script(type='text/javascript', src='https://www.google.com/jsapi').
+		script(type='text/javascript').
+
+			var number = null;
+			var wart = null;
+
+			function drawCharts(aa,bb){
+				number = aa;
+				wart = bb;
+				var list = '<select onchange="draw(this.value)" required pattern="[a-z]+"> \
+				<option value="no">Select a graph</option> \
+				<option value="pie">Pie Chart</option> \
+				<option value="column">Column Chart</option> \
+				<option value="inny">Inny Chart</option> \
+				</select>';
+				var what = document.createElement("div");
+				what.innerHTML = list+ wart[1];
+				var div = document.getElementById(aa+'list');
+				var x =document.getElementById(aa);
+				x.insertBefore(what,div); 
+			}
+			google.load('visualization', '1.0', {'packages':['corechart']});
+			google.setOnLoadCallback(drawChart);
+
+			function draw(xx){				
+				var data = new google.visualization.DataTable();
+				data.addColumn('string', 'Topping');
+				data.addColumn('number', 'Slices');
+				data.addRows([
+				['number', wart],
+				]);
+				var options = {'title':'Chart of result',
+				'width':400,
+				'height':300};
+
+				if(xx=="pie") {
+				var chart = new google.visualization.PieChart(document.getElementById(number+'chart'));
+				chart.draw(data, options);
+				}
+				else if(xx=="column") {
+				var chart = new google.visualization.ColumnChart(document.getElementById(number+'chart'));
+				chart.draw(data, options);
+				}
+			}
