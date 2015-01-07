@@ -886,8 +886,10 @@ router.post('/result', function(req, res){
             result(req,res);
         } 
         else{
-            res.send("You dont have access to see result of this survey - wrong password or no filled survey");
-            return;
+            res.render('seeresults', {
+                    "result" : "You dont have access to see result of this survey - wrong password or no filled survey" 
+                });
+
         }   
     });
 });
@@ -975,7 +977,7 @@ function result(req, res){
                                         if (n < howManyAnswerInQuestion){ 
                                                 
                                                 if (h<countt){
-                                                    if (String(find[h].answers[i][0])==String(docs[0].questions[i].availbeanswers[n])) how++;
+                                                    if (String(find[h].answers[i])==String(docs[0].questions[i].availbeanswers[n])) how++;
                                                     h++;
                                                     CountFunction();
                                                 }
@@ -1045,7 +1047,7 @@ function result(req, res){
                                                 
                                                 if (co<=docs[0].questions[i].availbeanswers[1]){
                                                     if (h<countt){
-                                                            if (String(find[h].answers[i][0])==String(co)) how++;
+                                                            if (String(find[h].answers[i])==String(co)) how++;
                                                             h++;
                                                             CountFunction();
                                                     }
