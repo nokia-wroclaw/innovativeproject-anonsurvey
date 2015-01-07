@@ -108,6 +108,7 @@ function adduserFunction(req, res) {
                         "username" : userName,
                         "usersurname" : userSurname,
                         "useremail" : userEmail,
+                        "userregdate" : new Date(),
                         "userpassword" : String(CryptoJS.SHA3(userPassword))
                     }, function (err, doc) {
                         if (err) {
@@ -136,13 +137,19 @@ function adduserFunction(req, res) {
 
 /* GET Forgot Password page. */
 router.get('/forgotpassword', function(req, res) {
+
     res.render('forgotpassword', { title: 'Forgot Password' });
 });
 
-/* POST Forgot Password Next Step page. */
-router.post('/forgotpassword2', function(req, res) {
-
+router.post('/forgotpasswordsendemail', function(req, res) {
+    
     var youremail = req.body.youremail;
+    var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+
+    if(!youremail.match(regMail)){
+        res.send("Incorrect email");
+        return;
+    }
 
     var db = req.db;
     var collection = db.get('usercollection');
@@ -152,13 +159,101 @@ router.post('/forgotpassword2', function(req, res) {
         }
         else{
             collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
-            console.log(doc);
-            res.render('forgotpassword2', { 
-                title: 'Forgot Password',
-                info: doc[0] 
-            });
+                
+                console.log(doc);
+                var hashpass = String(CryptoJS.SHA3(doc[0].userpassword+doc[0].useremail)).substring(0, 20);
+                var link = "localhost:3000/forgotpassword2?email="+youremail+"&id="+hashpass;
+                var text = "For set new password click this link:\n"+link+"\nBye";
+                sendmail(youremail,"Magic Survey App - new password", text);
+
+                res.render('forgotpassword', { 
+                    title: 'Forgot Password',
+                    info: "Email was sent to you" 
+                });
             });
         }
+    });
+});
+
+/* GET Forgot Password Next Step page. */
+router.get('/forgotpassword2', function(req, res) {
+
+    var youremail = req.query['email'];
+    var hash = req.query['id'];
+    console.log(youremail);
+    console.log(hash);
+    
+    var db = req.db;
+    var collection = db.get('usercollection');
+    collection.count({"useremail" : youremail},function(err, count){
+        if(count==0){
+            res.send("There is not e-mail in our database - You can register");
+        }
+        else{
+            collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
+            
+                if(hash == String(CryptoJS.SHA3(doc[0].userpassword+doc[0].useremail)).substring(0, 20)){
+                    console.log(doc);
+                    res.render('forgotpassword2', { 
+                        title: 'Forgot Password',
+                        info: doc[0] 
+                    });    
+                }
+                else{
+                    res.send("Something is wrong");
+                }
+            });
+        }
+    });
+
+});
+
+router.post('/setnewpassword', function(req, res) {
+
+    var userName = req.body.yourname;
+    var userSurname = req.body.yoursurname;
+    var userEmail = req.body.youremail;
+    var userPassword = req.body.yournewpass;
+    var userRepeatPassword = req.body.yournewpass2;
+
+    var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
+    var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+
+    if (!((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (!userPassword=="") && (userPassword==userRepeatPassword))){
+        res.send("Incorrect data");
+        return;
+    }
+    //console.log("JEST!!");
+    
+    var db = req.db;
+    var collection = db.get('usercollection');
+ 
+    collection.update({"useremail" : userEmail, "userstatus" : {$in : ["A","N"]}},{$set: {"userstatus" : "U"}},function (err1, docup){ //user is unactive
+
+        collection.count({},function (err2, count){
+            userid = count+1;  
+            // Submit to the DB
+            collection.insert({
+                "userid" : userid,
+                "userstatus" : "N",  //user is new active
+                "username" : userName,
+                "usersurname" : userSurname,
+                "useremail" : userEmail,
+                "userregdate" : new Date(),
+                "userpassword" : String(CryptoJS.SHA3(userPassword))
+            }, function (err, doc) {
+                if (err) {
+                    // If it failed, return error
+                    res.send("There was a problem adding the information to the database.");
+                }
+                else {
+                    // If it worked, set the header so the address bar doesn't still say /adduser
+                    res.location("/");
+                    // And forward to success page
+                    res.redirect("/");
+                }
+            });
+        });
     });
 });
 
@@ -200,7 +295,7 @@ function profileFunction(req,res){
     // Set our collection
     var collection = db.get('usercollection');
 
-    collection.count({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
+    collection.count({"useremail" : userEmail,"userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
         if(count==1)
         {
             var sessionId = makeID();
@@ -222,11 +317,16 @@ function profileFunction(req,res){
                 res.redirect("/result?survey="+gotoresultid);
                 return;
             }
-            collection.find({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(e,docs){
+            collection.find({"useremail" : userEmail,"userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(e,docs){
             
+                if(docs[0].userstatus == "A"){
+                    var date = new Date(0);
+                }
+                else{
+                    var date = new Date(docs[0].userregdate)
+                }
                 var collection2 = db.get('usersurveycollection');
-
-                collection2.find({"email" : userEmail},function(e,docs2) {
+                collection2.find({"email" : userEmail, "adddate" : { $gt : date}},function(e,docs2) {
                     var list = [];
                     for (i=0; i<docs2.length; i++) {
                 
@@ -237,8 +337,9 @@ function profileFunction(req,res){
 
                     var collection3 = db.get('surveycollection');
 
+                    //collection3.find({"surveyid" : {$in : list}, "surveystart" : {$lt : {$in : date}}},function(e, docs3) {
                     collection3.find({"surveyid" : {$in : list}},function(e, docs3) {
-
+                        console.log(docs3);
                         collection3.find({"surveyowner" : userEmail}, function(e, docs4){
                             //console.log(docs3);
 
@@ -374,24 +475,40 @@ router.get('/gotosurvey', function(req, res){
     // Set our collection
     var collection = db.get('usercollection');
 
-    collection.count({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
-        if(count==1){
-
+    collection.find({"useremail" : userEmail,"userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, find){
+        if(find.length==1){
             //console.log(count);
-            var collection2 = db.get('surveycollection');
 
+            var collection2 = db.get('surveycollection');
             collection2.find({"surveyid" : parseInt(surveyid)}, function(err,doc){
 
-                var collection3 = db.get('usersurveycollection');
                 //console.log(doc[0].whoanswer);
-                if(doc[0].whoanswer == "invited"){
+                if(doc[0].whoanswer == "invited" || doc[0].whoanswer == "everybody"){
 
-                    collection3.count({"surveyid" : surveyid, "email" : userEmail}, function(err,count3){
-                        console.log(count3);
-                        if(count3>0){
-                            res.render('gotosurvey', {
-                                "surveyid" : surveyid,
-                            });
+                    var collection3 = db.get('usersurveycollection');
+                    collection3.find({"surveyid" : surveyid, "email" : userEmail}, function(err,find3){
+                        //console.log("find3: "+find3[0]+"---->"+find.length);
+
+                        if(find3.length>0){
+                            if(find[0].userstatus == "N"){
+                                for(f in find3){
+                                    if(find3[f].adddate > find[0].userregdate){
+                                        //console.log("find3.adddate: "+find3[f].adddate);
+                                        //console.log("find.userregdate: "+find[0].userregdate);
+                                        res.render('gotosurvey', {
+                                            "surveyid" : surveyid,
+                                        });
+                                        return;
+                                    }
+                                }
+                                res.send("You cant fill or check this survey");
+                            }
+                            else{
+                                res.render('gotosurvey', {
+                                    "surveyid" : surveyid,
+
+                                });
+                            }
                         }
                         else{
                             res.send("You are not invited to fill this survey");
@@ -401,17 +518,27 @@ router.get('/gotosurvey', function(req, res){
                 }
                 else if(doc[0].whoanswer == "everybody"){
 
-                        collection3.insert({"surveyid" : surveyid, "email" : userEmail}, function(err,doc3){
+                    if((find[0].userstatus == "A") || (find.userstatus == "N" && doc[0].surveystart > find[0].userregdate)){
+                        collection3.insert({
+                            "surveyid" : surveyid, 
+                            "email" : userEmail,
+                            "status" : "active",
+                            "adddate" : new Date()
+                        }, function(err,doc3){
                             if (err) {
-                            // If it failed, return error
-                            res.send("There was a problem adding the information to the database.");
-                        }
-                        else {
-                            res.render('gotosurvey', {
-                                "surveyid" : surveyid,
-                            });
-                        }
-                    });
+                                // If it failed, return error
+                                res.send("There was a problem adding the information to the database.");
+                            }
+                            else {
+                                res.render('gotosurvey', {
+                                    "surveyid" : surveyid,
+                                });
+                            }
+                        });
+                    }
+                    else{
+                        res.send("You cant fill or check this survey");
+                    }
                 }
             });
         }
@@ -576,8 +703,19 @@ router.post('/adduserstosurvey', function(req, res) {
     var db = req.db;
     var surveyid = req.body.surveyid;
     var startdate = req.body.startdate;
+    if(startdate == undefined || startdate == ""){
+        startdate = new Date();
+        //console.log(startdate);
+    }
+    else{
+        startdate = new Date(startdate);
+    }
     var emails = req.body.email;
-    console.log(req.body.email);
+    if(emails == undefined || emails == ""){
+        res.render('adduserstosurvey', {title: 'Survey made'});
+        return;
+    }
+
     if( typeof emails === 'string' ) {
         emails = [ emails ];
     }
@@ -641,7 +779,7 @@ router.post('/fillorcheck', function(req,res){
 
         var collection = db.get('usercollection');
 
-        collection.count( { "useremail" : useremail, "userpassword" : userpass }, function(err, count){ //sprawdzanie poprawności hasła
+        collection.count( { "useremail" : useremail,"userstatus" : {$in : ["A","N"]}, "userpassword" : userpass }, function(err, count){ //sprawdzanie poprawności hasła
         if(count == 1){
 
             var baseName = 'surveyanswers' + surveyId;
@@ -826,7 +964,7 @@ router.get('/result', function(req, res){
     var db = req.db;
     var collection = db.get('usercollection');
 
-    collection.count({"useremail" : userEmail, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
+    collection.count({"useremail" : userEmail,"userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
         if(count==1){
 
             //console.log(count);
@@ -835,7 +973,7 @@ router.get('/result', function(req, res){
             collection2.find({"surveyid" : parseInt(resultid)}, function(err,doc){
 
                 //owner of survey
-                if(doc[0].whoseeresult == "onlyyou" && doc[0].surveyowner == userEmail){
+                if((doc[0].whoseeresult == "onlyyou" || doc[0].whoseeresult == "youandwhoanswer") && doc[0].surveyowner == userEmail){
 
                     result(req,res);
                 }
@@ -843,7 +981,7 @@ router.get('/result', function(req, res){
 
                     result(req,res);
                 }
-                else if(doc[0].whoseeresult == "everywhoanswer"){
+                else if(doc[0].whoseeresult == "everywhoanswer" || doc[0].whoseeresult == "youandwhoanswer"){
 
                     res.render('seeresults', {
                         "verifypass" : resultid

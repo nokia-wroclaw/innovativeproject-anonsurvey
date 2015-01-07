@@ -12,9 +12,9 @@ block content
                 ul
                 each survey in surveys
                         li #{survey.surveyname} 
-                            input.btn.btn-medium.btn-info(type='button', name='fillorcheck', value='Fill or Check', onclick='writepassword('+survey.surveyid+')')
+                            a.btn.btn-medium.btn-primary(href='/gotosurvey?id='+survey.surveyid) Fill or Check 
                             | &nbsp
-                            if(survey.whoseeresult == "everywhoanswer")
+                            if(survey.whoseeresult == "everywhoanswer" || survey.whoseeresult == "youandwhoanswer")
                                 //input.btn.btn-medium.btn-primary(type='button', name='emailsubmit', value='Every who answer', onclick='writepasswordtoresult('+survey.surveyid+')')
                                 a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Every who answer
                             else if(survey.whoseeresult == "everybody")

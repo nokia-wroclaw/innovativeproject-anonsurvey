@@ -57,7 +57,7 @@ block content
 											- var ansNumber = "ans" + q.questionnumber.toString();
 											- var outputName = ansNumber + "Out";
 												label Min = #{q.availbeanswers[0]}, Max = #{q.availbeanswers[1]}, Step = #{q.availbeanswers[2]}
-												input(type="range" id = ansNumber value = q.availbeanswers[0] name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] step = q.availbeanswers[2]  form="answer" onchange = 'changeOutput("#{ansNumber}")' ) 
+												input(type="range" id = ansNumber value = q.availbeanswers[0] name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] step = q.availbeanswers[2]  form="answer" oninput='changeOutput("#{ansNumber}")' ) 
 												output(name = outputName for = ansNumber value = q.availbeanswers[0])
 
 										if q.answertype == "date"

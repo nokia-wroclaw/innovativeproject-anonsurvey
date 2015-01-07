@@ -29,8 +29,11 @@ block content
             |  Everybody 
           div.col-md-2(align='left')   
             label Who can see result?
+            br 
+            input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="youandwhoanswer", checked)
+            |  You & every who answer
             br
-            input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', checked, value="everywhoanswer")
+            input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="everywhoanswer")
             |  Everybody who answer
             br 
             input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="everybody")
