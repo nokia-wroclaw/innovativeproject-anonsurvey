@@ -477,31 +477,30 @@ router.get('/gotosurvey', function(req, res){
 
     collection.find({"useremail" : userEmail,"userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, find){
         if(find.length==1){
-            //console.log(count);
-
+            console.log(find);
             var collection2 = db.get('surveycollection');
+
             collection2.find({"surveyid" : parseInt(surveyid)}, function(err,doc){
 
-                //console.log(doc[0].whoanswer);
-                if(doc[0].whoanswer == "invited" || doc[0].whoanswer == "everybody"){
+                var collection3 = db.get('usersurveycollection');
 
-                    var collection3 = db.get('usersurveycollection');
+                if(doc[0].whoanswer == "invited"){
+
                     collection3.find({"surveyid" : surveyid, "email" : userEmail}, function(err,find3){
                         //console.log("find3: "+find3[0]+"---->"+find.length);
 
                         if(find3.length>0){
                             if(find[0].userstatus == "N"){
-                                for(f in find3){
-                                    if(find3[f].adddate > find[0].userregdate){
-                                        //console.log("find3.adddate: "+find3[f].adddate);
-                                        //console.log("find.userregdate: "+find[0].userregdate);
-                                        res.render('gotosurvey', {
-                                            "surveyid" : surveyid,
-                                        });
-                                        return;
-                                    }
+                                if(find3[0].adddate > find[0].userregdate){
+                                    //console.log("find3.adddate: "+find3[f].adddate);
+                                    //console.log("find.userregdate: "+find[0].userregdate);
+                                    res.render('gotosurvey', {
+                                        "surveyid" : surveyid,
+                                    });
+                                        
                                 }
-                                res.send("You cant fill or check this survey");
+                                else
+                                    res.send("You cant fill or check this survey - we dont know you filled this survey 1");
                             }
                             else{
                                 res.render('gotosurvey', {
@@ -518,28 +517,54 @@ router.get('/gotosurvey', function(req, res){
                 }
                 else if(doc[0].whoanswer == "everybody"){
 
-                    if((find[0].userstatus == "A") || (find.userstatus == "N" && doc[0].surveystart > find[0].userregdate)){
-                        collection3.insert({
-                            "surveyid" : surveyid, 
-                            "email" : userEmail,
-                            "status" : "active",
-                            "adddate" : new Date()
-                        }, function(err,doc3){
-                            if (err) {
-                                // If it failed, return error
-                                res.send("There was a problem adding the information to the database.");
-                            }
-                            else {
-                                res.render('gotosurvey', {
-                                    "surveyid" : surveyid,
+                        collection3.count({"surveyid" : surveyid, "email" : userEmail}, function(err,count3){
+                            if(count3==0){
+                                console.log("0: "+ count3);
+                                collection3.insert({
+                                    "surveyid" : surveyid, 
+                                    "email" : userEmail,
+                                    "status" : "active",
+                                    "adddate" : new Date()
+                                }, function(err,doc3){
+                                    if (err) {
+                                        // If it failed, return error
+                                        res.send("There was a problem adding the information to the database.");
+                                    }
+                                    else {
+                                        res.render('gotosurvey', {
+                                            "surveyid" : surveyid,
+                                        });
+                                    }
                                 });
                             }
+                            else {
+                                console.log("1?: "+ count3);
+                                if((find[0].userstatus == "A") || (find[0].userstatus == "N" && doc[0].surveystart > find[0].userregdate)){
+                                    res.render('gotosurvey', {
+                                        "surveyid" : surveyid,
+                                    });
+                                }
+                                else if(find[0].userstatus == "N"){
+
+                                    collection3.find({"surveyid" : surveyid, "email" : userEmail}, function(err,find3){
+                                        //console.log("find3: "+find3[0]+"---->"+find.length);
+                                        if(find3.length>0 && find3[0].adddate > find[0].userregdate){
+                                            res.render('gotosurvey', {
+                                                "surveyid" : surveyid,
+                                            });
+                                        }
+                                        else{
+                                            res.send("You cant fill or check this survey - we dont know you filled this survey 2");
+                                        }
+                                    });
+                                }
+                                else{
+                                    res.send("You cant fill or check this survey - we dont know you filled this survey 3");
+                                }      
+                            }
                         });
-                    }
-                    else{
-                        res.send("You cant fill or check this survey");
-                    }
                 }
+                //console.log(doc[0].whoanswer);   
             });
         }
         else {
@@ -726,12 +751,21 @@ router.post('/adduserstosurvey', function(req, res) {
     var to = [];
     for (i in emails) {
         //console.log(emails[i]);
-        collection.insert({
-            "surveyid" : surveyid, 
-            "email" : emails[i],
-            "status" : "active",
-            "adddate" : startdate
-        }, function (err, doc) {});
+        collection.count({"surveyid" : surveyid, "email" : emails[i]}, function(err,count3){
+            if(count3==0){
+                collection.insert({
+                    "surveyid" : surveyid, 
+                    "email" : emails[i],
+                    "status" : "active",
+                    "adddate" : startdate
+                }, function(err,doc3){
+                    if (err) {
+                        // If it failed, return error
+                        res.send("There was a problem adding the information to the database.");
+                    }              
+                });
+            }
+        });
     }
     var j = 0;
     function loop(){
