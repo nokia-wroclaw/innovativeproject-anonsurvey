@@ -1024,8 +1024,10 @@ router.post('/result', function(req, res){
             result(req,res);
         } 
         else{
-            res.send("You dont have access to see result of this survey - wrong password or no filled survey");
-            return;
+            res.render('seeresults', {
+                    "result" : "You dont have access to see result of this survey - wrong password or no filled survey" 
+                });
+
         }   
     });
 });
@@ -1045,6 +1047,8 @@ function result(req, res){
     var collection = db.get(baseName);
 
     var odp = [];
+
+    var ile = [];
 
     collectionUser.count({"surveyid" : surveyid,}, function(err, all){
 
@@ -1072,11 +1076,14 @@ function result(req, res){
 
                             var i=0;
                             h=0;
-                            odp[i]="";
                             n=0;
                             how =0;
                             h=0;
                             l=0;
+                            odp[i]="";
+                            ile[i]= [];
+                            ile[i][n]="";
+                            
 
                     collection.find({},function(err,find){
 
@@ -1095,6 +1102,7 @@ function result(req, res){
                                                 else h=0;
                                                 i++;
                                                 odp[i]="";
+                                                ile[i]= [];
                                                 CountFunction();
                                         
 
@@ -1107,12 +1115,13 @@ function result(req, res){
                                         if (n < howManyAnswerInQuestion){ 
                                                 
                                                 if (h<countt){
-                                                    if (String(find[h].answers[i][0])==String(docs[0].questions[i].availbeanswers[n])) how++;
+                                                    if (String(find[h].answers[i])==String(docs[0].questions[i].availbeanswers[n])) how++;
                                                     h++;
                                                     CountFunction();
                                                 }
                                                 else{
                                                 h=0;
+                                                ile[i][n]=how;
                                                 if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 how=0;
@@ -1124,6 +1133,7 @@ function result(req, res){
                                         n=0;
                                         i++;
                                         odp[i]="";
+                                        ile[i]= [];
                                         CountFunction();
                                         }
                                     }
@@ -1149,6 +1159,7 @@ function result(req, res){
                                                 }
                                                 else{
                                                 h=0;
+                                                ile[i][n]=how;
                                                 if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 how=0;
@@ -1160,22 +1171,26 @@ function result(req, res){
                                         n=0;
                                         i++;
                                         odp[i]="";
+                                        ile[i]= [];
                                         CountFunction();
                                         }
                                     }
 
                                     else if (docs[0].questions[i].answertype=="range"){
 
-                                            p=parseInt(docs[0].questions[i].availbeanswers[0]);
-                                            co=parseInt(p+n);
+                                            p=parseFloat(docs[0].questions[i].availbeanswers[0]);
+                                           step=parseFloat(docs[0].questions[i].availbeanswers[2]);
+                                           console.log(step);
+                                            co=parseFloat(p+(n*step));
                                                 
                                                 if (co<=docs[0].questions[i].availbeanswers[1]){
                                                     if (h<countt){
-                                                            if (String(find[h].answers[i][0])==String(co)) how++;
+                                                            if (String(find[h].answers[i])==String(co)) how++;
                                                             h++;
                                                             CountFunction();
                                                     }
                                                     else h=0;
+                                                    ile[i][n]=how;
                                                     if (n==0) odp[i] +=co +":" + how;
                                                     else odp[i]+="\n" + co +":" + how;
                                                     how=0;
@@ -1184,19 +1199,21 @@ function result(req, res){
                                                 }
                                                 else n=0;    
                                                 i++;
+                                                ile[i]= [];
                                                 odp[i]="";
                                                 CountFunction();
                                     }
 
                                     else {
                                                 if (h<countt){
-                                                        if (h==0) odp[i]+=find[h].answers[i];
+                                                        if (h==0) odp[i]+=find[h].answers[i]+";";
                                                         else odp[i]+="\n" +find[h].answers[i];
                                                         h++;
                                                         CountFunction();
                                                 }
                                                 else h=0;
                                                 i++;
+                                                ile[i]= [];
                                                 odp[i]="";
                                                 CountFunction();
 
@@ -1207,12 +1224,12 @@ function result(req, res){
                             i=0;
                             CountFunction();                         
                             
-                            console.log(odp[0]);
+                           // console.log(odp[0]);
                           //  console.log(odp[1]);
 
                             
                             res.render('seeresults', {
-                                "count" : count, "results" : docs, "odp" : odp 
+                                "count" : count, "results" : docs, "odp" : odp, "ile" : ile
                             });
                     });
                   
