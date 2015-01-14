@@ -10,13 +10,13 @@ block content
 			input#inputEmail.form-control(type='text', ng-model='yourName', name='useremail', placeholder='Enter your e-mail here')
 			label.sr-only(for='inputPassword') Password:
 			input#inputPassword.form-control(type='password', ng-model='yourPass', name='userpassword', placeholder='Enter your password here')
-			br
-			input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Sign In')
-			br
-			br
-		a.btn.btn-medium.btn-primary(href="/newuser")= "Register"
-		a.btn.btn-medium.btn-primary(href="/forgotpassword")= "Forgot Password"
-		br
-		br
+			table.table-condensed
+				thead
+					th
+						input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Sign In')
+					th 
+						a.btn.btn-medium.btn-primary(href="/newuser")= "Register"           
+					th 
+						a.btn.btn-medium.btn-warning(href="/forgotpassword")= "Forgot Password"      	
 		if error
 			.alert.alert-danger(role='alert')= error

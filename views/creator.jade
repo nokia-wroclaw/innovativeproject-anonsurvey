@@ -1,6 +1,19 @@
 extends layout
 
 block content
+    div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+            div.container
+                button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+                a.navbar-brand
+                  | Annonymous Survey App
+                div.nav.navbar-nav.navbar-right
+                        li
+                          button.btn.btn-success.navbar-btn.navbar-inverse(onclick='addquest()', type='button') Add question     
+                        li
+                          button.btn.btn-primary.navbar-btn.navbar-inverse(type="submit", form="creator", value="addsurvey" onclick="return valid()") Survey complete
+                        li
+                          a(href="/profile")= "Back"
+          div.collapse.navbar-collapse
     div(align='center')
       h1 Survey Creator 
       h2 This is the place where you can create your survey!!
@@ -44,16 +57,6 @@ block content
           div.col-md-4#col1(align='center', class = 'jumbotron')    
           div.col-md-4#col2(align='center', class = 'jumbotron')    
           div.col-md-4#col3(align='center', class = 'jumbotron') 
-    div(align='center', class = 'row')             
-    div#buttons(align='center', class = 'jumbotron')
-      div#errorinfo
-      button.btn.btn-medium.btn-success(onclick='addquest()', type='button') Add question
-      br
-      br
-      button.btn.btn-medium.btn-info(type="submit", form="creator", value="addsurvey" onclick="return valid()") Add Survey
-      br
-      br  
-      a.btn.btn-medium.btn-primary(href="/profile")= "Back"
     script(type='text/javascript').
       var countquest = 0;
       var countanswer = 0;

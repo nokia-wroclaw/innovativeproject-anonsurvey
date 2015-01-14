@@ -10,16 +10,16 @@ block content
 			input.inputEmail.form-control(type="text", placeholder='Enter your e-mail here', name="useremail",onBlur="validateEmail(this.value)")
 			p#validEmail
 			input.inputPassword.form-control(type='password', name='userpassword', placeholder='Enter your password here')
+			p
 			input.inputRepeatPassword.form-control(type='password', name='userrepeatpassword', placeholder='Repeat your password',onBlur="validatePassword(this.value)")
 			p#validPass
-			br
-			input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Register')
-			br
-			br
-			a.btn.btn-medium.btn-info(href="/")= "Back"
-			br
-			br 
-		if error
+		table.table-condensed
+			thead
+				th
+					input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Register')
+				th
+					a.btn.btn-medium.btn-info(href="/")= "Back"
+		if error	
 			.alert.alert-danger(role='alert')= error
 	script(type='text/javascript').
 		function validateName(val){

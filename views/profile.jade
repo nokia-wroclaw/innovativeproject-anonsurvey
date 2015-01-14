@@ -1,6 +1,20 @@
 extends layout
 
 block content
+    div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+        div.container
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+            a.navbar-brand
+                | Annonymous Survey App
+            div.nav.navbar-nav.navbar-right
+                    li
+                        a(href='/creator') Create survey     
+                    li
+                        a(href='/changepassword') Change password
+                    li
+                        a(href="/") Log out
+        div.collapse.navbar-collapse
+
     div(align='center', class='jumbotron')
         h1 Profile's panel
             each user in profile
@@ -24,26 +38,23 @@ block content
                             p
             div.col-md-6(align='left')            
                 h3 Surveys created by You:
-                ul
-                each osurvey in surveysowner
-                        li #{osurvey.surveyname}  
-                            a.btn.btn-medium.btn-info(href='/result?survey='+osurvey.surveyid) Result
-                            | &nbsp
-                            a.btn.btn-medium.btn-primary(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
-                            p 
-    div.well                        
-        div.col-md-12(align='center')
-            a.btn.btn-medium.btn-success(href='/creator') Create your own survey!
-        br
-        br
-        div.col-md-12(align='center')
-            a.btn.btn-medium.btn-info(href='/changepassword') Change password
-        br
-        br
-        div.col-md-12(align='center')
-            a.btn.btn-medium.btn-warning(href="/")= "Log out"
-        br
-        br 
+                    br
+                    each osurvey in surveysowner
+                        table.auto
+                            thead
+                                th                     
+                                th
+                                th
+                            tbody
+                                    td.col-md-9
+                                        h5 #{osurvey.surveyname}
+                                    |    
+                                    td.col-md-1
+                                        a.btn.btn-medium.btn-info.btn-sm(href='/result?survey='+osurvey.surveyid) Result
+                                    |                     
+                                    td.col-md-2
+                                        a.btn.btn-medium.btn-primary.btn-sm(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
+                                br  
     script(type='text/javascript').
         function writepassword(n){
             var input = '<br><form action="/fillorcheck" method="post" id="form1"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form1" value="fillorcheck">Fill or Check</button></form>';
