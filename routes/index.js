@@ -160,7 +160,6 @@ router.post('/forgotpasswordsendemail', function(req, res) {
         else{
             collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
                 
-                console.log(doc);
                 var hashpass = String(CryptoJS.SHA3(doc[0].userpassword+doc[0].useremail)).substring(0, 20);
                 var link = "localhost:3000/forgotpassword2?email="+youremail+"&id="+hashpass;
                 var text = "For set new password click this link:\n"+link+"\nBye";
@@ -180,8 +179,6 @@ router.get('/forgotpassword2', function(req, res) {
 
     var youremail = req.query['email'];
     var hash = req.query['id'];
-    console.log(youremail);
-    console.log(hash);
     
     var db = req.db;
     var collection = db.get('usercollection');
@@ -193,7 +190,7 @@ router.get('/forgotpassword2', function(req, res) {
             collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
             
                 if(hash == String(CryptoJS.SHA3(doc[0].userpassword+doc[0].useremail)).substring(0, 20)){
-                    console.log(doc);
+
                     res.render('forgotpassword2', { 
                         title: 'Forgot Password',
                         info: doc[0] 
@@ -223,7 +220,7 @@ router.post('/setnewpassword', function(req, res) {
         res.send("Incorrect data");
         return;
     }
-    //console.log("JEST!!");
+
     
     var db = req.db;
     var collection = db.get('usercollection');
@@ -280,15 +277,12 @@ function profileFunction(req,res){
     
     var gotosurveyid = req.body.gotosurveyid;
     var gotoresultid = req.body.gotoresultid;
-    //console.log("go to survey id: "+gotosurveyid);
-    // Get our form values. These rely on the "name" attributes
-    //console.log(req.body.useremail);
+ 
     if(req.body.useremail != undefined ){    
         var userEmail = req.body.useremail;
         var userPassword = req.body.userpassword;
     }
     else {
-        //console.log(req.cookies.useremail);
         var userEmail = req.cookies.useremail;
         var userPassword = req.cookies.userpassword; 
     }   
@@ -302,7 +296,7 @@ function profileFunction(req,res){
             res.cookie('sessionId', sessionId, { maxAge: 900000, httpOnly: true });
             res.cookie('useremail', userEmail, { maxAge: 900000, httpOnly: true });
             res.cookie('userpassword', userPassword, { maxAge: 900000, httpOnly: true });
-            //console.log("go to survey id: "+gotosurveyid);
+
             if(gotosurveyid != undefined && gotosurveyid != ""){
                 // If it worked, set the header so the address bar doesn't still say /adduser
                 res.location("/gotosurvey");
@@ -332,16 +326,12 @@ function profileFunction(req,res){
                 
                         list[list.length] = parseInt(docs2[i].surveyid);
                     }
-                    //console.log(list);
-                    //console.log(docs2.length);
 
                     var collection3 = db.get('surveycollection');
 
-                    //collection3.find({"surveyid" : {$in : list}, "surveystart" : {$lt : {$in : date}}},function(e, docs3) {
                     collection3.find({"surveyid" : {$in : list}},function(e, docs3) {
-                        console.log(docs3);
+
                         collection3.find({"surveyowner" : userEmail}, function(e, docs4){
-                            //console.log(docs3);
 
                             res.render('profile', {
                             title: 'Your Profile',
@@ -382,15 +372,11 @@ function changepassword(req,res,email,oldpass,newpass,next){
     var collection = db.get('usercollection');
 
     collection.update({"useremail" : email, "userstatus" : {$in : ["A","N"]},"userpassword" : String(CryptoJS.SHA3(oldpass))}, {$set: {"userpassword" : String(CryptoJS.SHA3(newpass))}},function(err, count, status){
-            //console.log(count);
-            //console.log(status);
             next(req,res,email,oldpass,newpass);
     });
 };
 function changehash(req,res,email,oldpass,newpass){
-    //console.log(email);
-    //console.log(oldpass);
-    //console.log(newpass);
+
     var db = req.db;
     var collection = db.get('usersurveycollection');
     collection.find({"email" : email},function(err,doc){
@@ -407,7 +393,6 @@ function changehash(req,res,email,oldpass,newpass){
                 var collectionloop = db.get("surveyanswers"+doc[i].surveyid);
 
                 collectionloop.update({"user" : stringToCheck},{$set: {"user" : newStringToCheck}},function(err, count, status){
-                    //console.log(count+","+doc[i].surveyid+","+doc[i].email+","+email);
                     i++;
                     loop2();
                 });
@@ -457,7 +442,6 @@ router.get('/gotosurvey', function(req, res){
     } 
     var db = req.db;
     // Get our form values. These rely on the "name" attributes
-    //console.log(req.body.useremail);
     if(req.cookies.useremail == undefined){    
         // If it worked, set the header so the address bar doesn't still say /adduser
         res.location("/");
@@ -466,18 +450,15 @@ router.get('/gotosurvey', function(req, res){
         return;
     }
     else {
-        //console.log(req.cookies.useremail);
         var userEmail = req.cookies.useremail;
         var userPassword = req.cookies.userpassword;
-        //console.log(userEmail); 
-       // console.log(surveyid); 
+
     }   
     // Set our collection
     var collection = db.get('usercollection');
 
     collection.find({"useremail" : userEmail,"userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, find){
         if(find.length==1){
-            console.log(find);
             var collection2 = db.get('surveycollection');
 
             collection2.find({"surveyid" : parseInt(surveyid)}, function(err,doc){
@@ -492,8 +473,7 @@ router.get('/gotosurvey', function(req, res){
                         if(find3.length>0){
                             if(find[0].userstatus == "N"){
                                 if(find3[0].adddate > find[0].userregdate){
-                                    //console.log("find3.adddate: "+find3[f].adddate);
-                                    //console.log("find.userregdate: "+find[0].userregdate);
+
                                     res.render('gotosurvey', {
                                         "surveyid" : surveyid,
                                     });
@@ -564,7 +544,7 @@ router.get('/gotosurvey', function(req, res){
                             }
                         });
                 }
-                //console.log(doc[0].whoanswer);   
+           
             });
         }
         else {
@@ -582,7 +562,7 @@ router.post('/addsurvey', function(req, res) {
     
     var surveyname = req.body.surveyname;
     var quest = req.body.question;
-    console.log(quest);
+
     var startdate = new Date(req.body.startofsurvey);
     startdate.setHours(0);
     startdate.setMinutes(0);
@@ -682,7 +662,7 @@ router.get('/chooseuser', function(req, res) {
     var collection = db.get('usercollection');
     var surveyid = req.query['survey'];
     var startdate = req.query['start'];
-    //console.log(surveyid);
+
     collection.find({},{},function(e,docs){
         res.render('chooseuser', {
             title: 'Choose users who can answer from the list', 
@@ -701,9 +681,6 @@ function sendmail(aemail, asubject, atext) {
             pass: 'magic2014'
         }
     }); 
-    //console.log(aemail);
-    //console.log(asubject);
-    //console.log(atext);
 
     var mailOptions = {
     from: 'magic.survey.app@gmail.com',    
@@ -723,14 +700,12 @@ function sendmail(aemail, asubject, atext) {
 };
 
 router.post('/adduserstosurvey', function(req, res) {
-    //console.log(req.body);
-    //console.log(req.body.email.length);
+
     var db = req.db;
     var surveyid = req.body.surveyid;
     var startdate = req.body.startdate;
     if(startdate == undefined || startdate == ""){
         startdate = new Date();
-        //console.log(startdate);
     }
     else{
         startdate = new Date(startdate);
@@ -744,13 +719,11 @@ router.post('/adduserstosurvey', function(req, res) {
     if( typeof emails === 'string' ) {
         emails = [ emails ];
     }
-    //console.log(emails);
-    //console.log(emails.length);
+   
     var collection = db.get('usersurveycollection');
     var collection2 = db.get('usercollection');
     var to = [];
     for (i in emails) {
-        //console.log(emails[i]);
         collection.count({"surveyid" : surveyid, "email" : emails[i]}, function(err,count3){
             if(count3==0){
                 collection.insert({
@@ -832,6 +805,7 @@ router.post('/fillorcheck', function(req,res){
                         collection = db.get(baseName);
                         
                         collection.find( { user : stringToCheck  } ,  function(e,docs2) { //pobieranie odpowiedzi użytkownika z bazy
+
                             res.render('checkuseranswer', { 
                                 "answerlist" : docs2,
                                 "questionlist" : questions
@@ -869,54 +843,63 @@ router.post('/answertobase', function(req,res){
     var surveyid = req.body.surveyid; //Pobieranie numeru ankiety
     var questionsamount = req.body.questionsamount; //pobieranie ilości pytań
     var collection = db.get('surveycollection'); 
+    var collectionSurvey = db.get('surveycollection');
+                
     
     var answers = []; //Tu będziemy przechowywać pytania i odpowiedzi na nie
 
-    for(var i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
+    collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, find){ 
 
-        var newAnswersAmount = 0;
-        var strAnswer = "ans" + String(i);
-        var ans = req.param(strAnswer,"No answer"); //Jeżeli nie ma odpowiedzi na to pytanie, to do bazy zapisujemy "No answer"
+        for(var i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
 
-        //sprawdzamy, czy użytkownik udzielił swoich odpowiedzi w radiobuttonach i checkboxach
-        strAnswer += "User"; 
-        var ansUser = req.param(strAnswer,"No answer");
-       
-        if( ansUser == 'No answer' || ansUser == ''){ //Tutaj sprawdzamy czy użytkownik udzielił własnych odpowiedzi i dodajemy je do bazy
-            answers[i] = ans;        //Jeżeli nie to zapisujemy po prostu jego odpowiedzi do bazy
-        }  else {                   //update, dodatkowe odpowiedzi w ankiecie. Obsługa w zalezności od ilości udzielonych odpowiedzi.
-            var number = parseInt(surveyid);
-            if(typeof ansUser == "string") {
-                collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $addToSet: {"questions.$.availbeanswers": ansUser}});
-                newAnswersAmount++; 
-            } else {
-                for(var k = 0; k < ansUser.length; k++){
-                    collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $addToSet: {"questions.$.availbeanswers": ansUser[k]}});
+            var newAnswersAmount = 0;
+            var strAnswer = "ans" + String(i);
+            var ans = req.param(strAnswer,"No answer"); //Jeżeli nie ma odpowiedzi na to pytanie, to do bazy zapisujemy "No answer"
+
+            //sprawdzamy, czy użytkownik udzielił swoich odpowiedzi w radiobuttonach i checkboxach
+            strAnswer += "User"; 
+            var ansUser = req.param(strAnswer,"No answer");
+
+            answers[i]=[];       
+            if( ansUser == 'No answer' || ansUser == ''){ //Tutaj sprawdzamy czy użytkownik udzielił własnych odpowiedzi i dodajemy je do bazy
+                if ((find[0].questions[i].answertype=="checkbox")  &&  (typeof ans == 'string')){
+                    answers[i][0] = ans; 
+                } else answers[i] = ans; 
+                     //Jeżeli nie to zapisujemy po prostu jego odpowiedzi do bazy
+            }  else {                   //update, dodatkowe odpowiedzi w ankiecie. Obsługa w zalezności od ilości udzielonych odpowiedzi.
+                var number = parseInt(surveyid);
+                if(typeof ansUser == "string") {
+                    collectionSurvey.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $addToSet: {"questions.$.availbeanswers": ansUser}});
                     newAnswersAmount++; 
+                } else {
+                    for(var k = 0; k < ansUser.length; k++){
+                        collectionSurvey.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $addToSet: {"questions.$.availbeanswers": ansUser[k]}});
+                        newAnswersAmount++; 
+                    }
                 }
-            }
 
-            var j = 0;
-            var answersArray = [];
-            if(ans != 'No answer' && typeof ans == 'object') {
-                Array.prototype.push.apply(answersArray,ans);
-                j = ans.length;
-            }
-            else {
-                if( !(ans =='No answer') ){
-                    answersArray[0] = ans;
-                    j++;
+                var j = 0;
+                var answersArray = [];
+                if(ans != 'No answer' && typeof ans == 'object') {
+                    Array.prototype.push.apply(answersArray,ans);
+                    j = ans.length;
                 }
+                else {
+                    if( !(ans =='No answer') ){
+                        answersArray[0] = ans;
+                        j++;
+                    }
+                }
+                if(typeof ansUser == 'string') answersArray[j] = ansUser;
+                else Array.prototype.push.apply(answersArray,ansUser);
+
+                answers[i] = answersArray;          
             }
-            if(typeof ansUser == 'string') answersArray[j] = ansUser;
-            else Array.prototype.push.apply(answersArray,ansUser);
 
-            answers[i] = answersArray;          
-        }
-
-        //update ilości odpowiedzi
-        if(newAnswersAmount > 0) collection.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $inc: {"questions.$.answercount": newAnswersAmount }});  
-    }        
+            //update ilości odpowiedzi
+            if(newAnswersAmount > 0) collectionSurvey.update( { "surveyid" : number , questions: {$elemMatch: {questionnumber : parseInt(i)}}}, { $inc: {"questions.$.answercount": newAnswersAmount }});  
+        }    
+        
 
     var baseName = 'surveyanswers' + surveyid; //sklejanie z numerem, żeby stworzyć bazę odpowiedzi danej ankiety
     var collection = db.get(baseName);              
@@ -933,6 +916,7 @@ router.post('/answertobase', function(req,res){
     res.location("/profile");
     res.redirect("/profile");
 
+    });
 });
 
 
@@ -944,8 +928,7 @@ function CountFunctionRadio(all,wart,collection, docs , i, n){
                 if (String(ans[h].answers[i][0])==String(docs[0].questions[i].availbeanswers[n])) how++;
             }
            wart +="\n" + docs[0].questions[i].availbeanswers[n]+": " + how+ "\n";
-          //  odp[i] =wart;
-           // console.log(odp[i]);
+
            n++;
            if (n < howManyAnswerInQuestion) CountFunctionRadio(all,wart,collection, docs , i, n); 
        return wart;                                
@@ -962,8 +945,6 @@ function CountFunctionCheckbox(all,wart,collection, docs , i, n){
                 }
             }
            wart +="\n" + docs[0].questions[i].availbeanswers[n]+": " + how+ "\n";
-            //odp[i] =wart;
-            //console.log(odp[i]);
            n++;
            if (n < howManyAnswerInQuestion) CountFunctionCheckbox(all,wart,collection, docs , i, n); 
         return wart;                               
@@ -988,11 +969,10 @@ router.get('/result', function(req, res){
         return;
     }
     else {
-        //console.log(req.cookies.useremail);
+
         var userEmail = req.cookies.useremail;
         var userPassword = req.cookies.userpassword;
-        //console.log(userEmail); 
-       // console.log(surveyid); 
+
     }   
     // Set our collection
     var db = req.db;
@@ -1001,7 +981,6 @@ router.get('/result', function(req, res){
     collection.count({"useremail" : userEmail,"userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(userPassword))},function(err, count){
         if(count==1){
 
-            //console.log(count);
             var collection2 = db.get('surveycollection');
 
             collection2.find({"surveyid" : parseInt(resultid)}, function(err,doc){
@@ -1084,30 +1063,35 @@ function result(req, res){
 
     var ile = [];
 
+
     collectionUser.count({"surveyid" : surveyid,}, function(err, all){
 
         collection.count({}, function(err, countt){
 
             var collectionSurvey = db.get('surveycollection');
-                collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
+                collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, doc){ 
 
-                    var sy = parseInt(docs[0].surveyend[0]+docs[0].surveyend[1]+docs[0].surveyend[2]+docs[0].surveyend[3]);
-                    var sm = parseInt(docs[0].surveyend[5]+docs[0].surveyend[6]);
-                    var sd = parseInt(docs[0].surveyend[8]+docs[0].surveyend[9]);
+                    var sy = parseInt(doc[0].surveyend[0]+doc[0].surveyend[1]+doc[0].surveyend[2]+doc[0].surveyend[3]);
+                    var sm = parseInt(doc[0].surveyend[5]+doc[0].surveyend[6]);
+                    var sd = parseInt(doc[0].surveyend[8]+doc[0].surveyend[9]);
                     
                     var T = new Date();
                     var y = parseInt(T.getFullYear());
                     var m = parseInt(T.getMonth()+1);
                     var d = parseInt(T.getDay());
 
-            if((countt > all/2) || (y>sy) || ((y=sy)&&(m>sm)) ||((y=sy)&&(m=sm)&&(d>=sd)))
+            if((doc[0].whoanswer == "everybody") || (countt > all/2) || (y>sy) || ((y=sy)&&(m>sm)) ||((y=sy)&&(m=sm)&&(d>=sd)))
             {
                     collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, docs){ 
 
                     count = String(parseInt((countt/all)*100)) + "%";        //ile udzielono odpowiedzi
+
+                    if(doc[0].whoanswer == "everybody") count = "NAN";
                      
                             var howManyQuestions =parseInt(docs[0].questionscount);
 
+                            var srednia = [];
+                            srednia[0]=0;
                             var i=0;
                             h=0;
                             n=0;
@@ -1128,8 +1112,8 @@ function result(req, res){
                                     if (docs[0].questions[i].answertype=="date"){
                                         
                                                 if (h<countt){
-                                                        if (h==0) odp[i]+=find[h].answers[i];
-                                                        else odp[i]+="\n" +find[h].answers[i];
+                                                        if (h==0) odp[i]+=find[h].answers[i]+"; ";
+                                                        else odp[i]+="\n" +find[h].answers[i]+"; ";
                                                         h++;
                                                         CountFunction();
                                                 }
@@ -1137,6 +1121,7 @@ function result(req, res){
                                                 i++;
                                                 odp[i]="";
                                                 ile[i]= [];
+                                                srednia[i]=0;
                                                 CountFunction();
                                         
 
@@ -1168,6 +1153,7 @@ function result(req, res){
                                         i++;
                                         odp[i]="";
                                         ile[i]= [];
+                                        srednia[i]=0;
                                         CountFunction();
                                         }
                                     }
@@ -1205,6 +1191,7 @@ function result(req, res){
                                         n=0;
                                         i++;
                                         odp[i]="";
+                                        srednia[i]=0;
                                         ile[i]= [];
                                         CountFunction();
                                         }
@@ -1214,7 +1201,6 @@ function result(req, res){
 
                                             p=parseFloat(docs[0].questions[i].availbeanswers[0]);
                                            step=parseFloat(docs[0].questions[i].availbeanswers[2]);
-                                           console.log(step);
                                             co=parseFloat(p+(n*step));
                                                 
                                                 if (co<=docs[0].questions[i].availbeanswers[1]){
@@ -1227,20 +1213,24 @@ function result(req, res){
                                                     ile[i][n]=how;
                                                     if (n==0) odp[i] +=co +":" + how;
                                                     else odp[i]+="\n" + co +":" + how;
+                                                    srednia[i]+=parseFloat(co*how);
                                                     how=0;
                                                     n++;
                                                     CountFunction();
                                                 }
-                                                else n=0;    
+                                                else n=0;  
+                                                srednia[i]/=countt;
+                                                console.log(srednia[i]);
                                                 i++;
                                                 ile[i]= [];
+                                                srednia[i]=0;
                                                 odp[i]="";
                                                 CountFunction();
                                     }
 
                                     else {
                                                 if (h<countt){
-                                                        if (h==0) odp[i]+=find[h].answers[i]+";";
+                                                        if (h==0) odp[i]+=find[h].answers[i]+"; ";
                                                         else odp[i]+="\n" +find[h].answers[i];
                                                         h++;
                                                         CountFunction();
@@ -1249,6 +1239,7 @@ function result(req, res){
                                                 i++;
                                                 ile[i]= [];
                                                 odp[i]="";
+                                                srednia[i]=0;
                                                 CountFunction();
 
 
@@ -1258,12 +1249,10 @@ function result(req, res){
                             i=0;
                             CountFunction();                         
                             
-                           // console.log(odp[0]);
-                          //  console.log(odp[1]);
 
                             
                             res.render('seeresults', {
-                                "count" : count, "results" : docs, "odp" : odp, "ile" : ile
+                                "count" : count,"countt" : countt, "srednia" : srednia, "results" : docs, "odp" : odp, "ile" : ile
                             });
                     });
                   
