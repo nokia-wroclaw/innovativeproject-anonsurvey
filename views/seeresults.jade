@@ -23,8 +23,12 @@ block content
 						strong #{r.surveyend}
 				div.col-md-3(align='left')
 					h4
-						| Percentage answered: 
-						strong #{count}
+						if count=="NAN"
+							| Answered: 
+							strong #{countt}
+						else
+							| Percentage answered: 
+							strong #{count}
 				div(align='center', class='jumbotron')
 					div.col-md-12(align='center')								
 						h2 Results of the respondents:
@@ -39,9 +43,16 @@ block content
 								div.col-md-6(align='left')
 									h3 #{q.questionnumber+1}. #{q.question}
 								div.col-md-6(align='left')
-									h3 #{odp[q.questionnumber]}	
+									if q.answertype=="range"
+										h3 #{srednia[q.questionnumber]}	
+									else
+										h3 #{odp[q.questionnumber]}	
 									if ile[q.questionnumber].length>1
-										button(onclick='drawCharts(#{q.questionnumber},#{ile[q.questionnumber]})', type='button') Draw Charts	
+										h3 Select chart to draw
+										- var wartosc = ile[q.questionnumber][0]
+										button(onclick='draw(#{q.questionnumber},"pie",#{wartosc})', type='button') Pie Charts	
+										button(onclick='draw(#{q.questionnumber},"column")', type='button') Column Charts
+										button(onclick='draw(#{q.questionnumber},"histo",#{ile[q.questionnumber]})', type='button') Histogram
 										div(id=q.questionnumber)
 											div(id=(q.questionnumber+'list'))
 										div(id=q.questionnumber+'chart')
@@ -66,7 +77,7 @@ block content
 				<option value="no">Select a graph</option> \
 				<option value="pie">Pie Chart</option> \
 				<option value="column">Column Chart</option> \
-				<option value="inny">Inny Chart</option> \
+				<option value="histo">Histogram</option> \
 				</select>';
 				var what = document.createElement("div");
 				what.innerHTML = list+ wart[1];
@@ -77,12 +88,12 @@ block content
 			google.load('visualization', '1.0', {'packages':['corechart']});
 			google.setOnLoadCallback(drawChart);
 
-			function draw(xx){				
+			function draw(number,xx){				
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'Topping');
 				data.addColumn('number', 'Slices');
 				data.addRows([
-				['number', wart],
+				['number', 6],
 				]);
 				var options = {'title':'Chart of result',
 				'width':400,
@@ -94,6 +105,10 @@ block content
 				}
 				else if(xx=="column") {
 				var chart = new google.visualization.ColumnChart(document.getElementById(number+'chart'));
+				chart.draw(data, options);
+				}
+				else if(xx=="histo") {
+				var chart = new google.visualization.Histogram(document.getElementById(number+'chart'));
 				chart.draw(data, options);
 				}
 			}
