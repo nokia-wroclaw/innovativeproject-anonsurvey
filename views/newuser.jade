@@ -13,12 +13,12 @@ block content
 			p
 			input.inputRepeatPassword.form-control(type='password', name='userrepeatpassword', placeholder='Repeat your password',onBlur="validatePassword(this.value)")
 			p#validPass
-		table.table-condensed
-			thead
-				th
-					input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Register')
-				th
-					a.btn.btn-medium.btn-info(href="/")= "Back"
+			table.table-condensed
+				thead
+					th
+						input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Register')
+					th
+						a.btn.btn-medium.btn-info(href="/")= "Back"
 		if error	
 			.alert.alert-danger(role='alert')= error
 	script(type='text/javascript').
