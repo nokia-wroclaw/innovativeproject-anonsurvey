@@ -12,13 +12,12 @@ block content
                     li
                         a(href='/changepassword') Change password
                     li
-                        a(href="/") Log out
+                        a(href="/logout") Log out
         div.collapse.navbar-collapse
 
     div(align='center', class='jumbotron')
         h1 Profile's panel
-            each user in profile
-                    h3 Hi  #{user.username}!
+            h3 Hi  #{profile.username}!
         hr
         div.row
             div.col-md-6(align='left')

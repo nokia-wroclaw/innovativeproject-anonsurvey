@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('client-sessions');
 
 var mongo = require('mongodb');
 var monk = require('monk');
@@ -26,6 +27,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  cookieName: 'session',  //nazwa caisteczka
+  secret: '348rvnrh238ry293nr3jvi303vr83h83v', //randomowy string służący do enkrypcji
+  duration: 60 * 60 * 1000, //czas ważności ciasteczka
+  activeDuration: 30 * 60 * 1000, //przedłuzenie czasu trwania ciasteczka
+}));
 
 app.use(function(req,res,next){
     req.db = db;
