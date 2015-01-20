@@ -1190,6 +1190,8 @@ function result(req, res){
 
     var ile = [];
 
+    var co = [];
+
 
     collectionUser.count({"surveyid" : surveyid,}, function(err, all){
 
@@ -1228,6 +1230,8 @@ function result(req, res){
                             odp[i]="";
                             ile[i]= [];
                             ile[i][n]="";
+                            co[i]= [];
+                            co[i][n]="";
                             
 
                     collection.find({},function(err,find){
@@ -1248,6 +1252,7 @@ function result(req, res){
                                                 i++;
                                                 odp[i]="";
                                                 ile[i]= [];
+                                                co[i]=[];
                                                 srednia[i]=0;
                                                 CountFunction();
                                         
@@ -1268,6 +1273,7 @@ function result(req, res){
                                                 else{
                                                 h=0;
                                                 ile[i][n]=how;
+                                                co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
                                                 if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 how=0;
@@ -1280,6 +1286,7 @@ function result(req, res){
                                         i++;
                                         odp[i]="";
                                         ile[i]= [];
+                                        co[i]=[];
                                         srednia[i]=0;
                                         CountFunction();
                                         }
@@ -1307,6 +1314,7 @@ function result(req, res){
                                                 else{
                                                 h=0;
                                                 ile[i][n]=how;
+                                                co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
                                                 if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
                                                 how=0;
@@ -1320,6 +1328,7 @@ function result(req, res){
                                         odp[i]="";
                                         srednia[i]=0;
                                         ile[i]= [];
+                                        co[i]=[];
                                         CountFunction();
                                         }
                                     }
@@ -1328,27 +1337,30 @@ function result(req, res){
 
                                             p=parseFloat(docs[0].questions[i].availbeanswers[0]);
                                            step=parseFloat(docs[0].questions[i].availbeanswers[2]);
-                                            co=parseFloat(p+(n*step));
+                                            coile=parseFloat(p+(n*step));
                                                 
-                                                if (co<=docs[0].questions[i].availbeanswers[1]){
+                                                if (coile<=docs[0].questions[i].availbeanswers[1]){
                                                     if (h<countt){
-                                                            if (String(find[h].answers[i])==String(co)) how++;
+                                                            if (String(find[h].answers[i])==String(coile)) how++;
                                                             h++;
                                                             CountFunction();
                                                     }
                                                     else h=0;
                                                     ile[i][n]=how;
-                                                    if (n==0) odp[i] +=co +":" + how;
-                                                    else odp[i]+="\n" + co +":" + how;
-                                                    srednia[i]+=parseFloat(co*how);
+                                                    co[i][n]=String(coile);
+                                                    if (n==0) odp[i] +=coile +":" + how;
+                                                    else odp[i]+="\n" + coile +":" + how;
+                                                    srednia[i]+=parseFloat(coile*how);
                                                     how=0;
                                                     n++;
                                                     CountFunction();
                                                 }
                                                 else n=0;  
                                                 srednia[i]/=countt;
+                                                console.log(srednia[i]);
                                                 i++;
                                                 ile[i]= [];
+                                                co[i]=[];
                                                 srednia[i]=0;
                                                 odp[i]="";
                                                 CountFunction();
@@ -1364,6 +1376,7 @@ function result(req, res){
                                                 else h=0;
                                                 i++;
                                                 ile[i]= [];
+                                                co[i]=[];
                                                 odp[i]="";
                                                 srednia[i]=0;
                                                 CountFunction();
@@ -1377,7 +1390,7 @@ function result(req, res){
                             
                             
                             res.render('seeresults', {
-                                "count" : count,"countt" : countt, "srednia" : srednia, "results" : docs, "odp" : odp, "ile" : ile
+                                "count" : count,"countt" : countt, "co" : co, "srednia" : srednia, "results" : docs, "odp" : odp, "ile" : ile
                             });
                     });
                   
@@ -1385,7 +1398,7 @@ function result(req, res){
             }
             else
             {   
-                var result = "There's no result. nie ma minimum";
+                var result = "Results are not available yet. At least fifty percent respondens must answerd this survey";
                 res.render('seeresults', {
                     "result" : result 
                 });
