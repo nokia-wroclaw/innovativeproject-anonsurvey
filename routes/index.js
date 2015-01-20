@@ -113,7 +113,7 @@ function adduserFunction(req, res) {
                     }, function (err, doc) {
                         if (err) {
                             // If it failed, return error
-                            var ecom = "There was a problem adding the information to the database.";
+                            var ecom = "There was a problem during adding the information to the database.";
                             res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                             return;
                         }
@@ -127,12 +127,12 @@ function adduserFunction(req, res) {
                 });
             }
             else
-            {var ecom = "Account already exists";
+            {var ecom = "Account already exists.";
                 res.render('newuser', { "error" : ecom });}
         });
     }
     else
-    {var ecom = "Incorrect data.. Please, try again";
+    {var ecom = "Incorrect data. Please try again!";
                 res.render('newuser', { "error" : ecom });}
 }
 
@@ -158,7 +158,7 @@ router.post('/forgotpasswordsendemail', function(req, res) {
     var collection = db.get('usercollection');
     collection.count({"useremail" : youremail},function(err, count){
         if(count==0){
-            var ecom = "We haven't got this e-mail address in our database - You can register.";
+            var ecom = "We don't have this e-mail address in our database - you can register.";
             res.render('errorpage', { "error" : ecom, "page" : "/" });
             return;
         }
@@ -167,7 +167,7 @@ router.post('/forgotpasswordsendemail', function(req, res) {
                 
                 var hashpass = String(CryptoJS.SHA3(doc[0].userpassword+doc[0].useremail)).substring(0, 20);
                 var link = "localhost:3000/forgotpassword2?email="+youremail+"&id="+hashpass;
-                var text = "For set new password click this link:\n"+link+"\nBye";
+                var text = "In order to set a new password click this link:\n"+link+"\nBye";
                 sendmail(youremail,"Magic Survey App - new password", text);
 
                 res.render('forgotpassword', { 
@@ -189,7 +189,7 @@ router.get('/forgotpassword2', function(req, res) {
     var collection = db.get('usercollection');
     collection.count({"useremail" : youremail},function(err, count){
         if(count==0){
-            var ecom = "There is not such e-mail in our database - You can register";
+            var ecom = "There is not such an e-mail in our database - you can register";
             res.render('errorpage', { "error" : ecom, "page" : "/" });
             return;            
         }
@@ -447,19 +447,19 @@ router.post('/changepassword2', function(req, res) {
         var db = req.db;
         var collection = db.get("usercollection");
 
-        collection.count({"useremail" : email, "userstatus" : {$in : ["A","N"]},"userpassword" : String(CryptoJS.SHA3(oldpass))},function(err, count){//$in:[A,N]
+        collection.count({"useremail" : email, "userstatus" : {$in : ["A","N"]}, "userpassword" : String(CryptoJS.SHA3(oldpass))},function(err, count){//$in:[A,N]
             if(count==1){
                 changepassword(req,res,email,oldpass,newpass,changehash);
             }
             else{
-                var ecom = "Incorret current password";
+                var ecom = "Incorrect current password";
                 res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                 return;
             }
         });
     }
     else {
-        var ecom = "Incorret new password";
+        var ecom = "Incorrect new password";
         res.render('errorpage', { "error" : ecom, "page" : "/profile" });
         return;
     }
@@ -473,7 +473,7 @@ router.get('/gotosurvey', function(req, res){
     if(surveyid == undefined || surveyid == "")
 
     {
-        var ecom = "No no. of survey";
+        var ecom = "There is no survey with this number";
         res.render('errorpage', { "error" : ecom, "page" : "/profile" });
         return;
     } 
@@ -490,8 +490,6 @@ router.get('/gotosurvey', function(req, res){
 
         var userEmail = req.session.user.useremail;
         var userPassword = req.session.user.userpassword;
-        console.log(userEmail);
-        console.log(userPassword);
 
     }   
     // Set our collection
@@ -505,7 +503,7 @@ router.get('/gotosurvey', function(req, res){
             collection2.find({"surveyid" : parseInt(surveyid)}, function(err,doc){
                 
                 if(doc[0]==undefined || doc[0]==""){
-                    var ecom = "Wrong no. of survey";
+                    var ecom = "Wrong number of survey";
                     res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                     return;
                 }
@@ -518,7 +516,6 @@ router.get('/gotosurvey', function(req, res){
                 if(doc[0].whoanswer == "invited"){
 
                     collection3.find({"surveyid" : surveyid, "email" : userEmail}, function(err,find3){
-                        //console.log("find3: "+find3[0]+"---->"+find.length);
 
                         if(find3.length>0){
                             if(find[0].userstatus == "N"){
@@ -530,7 +527,7 @@ router.get('/gotosurvey', function(req, res){
                                         
                                 }
                                 else
-                                    var ecom = "You can't fill neither check this survey - we dont know if you have filled this survey (1)";
+                                    var ecom = "You can't fill neither check this survey - after changing the password, you don't have access to old surveys (1)";
                                     res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                                     return;
                             }
@@ -580,21 +577,20 @@ router.get('/gotosurvey', function(req, res){
                                 else if(find[0].userstatus == "N"){
 
                                     collection3.find({"surveyid" : surveyid, "email" : userEmail}, function(err,find3){
-                                        //console.log("find3: "+find3[0]+"---->"+find.length);
                                         if(find3.length>0 && find3[0].adddate > find[0].userregdate){
                                             res.render('gotosurvey', {
                                                 "surveyid" : surveyid,
                                             });
                                         }
                                         else{
-                                            var ecom = "You can't fill neither check this survey - we don't know if you have filled this survey earlier (2).";
+                                            var ecom = "You can't fill neither check this survey - after changing the password, you don't have access to old surveys (2).";
                                             res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                                             return;
                                         }
                                     });
                                 }
                                 else{
-                                    var ecom = "You can't fill neither check this survey - we don't know if you have filled this survey earlier (3).";
+                                    var ecom = "You can't fill neither check this survey - after changing the password, you don't have access to old surveys (3).";
                                     res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                                     return;
                                 }      
@@ -796,7 +792,7 @@ router.post('/adduserstosurvey', function(req, res) {
                 }, function(err,doc3){
                     if (err) {
                         // If it failed, return error
-                        var ecom = "There was a problem adding the information to the database.";
+                        var ecom = "There was a problem during adding the information to the database.";
                         res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                         return;
                     }
@@ -812,17 +808,15 @@ router.post('/adduserstosurvey', function(req, res) {
         if(j<emails.length){
             collection2.count({"useremail" : emails[j].toString()},function(err, count){
             if(count>0){
-                //info
-                //console.log()
                 var to = emails[j].toString();
-                var sub = "Magic Survey App - You have new invitation to fill survey";
+                var sub = "Magic Survey App - You have a new invitation to fill a survey";
                 var text = "Open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
                 sendmail(to, sub, text);
             }
             else{
                 //rejestrcyjny
                 var to = emails[j].toString();
-                var sub = "Magic Survey App - You have a invitation to fill survey";
+                var sub = "Magic Survey App - You have an invitation to fill a survey";
                 var text = "Register and then open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
                 sendmail(to, sub, text);
             }
@@ -832,7 +826,7 @@ router.post('/adduserstosurvey', function(req, res) {
         }
     }
     loop();
-    var ecom = "Congratulations, you have created survey!";
+    var ecom = "Congratulations, you have created the survey!";
     res.render('errorpage', { "success" : ecom, "page" : "/profile" });
 });
 
@@ -844,10 +838,10 @@ router.post('/unactivesurvey', function(req,res){
     collection.update({"surveyid" : surveyID, "email" : userEmail}, {$set: {"status": "unactive"}},function(err, count, status){
         if (err){
             // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
+            res.send("There was a problem during adding the information to the database.");
         }
         else{
-            res.send("Survey no. "+surveyID+" is forgotten");
+            res.send("Survey number "+surveyID+" is forgotten");
         }
     });
 });
@@ -860,10 +854,10 @@ router.post('/ounactivesurvey', function(req,res){
     collection.update({"surveyid" : parseInt(surveyID), "surveyowner" : userEmail}, {$set: {"surveystatus": "unactive"}},function(err, count, status){
         if (err){
             // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
+            res.send("There was a problem during adding the information to the database.");
         }
         else{
-            res.send("Survey no. "+surveyID+" is forgotten");
+            res.send("Survey number "+surveyID+" is forgotten");
         }
     });
 });
@@ -884,68 +878,73 @@ router.post('/fillorcheck', function(req,res){
         var collection = db.get('usercollection');
 
         collection.count( { "useremail" : useremail,"userstatus" : {$in : ["A","N"]}, "userpassword" : userpass }, function(err, count){ //sprawdzanie poprawności hasła
-        if(count == 1){
+        collection = db.get('surveycollection');
+        collection.findOne({ "surveyid" : parseInt(surveyId) }, { "surveyname" : 1 }, function(err, name){
+            if(count == 1){
 
-            var baseName = 'surveyanswers' + surveyId;
-            var collection = db.get(baseName);
+                var baseName = 'surveyanswers' + surveyId;
+                var collection = db.get(baseName);
 
-            collection.count( {"user" : stringToCheck },function(err, count){ //sprawdzanie czy już istnieją w bazie odpowiedzi tego użytkownika
+                collection.count( {"user" : stringToCheck },function(err, count){ //sprawdzanie czy już istnieją w bazie odpowiedzi tego użytkownika
 
-                if( count == 1 ){
+                    if( count == 1 ){
 
-                    collection = db.get('surveycollection');
-                    var number = parseInt(surveyId);
-                    var questions = [];
-                    collection.find({ "surveyid" : number }, function(e, docs1){ //Getting questions from database
+                        collection = db.get('surveycollection');
+                        var number = parseInt(surveyId);
+                        var questions = [];
+                        collection.find({ "surveyid" : number }, function(e, docs1){ //Getting questions from database
 
 
-                        for (var j = 0; j < docs1[0].questions.length; j++) questions.push(docs1[0].questions[j].question);
-                        collection = db.get(baseName);
-                        
-                        collection.find( { user : stringToCheck  } ,  function(e,docs2) { //pobieranie odpowiedzi użytkownika z bazy
+                            for (var j = 0; j < docs1[0].questions.length; j++) questions.push(docs1[0].questions[j].question);
+                            collection = db.get(baseName);
+                            
+                            collection.find( { user : stringToCheck  } ,  function(e,docs2) { //pobieranie odpowiedzi użytkownika z bazy
 
-                            res.render('checkuseranswer', { 
-                                "answerlist" : docs2,
-                                "questionlist" : questions
-                            }); 
+                                res.render('checkuseranswer', { 
+                                    "answerlist" : docs2,
+                                    "questionlist" : questions,
+                                    "surveyname" : name
+                                }); 
+                            });
                         });
-                    });
-                }
-                else
-                {
-                    var collection = db.get('surveycollection');
-                    var number = parseInt(surveyId);
-                    collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
-                        var today = new Date();
-                        var startdate = new Date(docs[0].surveystart);
-                        var enddate = new Date(docs[0].surveyend2);
-                        if(today<startdate){
+                    }
+                    else
+                    {
+                        var collection = db.get('surveycollection');
+                        var number = parseInt(surveyId);
+                        collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
+                            var today = new Date();
+                            var startdate = new Date(docs[0].surveystart);
+                            var enddate = new Date(docs[0].surveyend2);
+                            if(today<startdate){
 
-                            var ecom = "It is too early for answer";
-                            res.render('errorpage', { "info" : ecom, "page" : "/profile" });
-                            return;
-                        }
-                        if(today>enddate){
+                                var ecom = "It is too early for answer";
+                                res.render('errorpage', { "info" : ecom, "page" : "/profile" });
+                                return;
+                            }
+                            if(today>enddate){
 
-                            var ecom = "It is too late for answer";
-                            res.render('errorpage', { "info" : ecom, "page" : "/profile" });
-                            return;
-                        }
+                                var ecom = "It is too late for answer";
+                                res.render('errorpage', { "info" : ecom, "page" : "/profile" });
+                                return;
+                            }
 
-                        res.render('fillingsurvey', {
-                        "result" : docs ,
-                        "user" : stringToCheck,
+                            res.render('fillingsurvey', {
+                                "result" : docs ,
+                                "user" : stringToCheck,
+                                "surveyname" : name
+                            });
                         });
-                    });
-                }
+                    }
+                });
+            }
+            else
+            {
+                var ecom = "Incorrect password!";
+                res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                return;
+            }
             });
-        }
-        else
-        {
-            var ecom = "Incorrect password!";
-            res.render('errorpage', { "error" : ecom, "page" : "/profile" });
-            return;
-        }
         });
 
 });
@@ -1031,7 +1030,7 @@ router.post('/answertobase', function(req,res){
             });
 
 
-        var ecom = "Thank you for you answers!";
+        var ecom = "Thank you for answering!";
         res.render('errorpage', { "success" : ecom, "page" : "/profile" });
         return;
 
@@ -1075,12 +1074,11 @@ router.get('/result', function(req, res){
     var resultid = req.query['survey'];
     if(resultid == undefined || resultid == "")
     {
-        var ecom = "No no. of survey";
+        var ecom = "There is no survey with this number";
         res.render('errorpage', { "error" : ecom, "page" : "/profile" });
         return;
     } 
     // Get our form values. These rely on the "name" attributes
-    //console.log(req.body.useremail);
     if(!req.session.user){    
         // If it worked, set the header so the address bar doesn't still say /adduser
         res.location("/");
@@ -1105,7 +1103,7 @@ router.get('/result', function(req, res){
 
             collection2.find({"surveyid" : parseInt(resultid)}, function(err,doc){
                 if(doc[0]==undefined || doc[0]==""){
-                    var ecom = "Wrong no. of survey";
+                    var ecom = "Wrong number of survey";
                     res.render('errorpage', { "error" : ecom, "page" : "/profile" });
                     return;
                 }
@@ -1125,7 +1123,7 @@ router.get('/result', function(req, res){
                     });
                 }
                 else {
-                    var ecom = "You dont have access to see result of this survey";
+                    var ecom = "You are not allowed to see results of this survey";
                     res.render('errorpage', { "info" : ecom, "page" : "/profile" });
                     return;
                 }   
@@ -1145,7 +1143,7 @@ router.post('/result', function(req, res){
     var resultid = req.body.yourresultid;
     if(resultid == undefined || resultid == "")
     {
-        var ecom = "No no. of survey";
+        var ecom = "There is no survey with this number";
         res.render('errorpage', { "error" : ecom, "page" : "/profile" });
         return;
     } 
@@ -1165,7 +1163,7 @@ router.post('/result', function(req, res){
         } 
         else{
             res.render('seeresults', {
-                    "result" : "You don't have access to see result of this survey - wrong password or no filled survey." 
+                    "result" : "You are not allowed to see results of this survey - wrong password or survey isn't filled yet." 
                 });
 
         }   
@@ -1347,7 +1345,6 @@ function result(req, res){
                                                 }
                                                 else n=0;  
                                                 srednia[i]/=countt;
-                                               // console.log(srednia[i]);
                                                 i++;
                                                 ile[i]= [];
                                                 srednia[i]=0;
