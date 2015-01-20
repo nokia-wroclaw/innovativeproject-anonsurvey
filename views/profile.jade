@@ -25,24 +25,29 @@ block content
                 h3 Your surveys:
                 each survey in surveys
                     div(id='field'+survey.surveyid,class="row")
-                        td.col-md-6
-                            h5 #{survey.surveyname}
-                        td.col-md-2 
-                            a.btn.btn-medium.btn-primary(href='/gotosurvey?id='+survey.surveyid) Fill or Check 
-                            | &nbsp
-                            if(survey.whoseeresult == "everywhoanswer" || survey.whoseeresult == "youandwhoanswer")
-                                //input.btn.btn-medium.btn-primary(type='button', name='emailsubmit', value='Every who answer', onclick='writepasswordtoresult('+survey.surveyid+')')
-                                a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Every who answer
-                            else if(survey.whoseeresult == "everybody")
-                                a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Everybody
-                            else if(survey.whoseeresult == "onlyyou")
-                            | &nbsp
-                        td.col-md-2
-                            button.btn.btn-medium.btn-warning(onclick='info('+survey.surveyid+')') Info
-                            | &nbsp
-                        td.col-md-2
-                            button.btn.btn-medium.btn-warning(onclick='forget('+survey.surveyid+')') Forget
-                            | &nbsp  
+                        table.table-condensed
+                            thead
+                                th
+                                th
+                                th
+                                th
+                                th
+                            tbody    
+                                td.col-md-8
+                                    h5 #{survey.surveyname}
+                                td.col-md-1 
+                                    a.btn.btn-medium.btn-success(href='/gotosurvey?id='+survey.surveyid) Fill or Check
+                                td.col-md-1 
+                                    if(survey.whoseeresult == "everywhoanswer" || survey.whoseeresult == "youandwhoanswer")
+                                        //input.btn.btn-medium.btn-primary(type='button', name='emailsubmit', value='Every who answer', onclick='writepasswordtoresult('+survey.surveyid+')')
+                                        a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Every who answer
+                                    else if(survey.whoseeresult == "everybody")
+                                        a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Everybody
+                                    else if(survey.whoseeresult == "onlyyou")
+                                td.col-md-1
+                                    button.btn.btn-medium.btn-warning(onclick='info('+survey.surveyid+')') Info
+                                td.col-md-1
+                                    button.btn.btn-medium.btn-default(onclick='forget('+survey.surveyid+')') Forget
                     div(id='infofield'+survey.surveyid, hidden="hidden")
                         | Survey start: #{new Date(survey.surveystart).toLocaleDateString()}
                         br
@@ -55,20 +60,24 @@ block content
                 h3 Surveys created by You:
                 each osurvey in surveysowner
                     div(id='ofield'+osurvey.surveyid,class="row")
-                        td.col-md-6
-                            h5 #{osurvey.surveyname}    
-                        td.col-md-2
-                            a.btn.btn-medium.btn-info(href='/result?survey='+osurvey.surveyid) Result
-                            | &nbsp                     
-                        td.col-md-2
-                            a.btn.btn-medium.btn-primary(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
-                            | &nbsp 
-                        td.col-md-2
-                            button.btn.btn-medium.btn-warning(onclick='oinfo('+osurvey.surveyid+')') Info
-                            | &nbsp 
-                        td.col-md-2
-                            button.btn.btn-medium.btn-warning(onclick='oforget('+osurvey.surveyid+')') Forget
-                            | &nbsp 
+                        table.table-condensed
+                            thead
+                                th
+                                th
+                                th
+                                th
+                                th
+                            tbody    
+                                td.col-md-6
+                                    h5 #{osurvey.surveyname}    
+                                td.col-md-2
+                                    a.btn.btn-medium.btn-info(href='/result?survey='+osurvey.surveyid) Result                    
+                                td.col-md-2
+                                    a.btn.btn-medium.btn-primary(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
+                                td.col-md-1
+                                    button.btn.btn-medium.btn-warning(onclick='oinfo('+osurvey.surveyid+')') Info     
+                                td.col-md-1
+                                    button.btn.btn-medium.btn-default(onclick='oforget('+osurvey.surveyid+')') Forget     
                     div(id='oinfofield'+osurvey.surveyid, hidden="hidden")
                         | Survey start: #{new Date(osurvey.surveystart).toLocaleDateString()}
                         br

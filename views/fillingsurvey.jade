@@ -1,7 +1,21 @@
 extends layout
 block content
+	div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+		div.container
+			button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+			a.navbar-brand
+				| Annonymous Survey App
+			div.nav.navbar-nav.navbar-right    
+				li
+					button.btn.btn-primary.navbar-btn(type="submit" name="Sumbit" value='Done!' form="answer") Sumbit your answers	
+		div.collapse.navbar-collapse
 	div(align='center', class='jumbotron')
 		h2 Please answer following questions:
+		div(align='center', class='row')
+			div.col-md-6(align='center')
+				h2 Questions
+			div.col-md-6(align='center')
+				h2 Answers
 		div#form
 			hr
 			form#answer(method='post', action='/answertobase')
@@ -17,61 +31,73 @@ block content
 							each q in r.questions
 								- var question = "question" + q.questionnumber.toString();
 								hr
-								div(id=question)
+								div(id=question, class='row')
 									l1
 										input(type='hidden' name = question value = q.question form="answer")
 
 										if q.answertype == "radio"
-											h1 #{q.question}
-											- var ansNumber = "ans" + q.questionnumber.toString();
-												- for (var n=0; n < q.answercount; n++)
-													- var answ = q.availbeanswers[n]
-													input(type="radio" name = ansNumber value = answ form="answer" checked)
-													label=answ
-													br
-												- if(q.otheranswer == "true")
-													- var textFieldName = ansNumber + "User"
-													label Or type your own answer:
-													br
-													input(type="text" name = textFieldName form="answer" placeHolder="Your answer" oninput = 'disableRadioButtons("#{ansNumber}")')
+											div.col-md-6(align='left')
+												h2 #{q.question}
+											div.col-md-6(align='center')
+												- var ansNumber = "ans" + q.questionnumber.toString();
+													- for (var n=0; n < q.answercount; n++)
+														- var answ = q.availbeanswers[n]
+														input(type="radio" name = ansNumber value = answ form="answer" checked)
+														label=answ
+														br
+													- if(q.otheranswer == "true")
+														- var textFieldName = ansNumber + "User"
+														label Or type your own answer:
+														br
+														input(type="text" name = textFieldName form="answer" placeHolder="Your answer" oninput = 'disableRadioButtons("#{ansNumber}")')
 
 										if q.answertype == "checkbox"
-											h1 #{q.question}
-											- var ansNumber = "ans" + q.questionnumber.toString();
-												- for (var n=0; n < q.answercount; n++)
-													- var answ = q.availbeanswers[n]
-													input(type="checkbox" name=ansNumber value=answ form="answer")
-													label=answ
-													br
-												- if(q.otheranswer == "true")
-													- var divId = "question" + q.questionnumber.toString();
-														button( onclick = 'addans("#{divId}","#{ansNumber}"); this.i++;' type='button', placeHolder="Your answer") Add your answers!
-
+											div.col-md-6(align='left')
+												h2 #{q.question}
+											div.col-md-6(align='center')		
+												- var ansNumber = "ans" + q.questionnumber.toString();
+													- for (var n=0; n < q.answercount; n++)
+														- var answ = q.availbeanswers[n]
+														input(type="checkbox" name=ansNumber value=answ form="answer")
+														label=answ
+														br
+													- if(q.otheranswer == "true")
+														- var divId = "question" + q.questionnumber.toString();
+															button( onclick = 'addans("#{divId}","#{ansNumber}"); this.i++;' type='button', placeHolder="Your answer") Add your answers!
+										
 										if q.answertype == "text"
-											h1 #{q.question}
-											- var ansNumber = "ans" + q.questionnumber.toString();
-												input(type="text" name=ansNumber form="answer" required )
+											div.col-md-6(align='left')
+												h2 #{q.question}
+											div.col-md-6(align='center')		
+												- var ansNumber = "ans" + q.questionnumber.toString();
+													input(type="text" name=ansNumber form="answer" required )
 
 										if q.answertype == "range"
-											h1 #{q.question}
-											- var ansNumber = "ans" + q.questionnumber.toString();
-											- var outputName = ansNumber + "Out";
-												label Min = #{q.availbeanswers[0]}, Max = #{q.availbeanswers[1]}, Step = #{q.availbeanswers[2]}
-												input(type="range" id = ansNumber value = q.availbeanswers[0] name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] step = q.availbeanswers[2]  form="answer" oninput='changeOutput("#{ansNumber}")' ) 
-												output(name = outputName for = ansNumber value = q.availbeanswers[0])
+											div.col-md-6(align='left')
+												h2 #{q.question}
+											div.col-md-6(align='center')		
+												- var ansNumber = "ans" + q.questionnumber.toString();
+												- var outputName = ansNumber + "Out";
+													label Min = #{q.availbeanswers[0]}, Max = #{q.availbeanswers[1]}, Step = #{q.availbeanswers[2]}
+													input(type="range" id = ansNumber value = q.availbeanswers[0] name=ansNumber min=q.availbeanswers[0] max=q.availbeanswers[1] step = q.availbeanswers[2]  form="answer" oninput='changeOutput("#{ansNumber}")' ) 
+													output(name = outputName for = ansNumber value = q.availbeanswers[0])
 
 										if q.answertype == "date"
-											h1 #{q.question}
-											- var ansNumber = "ans" + q.questionnumber.toString();
+											div.col-md-6(align='left')
+												h2 #{q.question}
+											div.col-md-6(align='center')		
+												- var ansNumber = "ans" + q.questionnumber.toString();
 												input(type="date" name=ansNumber required )
 
 										if q.answertype == "textarea"
-											h1 #{q.question}
+											div.col-md-6(align='left')
+												h2 #{q.question}
 											- var ansNumber = "ans" + q.questionnumber.toString();
-											textarea(rows="4" cols="50" name=ansNumber form="answer" required )
+											div.col-md-6(align='center')											
+												textarea(rows="4" cols="50" name=ansNumber form="answer" required )
 						br
 						br
-						input(type="submit" name="Sumbit" value='Done!' form="answer")
+						
 	script(type='text/javascript').
 		function addans(question, name){
 

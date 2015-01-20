@@ -3,8 +3,8 @@ extends layout
 block content
     div(align='center')
       h1 Survey Creator 
-      h2 Write e-mails can answer of your survey! step 2
-      h2 Survey ID: #{getsurveyid}
+      h3 Please add emails of people you want to invite to this survey.
+      h3 Survey ID: #{getsurveyid}
     div(align='center', ng-app='ng-app')
       hr
       textarea#emails(rows='10', cols='50', name='emails')
