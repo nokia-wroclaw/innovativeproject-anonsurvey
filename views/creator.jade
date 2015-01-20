@@ -10,13 +10,15 @@ block content
                         li
                           button.btn.btn-success.navbar-btn.navbar-inverse(onclick='addquest()', type='button') Add question     
                         li
-                          button.btn.btn-primary.navbar-btn.navbar-inverse(type="submit", form="creator", value="addsurvey", onclick="return valid()") Survey complete
+                          button.btn.btn-primary.navbar-btn.navbar-inverse(type="submit", form="creator", value="addsurvey", onclick="return validall()") Survey complete
                         li
                           a(href="/profile")= "Back"
           div.collapse.navbar-collapse
     div(align='center')
       h1 Survey Creator 
       h2 This is the place where you can create your survey!!
+      .container(ng-app='ng-app')
+        div#errorinfo(align='center')
       div#form(align='center', class = 'panel')
         hr
         form#creator(method='post', action='/addsurvey')
@@ -56,26 +58,33 @@ block content
             |  Only you
           div.col-md-4#col1(align='center', class = 'jumbotron')    
           div.col-md-4#col2(align='center', class = 'jumbotron')    
-          div.col-md-4#col3(align='center', class = 'jumbotron') 
+          div.col-md-4#col3(align='center', class = 'jumbotron')
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js").
+    script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js").
     script(type='text/javascript').
       var countquest = 0;
       var countanswer = 0;
-      var noquest = 0;         
+      var noquest = 0; 
+      var areanswers = [];        
       function addquest(){
         var queststart = '<label>Question:</label><br>';
         var questname = '<input type="text" ng-model="yourQuestion" size="40" name="question['+countquest.toString()+']" required placeholder="Type your question here"><br><br>';
-        var info = "Choose option of answer:<br>";
-        var list = '<select onchange="addanswer(this.value,'+countquest.toString()+')" required pattern="[a-z]+"> \
-        <option value=""></option> \
-        <option value="text">Text</option> \
-        <option value="textarea">Long Text</option> \
-        <option value="radio">Radio</option> \
-        <option value="checkbox">Checkbox</option> \
-        <option value="range">Range</option> \
-        <option value="date">Date</option> \
-        </select>';
+        var info = "";
+        var list = '<div class="btn-group dropup">\
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">\
+        Choose option of answer <span class="caret"></span>\
+        </button>\
+          <ul class="dropdown-menu" role="menu">\
+            <li><a href="javascript:addanswer(1,'+countquest.toString()+')">Radio</a></li>\
+            <li><a href="javascript:addanswer(2,'+countquest.toString()+')">Checkbox</a></li>\
+            <li><a href="javascript:addanswer(3,'+countquest.toString()+')">Text</a></li>\
+            <li><a href="javascript:addanswer(4,'+countquest.toString()+')">Long Text</a></li>\
+            <li><a href="javascript:addanswer(5,'+countquest.toString()+')">Date</a></li>\
+            <li><a href="javascript:addanswer(6,'+countquest.toString()+')">Range</a></li>\
+          </ul>\
+          </div>';
         var questno = "quest"+countquest.toString();
-        var questdelete = '<a href="javascript:deletequest('+questno+')">Delete this question</a>';
+        var questdelete = '<br><a class="btn btn-default btn-sm" href="javascript:deletequest('+questno+')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Delete this question</a>';
         var newquest = document.createElement("div");
         newquest.setAttribute("id", questno);
         var endquestno = "endquest"+countquest;
@@ -100,48 +109,58 @@ block content
         noquest++;
         if(noquest==1) valid();
       }
+      function g(w){
+        alert(w);
+      }
       function addanswer(w,no){
         var otherans = "";
         var answer = "";
         var answertype = "";
         var button = "";
-        if(w=="radio") {
-          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
+        areanswers[no]=true;
+        if(w==1) {
+          otherans = '<label>Radio:</label><br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
           <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
           answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
-          button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button class="btn btn-default"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>';
+          button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add answer</button>';
         }
-        else if(w=="checkbox") {
-          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
+        else if(w==2) {
+          otherans = '<label>Checkbox:</label><br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
           <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
           answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
-          button = '<button onclick=addnextanswer("checkbox",'+no.toString()+') type="button"  class="btn btn-default"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>';                
+          button = '<button onclick=addnextanswer("checkbox",'+no.toString()+') type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add answer</button>';                
         }
         //'<button onclick=addnextanswer("checkbox",'+no.toString()+') type=button>Add next answer</button>';  
-        else if(w=="text") {
-          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+        else if(w==3) {
+          otherans = '<label>Text:</label><br>\
+          <input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Example" value="Here goes the answer" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="text">';  
         }
-        else if(w=="textarea") {
-          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+        else if(w==4) {
+          otherans = '<label>Long Text:</label><br>\
+          <input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<textarea rows="4" cols="30" name="answer['+no.toString()+']" form="creator" readonly>Here goes very long answer</textarea><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="textarea">';  
         }
-        else if(w=="date") {
-          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+        else if(w==5) {
+          otherans = '<label>Date:</label><br>\
+          <input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<input type="date" name="answer['+no.toString()+']" placeholder="Answer" value="Example" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="date">';
         }
-        else if(w=="range"){
-          otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          answer = '<input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Min value">\
-          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Max value">\
-          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Step"><br>';
+        else if(w==6){
+          otherans = '<label>Range:</label><br>\
+          <input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
+          answer = '<input id="minrange'+no.toString()+'" onchange="validrange('+no.toString()+')" type="text" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Min value">\
+          <input id="maxrange'+no.toString()+'" onchange="validrange('+no.toString()+')" type="text" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Max value">\
+          <input id="steprange'+no.toString()+'" onchange="validrange('+no.toString()+')" type="text" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Step"><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="range">';  
         }
         var answerno = "answer"+no.toString();
@@ -168,7 +187,7 @@ block content
           <br>';
         }
         var answerno = "answ"+countanswer.toString();
-        var answerdelete = '<a href="javascript:deletequest('+answerno+')">Delete this answer</a>';
+        var answerdelete = '<a class="btn btn-default btn-sm" href="javascript:deletequest('+answerno+')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Delete this answer</a>';
         var newtype = document.createElement("div");
         newtype.setAttribute("id", answerno);
         newtype.innerHTML = answer+answerdelete;
@@ -187,7 +206,7 @@ block content
       }
       function valid(){
         if(noquest==0){
-          div = document.getElementById("errorinfo");
+          var div = document.getElementById("errorinfo");
           div.removeAttribute("hidden");
           div.setAttribute("class", "alert alert-danger");
           div.setAttribute("role","alert");
@@ -195,9 +214,55 @@ block content
           return false;
         }
         else{
-          div = document.getElementById("errorinfo");
+          var div = document.getElementById("errorinfo");
           div.setAttribute("hidden","hidden");
           return true;
         }
       }
+      function validrange(no){
+        var minr = document.getElementById("minrange"+no.toString());
+        var maxr = document.getElementById("maxrange"+no.toString());
+        var stepr = document.getElementById("steprange"+no.toString());
+        //alert(minr.value);
+        if(Number(maxr.value)<Number(minr.value)){
+          var div = document.getElementById("errorinfo");
+          div.removeAttribute("hidden");
+          div.setAttribute("class", "alert alert-danger");
+          div.setAttribute("role","alert");
+          div.innerHTML = "Maximum is less than minimum in range!";
+          return false;
+        }
+        var q = (maxr.value-minr.value)/stepr.value;
+        if(q!=parseInt(q)){
+          var div = document.getElementById("errorinfo");
+          div.removeAttribute("hidden");
+          div.setAttribute("class", "alert alert-danger");
+          div.setAttribute("role","alert");
+          div.innerHTML = "Wrong step in range!";
+          return false;
+        }
+        var div = document.getElementById("errorinfo");
+        div.setAttribute("hidden","hidden");
+        return true;
+      }
+      function validall(){
+        var x;
+        var y;
+        if(areanswers.length!=countquest){
+          var div = document.getElementById("errorinfo");
+          div.removeAttribute("hidden");
+          div.setAttribute("class", "alert alert-danger");
+          div.setAttribute("role","alert");
+          div.innerHTML = "Question without selected type of answer!";
+          return false;
+        }
+        for(var i=0; i<countquest; i++){
+          x = document.getElementById("minrange"+i.toString());
+          if(x!=null){
+            return validrange(i);
+          }
+        }
+        return valid();
+      } 
+
 

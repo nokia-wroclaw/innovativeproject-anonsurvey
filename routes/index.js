@@ -166,8 +166,10 @@ router.post('/forgotpasswordsendemail', function(req, res) {
             collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
                 
                 var hashpass = String(CryptoJS.SHA3(doc[0].userpassword+doc[0].useremail)).substring(0, 20);
-                var link = "localhost:3000/forgotpassword2?email="+youremail+"&id="+hashpass;
+
+                var link = "https://magic-survey-app.herokuapp.com/forgotpassword2?email="+youremail+"&id="+hashpass;
                 var text = "In order to set a new password click this link:\n"+link+"\nBye";
+
                 sendmail(youremail,"Magic Survey App - new password", text);
 
                 res.render('forgotpassword', { 

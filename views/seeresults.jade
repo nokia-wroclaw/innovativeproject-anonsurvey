@@ -3,10 +3,13 @@ extends layout
 block content
 	div(align='center', class='jumbotron')
 		if verifypass
+			h2 Enter your password in order to see results
 			form#form1(action='/result', method='post')
 				input(type='hidden', name='yourresultid', value=verifypass)
 				input(type='password', name='yourpassword', placeholder='Enter you password here')
 				button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
+				| 
+				a.btn.btn-medium.btn-warning(href="/profile")= "Back"
 		if results
 			each r in results
 				div.col-md-3(align='left')
@@ -55,14 +58,15 @@ block content
 										div(id=q.questionnumber)
 											div(id=(q.questionnumber+'list'))
 										div(id=q.questionnumber+'chart')
-							hr(style='color:#000000')									
+							hr(style='color:#000000')
+			br
+			br
+			a.btn.btn-medium.btn-info(href="/profile")= "Back"									
 		if result
 			.alert.alert-danger(role='alert')= result							
-		br
-		br
-		a.btn.btn-medium.btn-info(href="/profile")= "Back"
-		br
-		br
+			br
+			br
+			a.btn.btn-medium.btn-info(href="/profile")= "Back"
 		script(type='text/javascript', src='https://www.google.com/jsapi').
 		script(type='text/javascript').
 			var number = null;
