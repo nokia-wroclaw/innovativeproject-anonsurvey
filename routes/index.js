@@ -113,7 +113,9 @@ function adduserFunction(req, res) {
                     }, function (err, doc) {
                         if (err) {
                             // If it failed, return error
-                            res.send("There was a problem adding the information to the database.");
+                            var ecom = "There was a problem adding the information to the database.";
+                            res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                            return;
                         }
                         else {
                             // If it worked, set the header so the address bar doesn't still say /adduser
@@ -147,7 +149,8 @@ router.post('/forgotpasswordsendemail', function(req, res) {
     var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
 
     if(!youremail.match(regMail)){
-        res.send("Incorrect email");
+        var ecom = "Incorect email";
+        res.render('errorpage', { "error" : ecom, "page" : "/" });
         return;
     }
 
@@ -155,7 +158,9 @@ router.post('/forgotpasswordsendemail', function(req, res) {
     var collection = db.get('usercollection');
     collection.count({"useremail" : youremail},function(err, count){
         if(count==0){
-            res.send("There is not e-mail in our database - You can register");
+            var ecom = " There is not e-mail in our database - You can register";
+            res.render('errorpage', { "error" : ecom, "page" : "/" });
+            return;
         }
         else{
             collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
@@ -184,7 +189,9 @@ router.get('/forgotpassword2', function(req, res) {
     var collection = db.get('usercollection');
     collection.count({"useremail" : youremail},function(err, count){
         if(count==0){
-            res.send("There is not e-mail in our database - You can register");
+            var ecom = "There is not e-mail in our database - You can register";
+            res.render('errorpage', { "error" : ecom, "page" : "/" });
+            return;            
         }
         else{
             collection.find({"useremail" : youremail, "userstatus" : {$in : ["A","N"]}},function(err, doc){
@@ -197,7 +204,9 @@ router.get('/forgotpassword2', function(req, res) {
                     });    
                 }
                 else{
-                    res.send("Something is wrong");
+                    var ecom = "Something is wrong";
+                    res.render('errorpage', { "error" : ecom, "page" : "/" });
+                    return;
                 }
             });
         }
@@ -217,7 +226,8 @@ router.post('/setnewpassword', function(req, res) {
     var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
 
     if (!((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (!userPassword=="") && (userPassword==userRepeatPassword))){
-        res.send("Incorrect data");
+        var ecom = "Incorrect data";
+        res.render('errorpage', { "error" : ecom, "page" : "/" });
         return;
     }
 
@@ -241,7 +251,9 @@ router.post('/setnewpassword', function(req, res) {
             }, function (err, doc) {
                 if (err) {
                     // If it failed, return error
-                    res.send("There was a problem adding the information to the database.");
+                    var ecom = "There was a problem adding the information to the database";
+                    res.render('errorpage', { "error" : ecom, "page" : "/" });
+                    return;
                 }
                 else {
                     // If it worked, set the header so the address bar doesn't still say /adduser
@@ -320,7 +332,7 @@ function profileFunction(req,res){
                     var date = new Date(docs[0].userregdate)
                 }
                 var collection2 = db.get('usersurveycollection');
-                collection2.find({"email" : userEmail, "adddate" : { $gt : date}},function(e,docs2) {
+                collection2.find({"email" : userEmail,"status" : "active","adddate" : { $gt : date}},function(e,docs2) {
                     var list = [];
                     for (i=0; i<docs2.length; i++) {
                 
@@ -331,7 +343,7 @@ function profileFunction(req,res){
 
                     collection3.find({"surveyid" : {$in : list}},function(e, docs3) {
 
-                        collection3.find({"surveyowner" : userEmail}, function(e, docs4){
+                        collection3.find({"surveyowner" : userEmail,"surveystatus" : "active"}, function(e, docs4){
 
                             res.render('profile', {
                             title: 'Your Profile',
@@ -359,7 +371,21 @@ router.post('/profile', profileFunction);
 
 /* GET Creator page. */
 router.get('/creator', function(req, res) {
-    res.render('creator', { title: 'Survey Creator' });
+    var x = new Date();
+    var today = x.getFullYear().toString();
+    if(x.getMonth()>9){
+        today = today+"-"+(x.getMonth()+1).toString();
+    }
+    else{
+        today = today+"-0"+(x.getMonth()+1).toString();
+    }
+        if(x.getDate()>9){
+        today = today+"-"+x.getDate().toString();
+    }
+    else{
+        today = today+"-0"+x.getDate().toString();
+    }
+    res.render('creator', { title: 'Survey Creator', todaydate : today });
 });
 
 /* GET Change Password page. */
@@ -398,7 +424,9 @@ function changehash(req,res,email,oldpass,newpass){
                 });
             }
             else{
-                res.send("Password is changed");
+                var ecom = "Password is changed";
+                res.render('errorpage', { "success" : ecom, "page" : "/" });
+                return;
             }
         }
         loop2();
@@ -420,12 +448,16 @@ router.post('/changepassword2', function(req, res) {
                 changepassword(req,res,email,oldpass,newpass,changehash);
             }
             else{
-                res.send("Incorret current password");
+                var ecom = "Incorret current password";
+                res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                return;
             }
         });
     }
     else {
-        res.send("Incorret new password");
+        var ecom = "Incorret new password";
+        res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+        return;
     }
     //res.location("/profile");
     //res.redirect("/profile");
@@ -437,7 +469,8 @@ router.get('/gotosurvey', function(req, res){
     var surveyid = req.query['id'];
     if(surveyid == undefined || surveyid == "")
     {
-        res.send("No no. of survey");
+        var ecom = "No no. of survey";
+        res.render('errorpage', { "error" : ecom, "page" : "/profile" });
         return;
     } 
     var db = req.db;
@@ -462,9 +495,18 @@ router.get('/gotosurvey', function(req, res){
             var collection2 = db.get('surveycollection');
 
             collection2.find({"surveyid" : parseInt(surveyid)}, function(err,doc){
-
+                
+                if(doc[0]==undefined || doc[0]==""){
+                    var ecom = "Wrong no. of survey";
+                    res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                    return;
+                }
                 var collection3 = db.get('usersurveycollection');
-
+                if(new Date(doc[0].surveystart)>new Date()){
+                    var ecom = "It is too early for answer";
+                    res.render('errorpage', { "info" : ecom, "page" : "/profile" });
+                    return;
+                }
                 if(doc[0].whoanswer == "invited"){
 
                     collection3.find({"surveyid" : surveyid, "email" : userEmail}, function(err,find3){
@@ -480,7 +522,9 @@ router.get('/gotosurvey', function(req, res){
                                         
                                 }
                                 else
-                                    res.send("You cant fill or check this survey - we dont know you filled this survey 1");
+                                    var ecom = "You cant fill or check this survey - we dont know you filled this survey (1)";
+                                    res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                                    return;
                             }
                             else{
                                 res.render('gotosurvey', {
@@ -490,7 +534,9 @@ router.get('/gotosurvey', function(req, res){
                             }
                         }
                         else{
-                            res.send("You are not invited to fill this survey");
+                            var ecom = "You are not invited to fill this survey";
+                            res.render('errorpage', { "info" : ecom, "page" : "/profile" });
+                            return;                            
                         }
 
                     });
@@ -508,7 +554,9 @@ router.get('/gotosurvey', function(req, res){
                                 }, function(err,doc3){
                                     if (err) {
                                         // If it failed, return error
-                                        res.send("There was a problem adding the information to the database.");
+                                        var ecom = "There was a problem adding the information to the database.";
+                                        res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                                        return;
                                     }
                                     else {
                                         res.render('gotosurvey', {
@@ -534,12 +582,16 @@ router.get('/gotosurvey', function(req, res){
                                             });
                                         }
                                         else{
-                                            res.send("You cant fill or check this survey - we dont know you filled this survey 2");
+                                            var ecom = "You cant fill or check this survey - we dont know you filled this survey (2)";
+                                            res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                                            return;
                                         }
                                     });
                                 }
                                 else{
-                                    res.send("You cant fill or check this survey - we dont know you filled this survey 3");
+                                    var ecom = "You cant fill or check this survey - we dont know you filled this survey (3)";
+                                    res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                                    return;
                                 }      
                             }
                         });
@@ -548,7 +600,8 @@ router.get('/gotosurvey', function(req, res){
             });
         }
         else {
-            res.send("Is problem with you");
+            var ecom = "Is problem with you";
+            res.render('errorpage', { "info" : ecom, "page" : "/profile" });
             return;
         }
 
@@ -644,7 +697,9 @@ router.post('/addsurvey', function(req, res) {
             }, function (err, doc) {
                 if (err) {
                     // If it failed, return error
-                    res.send("There was a problem adding the information to the database.");
+                    var ecom = "There was a problem adding the information to the database.";
+                    res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                    return;
                 }
                 else {
                     // If it worked, set the header so the address bar doesn't still say /adduser
@@ -711,6 +766,7 @@ router.post('/adduserstosurvey', function(req, res) {
         startdate = new Date(startdate);
     }
     var emails = req.body.email;
+    console.log(emails);
     if(emails == undefined || emails == ""){
         res.render('adduserstosurvey', {title: 'Survey made'});
         return;
@@ -723,7 +779,9 @@ router.post('/adduserstosurvey', function(req, res) {
     var collection = db.get('usersurveycollection');
     var collection2 = db.get('usercollection');
     var to = [];
-    for (i in emails) {
+    var i = 0;
+    function adduserstosurvey(){
+        if(i<emails.length)
         collection.count({"surveyid" : surveyid, "email" : emails[i]}, function(err,count3){
             if(count3==0){
                 collection.insert({
@@ -734,12 +792,17 @@ router.post('/adduserstosurvey', function(req, res) {
                 }, function(err,doc3){
                     if (err) {
                         // If it failed, return error
-                        res.send("There was a problem adding the information to the database.");
-                    }              
+                        var ecom = "There was a problem adding the information to the database.";
+                        res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                        return;
+                    }
+                    i++;
+                    adduserstosurvey();              
                 });
             }
         });
     }
+    adduserstosurvey();
     var j = 0;
     function loop(){
         if(j<emails.length){
@@ -756,7 +819,7 @@ router.post('/adduserstosurvey', function(req, res) {
             else{
                 //rejestrcyjny
                 var to = emails[j].toString();
-                //console.log("reg "+to);
+                console.log("reg "+to);
                 var sub = "Magic Survey App - You have a invitation to fill survey";
                 var text = "Register and then open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
                 sendmail(to, sub, text);
@@ -767,8 +830,42 @@ router.post('/adduserstosurvey', function(req, res) {
         }
     }
     loop();
+    var ecom = "Everything is ok";
+    res.render('errorpage', { "success" : ecom, "page" : "/profile" });
+});
 
-    res.render('adduserstosurvey', {title: 'Survey made'});
+router.post('/unactivesurvey', function(req,res){
+    var surveyID = req.body.surveyid;
+    var userEmail = req.cookies.useremail;
+    console.log("To jest to: "+surveyID+" "+userEmail);
+    var db = req.db;
+    var collection = db.get('usersurveycollection');
+    collection.update({"surveyid" : surveyID, "email" : userEmail}, {$set: {"status": "unactive"}},function(err, count, status){
+        if (err){
+            // If it failed, return error
+            res.send("There was a problem adding the information to the database.");
+        }
+        else{
+            res.send("Survey no. "+surveyID+" is forgotten");
+        }
+    });
+});
+
+router.post('/ounactivesurvey', function(req,res){
+    var surveyID = req.body.surveyid;
+    var userEmail = req.cookies.useremail;
+    console.log("o To jest to: "+surveyID+" "+userEmail);
+    var db = req.db;
+    var collection = db.get('surveycollection');
+    collection.update({"surveyid" : parseInt(surveyID), "surveyowner" : userEmail}, {$set: {"surveystatus": "unactive"}},function(err, count, status){
+        if (err){
+            // If it failed, return error
+            res.send("There was a problem adding the information to the database.");
+        }
+        else{
+            res.send("Survey no. "+surveyID+" is forgotten");
+        }
+    });
 });
 
 router.post('/fillorcheck', function(req,res){
@@ -801,6 +898,7 @@ router.post('/fillorcheck', function(req,res){
                     var questions = [];
                     collection.find({ "surveyid" : number }, function(e, docs1){ //Getting questions from database
 
+
                         for (var j = 0; j < docs1[0].questions.length; j++) questions.push(docs1[0].questions[j].question);
                         collection = db.get(baseName);
                         
@@ -811,6 +909,9 @@ router.post('/fillorcheck', function(req,res){
                                 "questionlist" : questions
                             }); 
                         });
+
+
+
                     });
 
                 }
@@ -819,6 +920,22 @@ router.post('/fillorcheck', function(req,res){
                     var collection = db.get('surveycollection');
                     var number = parseInt(surveyId);
                     collection.find({ "surveyid" : number }, function(e,docs) { //pobieramy pytania do żądanej ankiety
+                        var today = new Date();
+                        var startdate = new Date(docs[0].surveystart);
+                        var enddate = new Date(docs[0].surveyend2);
+                        if(today<startdate){
+
+                            var ecom = "It is too early for answer";
+                            res.render('errorpage', { "info" : ecom, "page" : "/profile" });
+                            return;
+                        }
+                        if(today>enddate){
+
+                            var ecom = "It is too late for answer";
+                            res.render('errorpage', { "info" : ecom, "page" : "/profile" });
+                            return;
+                        }
+
                         res.render('fillingsurvey', {
                         "result" : docs ,
                         "user" : stringToCheck,
@@ -829,7 +946,9 @@ router.post('/fillorcheck', function(req,res){
         }
         else
         {
-            res.send("Incorrect password!");
+            var ecom = "Incorrect password!";
+            res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+            return;
         }
         });
 
@@ -909,7 +1028,9 @@ router.post('/answertobase', function(req,res){
                 "questionsamount" : questionsamount
             }, function (err, doc) {
                 if (err) {
-                    res.send("There was a problem adding the information to the database.");
+                    var ecom = "There was a problem adding the information to the database.";
+                    res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                    return;
                 }
             });
      // Trzeba dodać jakieś powiadomienie w stylu: Dziękujemy za wypełenie ankiety
@@ -956,7 +1077,8 @@ router.get('/result', function(req, res){
     var resultid = req.query['survey'];
     if(resultid == undefined || resultid == "")
     {
-        res.send("No no. of survey");
+        var ecom = "No no. of survey";
+        res.render('errorpage', { "error" : ecom, "page" : "/profile" });
         return;
     } 
     // Get our form values. These rely on the "name" attributes
@@ -984,7 +1106,11 @@ router.get('/result', function(req, res){
             var collection2 = db.get('surveycollection');
 
             collection2.find({"surveyid" : parseInt(resultid)}, function(err,doc){
-
+                if(doc[0]==undefined || doc[0]==""){
+                    var ecom = "Wrong no. of survey";
+                    res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+                    return;
+                }
                 //owner of survey
                 if((doc[0].whoseeresult == "onlyyou" || doc[0].whoseeresult == "youandwhoanswer") && doc[0].surveyowner == userEmail){
 
@@ -1001,13 +1127,15 @@ router.get('/result', function(req, res){
                     });
                 }
                 else {
-                    res.send("You dont have access to see result of this survey");
+                    var ecom = "You dont have access to see result of this survey";
+                    res.render('errorpage', { "info" : ecom, "page" : "/profile" });
                     return;
                 }   
             });
         }
         else {
-            res.send("Is problem with you");
+            var ecom = "Is problem with you";
+            res.render('errorpage', { "info" : ecom, "page" : "/profile" });
             return;
         }
 
@@ -1019,7 +1147,8 @@ router.post('/result', function(req, res){
     var resultid = req.body.yourresultid;
     if(resultid == undefined || resultid == "")
     {
-        res.send("No no. of survey");
+        var ecom = "No no. of survey";
+        res.render('errorpage', { "error" : ecom, "page" : "/profile" });
         return;
     } 
     var userPassword = req.body.yourpassword;

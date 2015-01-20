@@ -1,0 +1,12 @@
+extends layout
+
+block content
+	.container(ng-app='ng-app')
+		div(align="center")
+			if info
+				.alert.alert-info(role='alert')= info
+			if error
+				.alert.alert-danger(role='alert')= error
+			if success
+				.alert.alert-success(role='alert')= success
+			a.btn.btn-medium.btn-primary(href=page)= "Back"   

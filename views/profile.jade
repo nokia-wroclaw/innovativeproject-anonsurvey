@@ -23,9 +23,11 @@ block content
         div.row
             div.col-md-6(align='left')
                 h3 Your surveys:
-                ul
                 each survey in surveys
-                        li #{survey.surveyname} 
+                    div(id='field'+survey.surveyid,class="row")
+                        td.col-md-6
+                            h5 #{survey.surveyname}
+                        td.col-md-2 
                             a.btn.btn-medium.btn-primary(href='/gotosurvey?id='+survey.surveyid) Fill or Check 
                             | &nbsp
                             if(survey.whoseeresult == "everywhoanswer" || survey.whoseeresult == "youandwhoanswer")
@@ -33,29 +35,97 @@ block content
                                 a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Every who answer
                             else if(survey.whoseeresult == "everybody")
                                 a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Everybody
-                            else if(survey.whoseeresult == "onlyyou") 
-                            div(class='passwordfield'+survey.surveyid)
-                            p
+                            else if(survey.whoseeresult == "onlyyou")
+                            | &nbsp
+                        td.col-md-2
+                            button.btn.btn-medium.btn-warning(onclick='info('+survey.surveyid+')') Info
+                            | &nbsp
+                        td.col-md-2
+                            button.btn.btn-medium.btn-warning(onclick='forget('+survey.surveyid+')') Forget
+                            | &nbsp  
+                    div(id='infofield'+survey.surveyid, hidden="hidden")
+                        | Survey start: #{new Date(survey.surveystart).toLocaleDateString()}
+                        br
+                        | Survey end: #{new Date(survey.surveyend2).toLocaleDateString()} 
+                        br
+                        | Survey owner: #{survey.surveyowner}
+                        br 
+                        p    
             div.col-md-6(align='left')            
                 h3 Surveys created by You:
-                    br
-                    each osurvey in surveysowner
-                        table.auto
-                            thead
-                                th                     
-                                th
-                                th
-                            tbody
-                                    td.col-md-9
-                                        h5 #{osurvey.surveyname}
-                                    |    
-                                    td.col-md-1
-                                        a.btn.btn-medium.btn-info.btn-sm(href='/result?survey='+osurvey.surveyid) Result
-                                    |                     
-                                    td.col-md-2
-                                        a.btn.btn-medium.btn-primary.btn-sm(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
-                                br  
+                each osurvey in surveysowner
+                    div(id='ofield'+osurvey.surveyid,class="row")
+                        td.col-md-6
+                            h5 #{osurvey.surveyname}    
+                        td.col-md-2
+                            a.btn.btn-medium.btn-info(href='/result?survey='+osurvey.surveyid) Result
+                            | &nbsp                     
+                        td.col-md-2
+                            a.btn.btn-medium.btn-primary(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
+                            | &nbsp 
+                        td.col-md-2
+                            button.btn.btn-medium.btn-warning(onclick='oinfo('+osurvey.surveyid+')') Info
+                            | &nbsp 
+                        td.col-md-2
+                            button.btn.btn-medium.btn-warning(onclick='oforget('+osurvey.surveyid+')') Forget
+                            | &nbsp 
+                    div(id='oinfofield'+osurvey.surveyid, hidden="hidden")
+                        | Survey start: #{new Date(osurvey.surveystart).toLocaleDateString()}
+                        br
+                        | Survey end: #{new Date(osurvey.surveyend2).toLocaleDateString()} 
+                        br
+                        p  
     script(type='text/javascript').
+        function info(x){
+            var info = document.getElementById("infofield"+x);
+            var v = info.getAttribute("hidden");
+            //alert(x+" "+v+" "+info);
+            if(v=="hidden"){
+                info.removeAttribute("hidden");
+            }
+            else{
+                info.setAttribute("hidden","hidden");
+            }
+        }
+        function oinfo(x){
+            var info = document.getElementById("oinfofield"+x);
+            var v = info.getAttribute("hidden");
+            //alert(x+" "+v+" "+info);
+            if(v=="hidden"){
+                info.removeAttribute("hidden");
+            }
+            else{
+                info.setAttribute("hidden","hidden");
+            }
+        }
+        function forget(x){
+            if(confirm("Are you sure to forget survey no. "+x+"?")){
+                //var z = document.cookie;
+                //alert(z);
+                $.post('unactivesurvey', { surveyid: x },function(data) {
+                        alert(data);
+                });
+                var i = document.getElementById("field"+x);
+                i.setAttribute("hidden","hidden");
+                var j = document.getElementById("infofield"+x);
+                j.setAttribute("hidden","hidden");
+            }
+            else{
+            }
+        }
+        function oforget(x){
+            if(confirm("Are you sure to forget your own survey no. "+x+"?")){
+                $.post('ounactivesurvey', { surveyid: x },function(data) {
+                        alert(data);
+                });
+                var i = document.getElementById("ofield"+x);
+                i.setAttribute("hidden","hidden");
+                var j = document.getElementById("oinfofield"+x);
+                j.setAttribute("hidden","hidden");
+            }
+            else{
+            }
+        }
         function writepassword(n){
             var input = '<br><form action="/fillorcheck" method="post" id="form1"><input type="hidden" name="yoursurveyid" value='+n+'><input type="password" name="yourpassword" placeholder="Enter you password here"><button class="btn btn-medium btn-info" type="submit" form="form1" value="fillorcheck">Fill or Check</button></form>';
             var x = document.getElementsByClassName("passwordfield"+n);

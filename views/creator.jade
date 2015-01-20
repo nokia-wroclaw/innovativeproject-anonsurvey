@@ -10,7 +10,7 @@ block content
                         li
                           button.btn.btn-success.navbar-btn.navbar-inverse(onclick='addquest()', type='button') Add question     
                         li
-                          button.btn.btn-primary.navbar-btn.navbar-inverse(type="submit", form="creator", value="addsurvey" onclick="return valid()") Survey complete
+                          button.btn.btn-primary.navbar-btn.navbar-inverse(type="submit", form="creator", value="addsurvey", onclick="return valid()") Survey complete
                         li
                           a(href="/profile")= "Back"
           div.collapse.navbar-collapse
@@ -27,7 +27,7 @@ block content
           div.col-md-2(align='left')
             label Start of survey:
             br
-            input#surveystartdate(type='date', ng-model='yourSurveyStart', name='startofsurvey', size="10", required, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
+            input#surveystartdate(type='date', ng-model='yourSurveyStart', name='startofsurvey', size="10", required, value=todaydate, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
           div.col-md-2(align='left')
             label End of survey:
             br
