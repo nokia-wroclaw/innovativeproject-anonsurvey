@@ -1378,7 +1378,6 @@ function result(req, res){
                             i=0;
                             CountFunction();                         
                             
-
                             
                             res.render('seeresults', {
                                 "count" : count,"countt" : countt, "srednia" : srednia, "results" : docs, "odp" : odp, "ile" : ile

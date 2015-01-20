@@ -49,10 +49,9 @@ block content
 										h3 #{odp[q.questionnumber]}	
 									if ile[q.questionnumber].length>1
 										h3 Select chart to draw
-										- var wartosc = ile[q.questionnumber][0]
-										button(onclick='draw(#{q.questionnumber},"pie",#{wartosc})', type='button') Pie Charts	
+										button(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'")', type='button') Pie Charts	
 										button(onclick='draw(#{q.questionnumber},"column")', type='button') Column Charts
-										button(onclick='draw(#{q.questionnumber},"histo",#{ile[q.questionnumber]})', type='button') Histogram
+										button(onclick='draw(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'")', type='button') Histogram
 										div(id=q.questionnumber)
 											div(id=(q.questionnumber+'list'))
 										div(id=q.questionnumber+'chart')
@@ -66,10 +65,8 @@ block content
 		br
 		script(type='text/javascript', src='https://www.google.com/jsapi').
 		script(type='text/javascript').
-
 			var number = null;
 			var wart = null;
-
 			function drawCharts(aa,bb){
 				number = aa;
 				wart = bb;
@@ -87,8 +84,7 @@ block content
 			}
 			google.load('visualization', '1.0', {'packages':['corechart']});
 			google.setOnLoadCallback(drawChart);
-
-			function draw(number,xx){				
+			function draw2(number,xx){				
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'Topping');
 				data.addColumn('number', 'Slices');
@@ -98,7 +94,6 @@ block content
 				var options = {'title':'Chart of result',
 				'width':400,
 				'height':300};
-
 				if(xx=="pie") {
 				var chart = new google.visualization.PieChart(document.getElementById(number+'chart'));
 				chart.draw(data, options);
@@ -111,4 +106,7 @@ block content
 				var chart = new google.visualization.Histogram(document.getElementById(number+'chart'));
 				chart.draw(data, options);
 				}
+			}
+			function draw(x,y,z){
+				alert(z.toString());
 			}
