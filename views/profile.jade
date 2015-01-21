@@ -16,12 +16,12 @@ block content
         div.collapse.navbar-collapse
 
     div(align='center', class='jumbotron')
-        h1 Profile's panel
+        h2 Annonymous Survey App - Your Account
             h3 Hi  #{profile.username}!
         hr
         div.row
             div.col-md-6(align='left')
-                h3 Your surveys:
+                h3 Surveys which you've been invited to:
                 each survey in surveys
                     div(id='field'+survey.surveyid,class="row")
                         table.table-condensed
@@ -39,9 +39,9 @@ block content
                                 td.col-md-1 
                                     if(survey.whoseeresult == "everywhoanswer" || survey.whoseeresult == "youandwhoanswer")
                                         //input.btn.btn-medium.btn-primary(type='button', name='emailsubmit', value='Every who answer', onclick='writepasswordtoresult('+survey.surveyid+')')
-                                        a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Every who answer
+                                        a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Results
                                     else if(survey.whoseeresult == "everybody")
-                                        a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Everybody
+                                        a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Results
                                     else if(survey.whoseeresult == "onlyyou")
                                 td.col-md-1
                                     button.btn.btn-medium.btn-warning(onclick='info('+survey.surveyid+')') Info
@@ -56,7 +56,7 @@ block content
                         br 
                         p    
             div.col-md-6(align='left')            
-                h3 Surveys created by You:
+                h3 Surveys created by you:
                 each osurvey in surveysowner
                     div(id='ofield'+osurvey.surveyid,class="row")
                         table.table-condensed

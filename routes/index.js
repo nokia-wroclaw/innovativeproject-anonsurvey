@@ -372,6 +372,8 @@ router.post('/profile', profileFunction);
 
 /* GET Creator page. */
 router.get('/creator', function(req, res) {
+
+    if( !req.session.user ) res.render('index', { title: 'Annonymous Surveys' });
     var x = new Date();
     var today = x.getFullYear().toString();
     if(x.getMonth()>9){
@@ -828,7 +830,7 @@ router.post('/adduserstosurvey', function(req, res) {
         }
     }
     loop();
-    var ecom = "Congratulations, you have created the survey!";
+    var ecom = "People have been invited";
     res.render('errorpage', { "success" : ecom, "page" : "/profile" });
 });
 

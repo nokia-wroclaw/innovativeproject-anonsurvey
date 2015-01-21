@@ -8,18 +8,18 @@ block content
                 | Annonymous Survey App
             div.nav.navbar-nav.navbar-right
                     li
-                        a(href='/profile') Back to profile   
+                        a(href='/profile') Back   
         div.collapse.navbar-collapse
     div(align='center')
       h1 Survey Creator 
-      h3 Please add emails of people you want to invite to this survey.
+      h3 Please add e-mails of people you want to invite to this survey.
       h3 Survey ID: #{getsurveyid}
     div(align='center', ng-app='ng-app')
         textarea#emails(rows='10', cols='50', name='emails')
         table.table-condensed
           thead
             th
-              button.btn.btn-medium.btn-success(type='submit', ng-model='yourButton', name='emailsubmit', onclick='addemailaddress()') Add emails to list
+              button.btn.btn-medium.btn-success(type='submit', ng-model='yourButton', name='emailsubmit', onclick='addemailaddress()') Add e-mails to list
             th
               button.btn.btn-default(onclick='help()', type='button')
                 span.glyphicon.glyphicon-question-sign(aria-hidden='true')
@@ -32,7 +32,7 @@ block content
             div#endemailsform
           br
           hr
-          button.btn.btn-medium.btn-info(type="submit" form="addusertosurvey" value="addemails") Add emails to survey
+          button.btn.btn-medium.btn-info(type="submit" form="addusertosurvey" value="addemails") Add emails to the survey
           br
           br
     script(type='text/javascript').
@@ -56,6 +56,6 @@ block content
           div.insertBefore(newtype, enddiv); 
       }
       function help(){
-            alert("1. Add emails that you want to invite to survey\n2. You can add emails seperated by space, comma or in new line(after enter)\n3. Click 'Add emails to list'. List of emails will be shown\n4. You can still add new emails and reject existing\n5. Click 'Add emails to survey'. Your survey is complete\n You can always invite new people from your profile page");
+            alert("1. Add e-mails of people that you want to invite to this survey\n2. You can add e-mails seperated by a space, a comma or in a new line (after enter)\n3. Click 'Add e-mails to list'. List of e-mails will be shown below\n4. You still can add new e-mails and reject already existing\n5. Click 'Add e-mails to the survey'. Now your survey is done!\n You can always invite more people from your profile page");
       }
       

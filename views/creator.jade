@@ -10,28 +10,28 @@ block content
                         li
                           button.btn.btn-success.navbar-btn.navbar-inverse(onclick='addquest()', type='button') Add question     
                         li
-                          button.btn.btn-primary.navbar-btn.navbar-inverse(type="submit", form="creator", value="addsurvey", onclick="return validall()") Survey complete
+                          button.btn.btn-primary.navbar-btn.navbar-inverse(type="submit", form="creator", value="addsurvey", onclick="return validall()") Done, save my survey
                         li
                           a(href="/profile")= "Back"
           div.collapse.navbar-collapse
     div(align='center')
       h1 Survey Creator 
-      h2 This is the place where you can create your survey!!
+      h2 This is the place where you can create your survey!
       .container(ng-app='ng-app')
         div#errorinfo(align='center')
       div#form(align='center', class = 'panel')
         hr
         form#creator(method='post', action='/addsurvey')
           div.col-md-3(align='left',)
-            label Survey's name:
+            label Title of the survey:
             br
-            input#surveyquest(type='text', ng-model='yourSurveyName', name='surveyname', maxlength="38", size="25", required, pattern="[^<>]+", title="Only text", placeholder='Surveys name')
+            input#surveyquest(type='text', ng-model='yourSurveyName', name='surveyname', maxlength="38", size="25", required, pattern="[^<>]+", title="Only text", placeholder='Write in title of the survey')
           div.col-md-2(align='left')
-            label Start of survey:
+            label Start of the survey:
             br
             input#surveystartdate(type='date', ng-model='yourSurveyStart', name='startofsurvey', size="10", required, value=todaydate, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
           div.col-md-2(align='left')
-            label End of survey:
+            label End of the survey:
             br
             input#surveyenddate(type='date', ng-model='yourSurveyEnd', name='endofsurvey', size="10", required, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
           div.col-md-2(align='left')          
@@ -43,13 +43,13 @@ block content
             input(type='radio', ng-model='yourWhoAnswer', name='whoanswer', value="everybody")
             |  Everybody 
           div.col-md-2(align='left')   
-            label Who can see result?
+            label Who can see results?
             br 
             input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="youandwhoanswer", checked)
-            |  You & every who answer
+            |  You & everyone who answered
             br
             input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="everywhoanswer")
-            |  Everybody who answer
+            |  Everybody who answered
             br 
             input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="everybody")
             |  Everybody
@@ -114,16 +114,16 @@ block content
         var answertype = "";
         var button = "";
         if(w=="radio") {
-          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked>Posiibility of adding answers by user<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false">No posiibility of adding answers by user<br><br>';
           answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
           button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button class="btn btn-default"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>';
         }
         else if(w=="checkbox") {
-          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
+          otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked>Posiibility of adding answers by user<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false">No posiibility of adding answers by user<br><br>';
           answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
@@ -137,7 +137,7 @@ block content
         }
         else if(w=="textarea") {
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          answer = '<textarea rows="4" cols="30" name="answer['+no.toString()+']" form="creator" readonly>Here goes very long answer</textarea><br>';
+          answer = '<textarea rows="4" cols="30" name="answer['+no.toString()+']" form="creator" readonly>Here goes a very long answer</textarea><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="textarea">';
         }
         else if(w=="date") {
@@ -147,8 +147,8 @@ block content
         }
         else if(w=="range"){
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          answer = '<input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Min value">\
-          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Max value">\
+          answer = '<input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Minimum value">\
+          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Maximum value">\
           <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Step"><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="range">';
         }
