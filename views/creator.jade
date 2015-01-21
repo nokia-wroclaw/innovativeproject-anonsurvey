@@ -120,8 +120,8 @@ block content
         areanswers[no]=true;
         if(w==1) {
           otherans = '<label>Radio:</label><br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
+          <input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Possibility of adding user\'s answer<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> No possibility of adding user\'s answer<br><br>';
           answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
@@ -129,8 +129,8 @@ block content
         }
         else if(w==2) {
           otherans = '<label>Checkbox:</label><br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Available own user\'s answer<br>\
-          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> Unavailable own user\'s answer<br><br>';
+          <input type="radio" name="otheranswer['+no.toString()+']" value="true" checked> Possibility of adding user\'s answers<br>\
+          <input type="radio" name="otheranswer['+no.toString()+']" value="false"> No possibility of adding user\'s answers<br><br>';
           answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
           <br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
@@ -248,6 +248,7 @@ block content
       function validall(){
         var x;
         var y;
+        /*
         if(areanswers.length!=countquest){
           var div = document.getElementById("errorinfo");
           div.removeAttribute("hidden");
@@ -256,6 +257,7 @@ block content
           div.innerHTML = "Question without selected type of answer!";
           return false;
         }
+        */
         for(var i=0; i<countquest; i++){
           x = document.getElementById("minrange"+i.toString());
           if(x!=null){
