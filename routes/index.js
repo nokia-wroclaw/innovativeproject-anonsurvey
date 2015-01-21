@@ -1340,6 +1340,9 @@ function result(req, res){
                                             p=parseFloat(docs[0].questions[i].availbeanswers[0]);
                                            step=parseFloat(docs[0].questions[i].availbeanswers[2]);
                                             coile=parseFloat(p+(n*step));
+                                            coile=Math.round(coile*100,2)/100;
+                                            console.log(coile);
+
                                                 
                                                 if (coile<=docs[0].questions[i].availbeanswers[1]){
                                                     if (h<countt){
@@ -1349,7 +1352,7 @@ function result(req, res){
                                                     }
                                                     else h=0;
                                                     ile[i][n]=how;
-                                                    co[i][n]=String(coile);
+                                                    co[i][n]=coile;
                                                     if (n==0) odp[i] +=coile +":" + how;
                                                     else odp[i]+="\n" + coile +":" + how;
                                                     srednia[i]+=parseFloat(coile*how);
@@ -1359,7 +1362,7 @@ function result(req, res){
                                                 }
                                                 else n=0;  
                                                 srednia[i]/=countt;
-                                                console.log(srednia[i]);
+                   
                                                 i++;
                                                 ile[i]= [];
                                                 co[i]=[];
