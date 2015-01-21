@@ -47,15 +47,21 @@ block content
 									h3 #{q.questionnumber+1}. #{q.question}
 								div.col-md-6(align='left')
 									if q.answertype=="range"
-										h3 #{srednia[q.questionnumber]}	
+										h3 average: #{srednia[q.questionnumber]}	
+										-var i =(q.availbeanswers[1]-q.availbeanswers[0]+1)/q.availbeanswers[2]
+										-var j=q.availbeanswers[0]
+										-var k=q.availbeanswers[2]
 									else
 										h3 #{odp[q.questionnumber]}	
+										-var i=q.answercount
+										-var j=0
+										-var k=0
 										
 									if ile[q.questionnumber].length>1
 										h3 Select chart to draw
-										button(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{q.answercount})', type='button') Pie Charts	
-										button(onclick='draw(#{q.questionnumber},"column","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{q.answercount})',type='botton') Column Charts
-										button(onclick='draw(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{q.answercount})', type='button') Histogram
+										button(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Pie Charts	
+										button(onclick='draw(#{q.questionnumber},"column","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})',type='botton') Column Charts
+										button(onclick='draw(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Histogram
 										div(id=q.questionnumber)
 											div(id=(q.questionnumber+'list'))
 										div(id=q.questionnumber+'chart')
@@ -88,21 +94,30 @@ block content
 			}
 			google.load('visualization', '1.0', {'packages':['corechart']});
 			google.setOnLoadCallback(drawChart);
-			function draw(number,xx,ile,co,l){		
+			function draw(number,xx,ile,co,l,k,r){		
 				var data = new google.visualization.DataTable();
 				var tabile =[];
 				var tabco =[];
 				j=0;
+				if(r==0){
+					for(i=0;i<l;i++){
+						tabco[i]="";
 
-				for(i=0;i<l;i++){
-					tabco[i]="";
-					while(j<co.length){
-						if (co[j]==",") 
-							{j++;
-							break;}
-						else 
-							{tabco[i]+=co[j];
-							j++;}
+						while(j<co.length){
+							if (co[j]==",") 
+								{j++;
+								break;}
+							else 
+								{tabco[i]+=co[j];
+								j++;}
+						}
+					}
+				}else{
+					n=0;
+					for(i=0;i<l;i++){
+						tabco[i]=k+(r*n);
+						n++;
+						
 					}
 				}
 
