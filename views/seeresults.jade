@@ -61,7 +61,8 @@ block content
 										h3 Select chart to draw
 										button(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Pie Charts	
 										button(onclick='draw(#{q.questionnumber},"column","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})',type='botton') Column Charts
-										button(onclick='draw(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Histogram
+										if q.answertype=="range"
+											button(onclick='drawHist(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Histogram
 										div(id=q.questionnumber)
 											div(id=(q.questionnumber+'list'))
 										div(id=q.questionnumber+'chart')
@@ -108,7 +109,7 @@ block content
 								{j++;
 								break;}
 							else 
-								{tabco[i]+=co[j];
+								{tabco[i]=Math.round(co[j]*100,2)/100;
 								j++;}
 						}
 					}
@@ -138,10 +139,12 @@ block content
 				var liczba=parseInt(ile[0]);
 				data.addColumn('string', 'Topping');
 				data.addColumn('number', 'Slices');
+				
 				for(i=0;i<tabco.length;i++){
-				data.addRows([
-				[tabco[i].toString(), parseInt(tabile[i])],
-				]);
+					if ((parseInt(tabile[i]))==0) continue;
+					data.addRows([
+					[(Math.round(tabco[i]*100,2)/100).toString(), parseInt(tabile[i])],
+					]);
 				}
 				var options = {'title':'Chart of result',
 				'width':400,
@@ -159,3 +162,67 @@ block content
 				chart.draw(data, options);
 				}
 			}
+
+			function drawHist(number,xx,ile,co,l,k,r){		
+				var data = new google.visualization.DataTable();
+				var tabile =[];
+				var tabco =[];
+				j=0;
+				if(r==0){
+					for(i=0;i<l;i++){
+						tabco[i]="";
+
+						while(j<co.length){
+							if (co[j]==",") 
+								{j++;
+								break;}
+							else 
+								{tabco[i]+=co[j];
+								j++;}
+						}
+					}
+				}else{
+					n=0;
+					for(i=0;i<l;i++){
+						tabco[i]=Math.round((k+(r*n))*100,2)/100;
+						n++;
+						
+					}
+				}
+
+				j=0;
+
+				for(i=0;i<l;i++){
+					tabile[i]="";
+					while(j<ile.length){
+						if (ile[j]==",") 
+							{j++;
+							break;}
+						else 
+							{tabile[i]+=ile[j];
+							j++;}
+					}
+				}
+
+				var liczba=parseInt(ile[0]);
+			
+
+				data.addColumn('number', 'Value');
+		
+				
+				
+				for(i=0;i<tabco.length;i++){
+					if ((parseInt(tabile[i]))==0) continue;
+					for(z=0;z<(parseInt(tabile[i]));z++){
+						data.addRows([
+						[parseFloat(tabco[i])],
+						]);
+					}
+				}
+				var options = {'title':'Chart of result',
+				'width':400,
+				'height':300};
+				
+				var chart = new google.visualization.Histogram(document.getElementById(number+'chart'));
+				chart.draw(data, options);
+				}
