@@ -1403,7 +1403,7 @@ function result(req, res){
             }
             else
             {   
-                var result = "Results are not available yet. At least fifty percent respondens must answerd this survey";
+                var result = "Results are not available yet. At least fifty percent respondens must fill this survey";
                 res.render('seeresults', {
                     "result" : result 
                 });

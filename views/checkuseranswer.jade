@@ -11,8 +11,9 @@ block content
 			each q in answerlist
 				div(align='center', class='row')
 					- for(var n = 0; n < q.questionsamount; n++)
+						- var toDisplay = String(n+1) + ". " + questionlist[n]
 						div.col-md-6(align='left')
-							h3= questionlist[n]
+							h3= toDisplay
 						div.col-md-6(align='center')
 							h3= q.answers[n]
 		br

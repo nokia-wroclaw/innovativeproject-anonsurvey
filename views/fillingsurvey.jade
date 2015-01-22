@@ -29,8 +29,10 @@ block content
 						input(type='hidden', name ='questionsamount' value = amount )
 						br
 						each r in result
+							- var numberToDisplay = 0; 
 							each q in r.questions
 								- var question = "question" + q.questionnumber.toString();
+								- numberToDisplay++;
 								hr
 								div(id=question, class='row')
 									l1
@@ -38,7 +40,8 @@ block content
 
 										if q.answertype == "radio"
 											div.col-md-6(align='left')
-												h2 #{q.question}
+												- var toDisplay = String(numberToDisplay) + ". " + q.question
+												h2= toDisplay
 											div.col-md-6(align='center')
 												- var ansNumber = "ans" + q.questionnumber.toString();
 													- for (var n=0; n < q.answercount; n++)
@@ -54,7 +57,8 @@ block content
 
 										if q.answertype == "checkbox"
 											div.col-md-6(align='left')
-												h2 #{q.question}
+												- var toDisplay = String(numberToDisplay) + ". " + q.question
+												h2= toDisplay
 											div.col-md-6(align='center')		
 												- var ansNumber = "ans" + q.questionnumber.toString();
 													- for (var n=0; n < q.answercount; n++)
@@ -68,14 +72,16 @@ block content
 										
 										if q.answertype == "text"
 											div.col-md-6(align='left')
-												h2 #{q.question}
+												- var toDisplay = String(numberToDisplay) + ". " + q.question
+												h2= toDisplay
 											div.col-md-6(align='center')		
 												- var ansNumber = "ans" + q.questionnumber.toString();
 													input(type="text" name=ansNumber form="answer" required )
 
 										if q.answertype == "range"
 											div.col-md-6(align='left')
-												h2 #{q.question}
+												- var toDisplay = String(numberToDisplay) + ". " + q.question
+												h2= toDisplay
 											div.col-md-6(align='center')		
 												- var ansNumber = "ans" + q.questionnumber.toString();
 												- var outputName = ansNumber + "Out";
@@ -85,14 +91,16 @@ block content
 
 										if q.answertype == "date"
 											div.col-md-6(align='left')
-												h2 #{q.question}
+												- var toDisplay = String(numberToDisplay) + ". " + q.question
+												h2= toDisplay
 											div.col-md-6(align='center')		
 												- var ansNumber = "ans" + q.questionnumber.toString();
 												input(type="date" name=ansNumber required )
 
 										if q.answertype == "textarea"
 											div.col-md-6(align='left')
-												h2 #{q.question}
+												- var toDisplay = String(numberToDisplay) + ". " + q.question
+												h2= toDisplay
 											- var ansNumber = "ans" + q.questionnumber.toString();
 											div.col-md-6(align='center')											
 												textarea(rows="4" cols="50" name=ansNumber form="answer" required )
