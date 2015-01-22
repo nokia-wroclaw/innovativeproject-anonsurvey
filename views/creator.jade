@@ -19,6 +19,7 @@ block content
       h2 This is the place where you can create your survey!
       .container(ng-app='ng-app')
         div#errorinfo(align='center')
+        div#errorinfo2(align='center')
       div#form(align='center', class = 'panel')
         hr
         form#creator(method='post', action='/addsurvey')
@@ -29,11 +30,11 @@ block content
           div.col-md-2(align='left')
             label Start of the survey:
             br
-            input#surveystartdate(type='date', ng-model='yourSurveyStart', name='startofsurvey', size="10", required, value=todaydate, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
+            input#surveystartdate(type='date', onchange="validdate()", ng-model='yourSurveyStart', name='startofsurvey', size="10", required, value=todaydate, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
           div.col-md-2(align='left')
             label End of the survey:
             br
-            input#surveyenddate(type='date', ng-model='yourSurveyEnd', name='endofsurvey', size="10", required, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
+            input#surveyenddate(type='date', onchange="validdate()", ng-model='yourSurveyEnd', name='endofsurvey', size="10", required, pattern="[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}", title="yyyy-mm-dd", placeholder='yyyy-mm-dd')
           div.col-md-2(align='left')          
             label Who can answer?
             br
@@ -56,22 +57,22 @@ block content
             br 
             input(type='radio', ng-model='yourwhoseeresult', name='whoseeresult', value="onlyyou")
             |  Only you
-          div.col-md-4#col1(align='center', class = 'jumbotron')    
-          div.col-md-4#col2(align='center', class = 'jumbotron')    
-          div.col-md-4#col3(align='center', class = 'jumbotron')
+          hr
+          div.col-md-4#col1(align='center')    
+          div.col-md-4#col2(align='center')    
+          div.col-md-4#col3(align='center')
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js").
     script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js").
     script(type='text/javascript').
       var countquest = 0;
       var countanswer = 0;
       var noquest = 0; 
-      var areanswers = [];        
+      var validquest = [];        
       function addquest(){
-        var queststart = '<label>Question:</label><br>';
-        var questname = '<input type="text" ng-model="yourQuestion" size="40" name="question['+countquest.toString()+']" required placeholder="Type your question here"><br><br>';
-        var info = "";
-        var list = '<select onchange="addanswer(this.value,'+countquest.toString()+')" required pattern="[a-z]+"> \
-        <option value=""></option> \
+        var queststart = '<label>Question:</label>';
+        var questname = '<input type="text" ng-model="yourQuestion" size="40" name="question['+countquest.toString()+']" required placeholder="Type your question here">';
+        var list = '<select class="btn btn-default" onchange="addanswer(this.value,'+countquest.toString()+')" required pattern="[a-z]+"> \
+        <option value="">Choose type of answer</option> \
         <option value="text">Text</option> \
         <option value="textarea">Long Text</option> \
         <option value="radio">Radio</option> \
@@ -80,12 +81,13 @@ block content
         <option value="date">Date</option> \
         </select>';
         var questno = "quest"+countquest.toString();
-        var questdelete = '<br><a class="btn btn-default btn-sm" href="javascript:deletequest('+questno+')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Delete this question</a>';
+        var questdelete = '<a class="btn btn-default btn-sm" href="javascript:deletequest('+questno+')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Delete this question</a>';
         var newquest = document.createElement("div");
         newquest.setAttribute("id", questno);
+        newquest.setAttribute("class", "panel panel-primary");
         var endquestno = "endquest"+countquest;
         var endquestdiv = '<div id='+endquestno+'></div>';
-        newquest.innerHTML = '<hr>' + queststart + questname + info + list + endquestdiv + questdelete;
+        newquest.innerHTML = '<hr>' + queststart + '<br>' + questname + '<hr>'+ list +'<br><br><table>' + endquestdiv +'</table><hr>' + questdelete + '<br><br>';
         if(noquest%3==0){
           div = document.getElementById("col1");
           enddiv = document.getElementById("end");
@@ -101,6 +103,7 @@ block content
           enddiv = document.getElementById("end");
           div.insertBefore(newquest, enddiv);
         }
+        validquest[countquest]=true;
         countquest++;
         noquest++;
         if(noquest==1) valid();
@@ -113,43 +116,50 @@ block content
         var answer = "";
         var answertype = "";
         var button = "";
+        var error = "";
         if(w=="radio") {
+          error = '<div id="errorinfo'+no.toString()+'"></div>';
           otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked>Posiibility of adding answers by user<br>\
           <input type="radio" name="otheranswer['+no.toString()+']" value="false">No posiibility of adding answers by user<br><br>';
-          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
-          <br>';
+          answer = '<table><tr><td><input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
+          &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td></table>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="radio">';
-          button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button class="btn btn-default"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>';
+          button = '<button onclick=addnextanswer("radio",'+no.toString()+') type=button class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add answer</button>';
         }
         else if(w=="checkbox") {
+          error = '<div id="errorinfo'+no.toString()+'"></div>';
           otherans = '<input type="radio" name="otheranswer['+no.toString()+']" value="true" checked>Posiibility of adding answers by user<br>\
           <input type="radio" name="otheranswer['+no.toString()+']" value="false">No posiibility of adding answers by user<br><br>';
-          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
-          <br>';
+          answer = '<table><tr><td><input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
+          &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td></table>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="checkbox">';
-          button = '<button onclick=addnextanswer("checkbox",'+no.toString()+') type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>';
+          button = '<button onclick=addnextanswer("checkbox",'+no.toString()+') type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add answer</button>';
         }
         //'<button onclick=addnextanswer("checkbox",'+no.toString()+') type=button>Add next answer</button>';
         else if(w=="text") {
+          error = '<div id="errorinfo'+no.toString()+'"></div>';
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<input type="text" name="answer['+no.toString()+']" placeholder="Example" value="Here goes the answer" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="text">';
         }
         else if(w=="textarea") {
+          error = '<div id="errorinfo'+no.toString()+'"></div>';
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<textarea rows="4" cols="30" name="answer['+no.toString()+']" form="creator" readonly>Here goes a very long answer</textarea><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="textarea">';
         }
         else if(w=="date") {
+          error = '<div id="errorinfo'+no.toString()+'"></div>';
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
           answer = '<input type="date" name="answer['+no.toString()+']" placeholder="Answer" value="Example" readonly><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="date">';
         }
         else if(w=="range"){
+          error = '<div id="errorinfo'+no.toString()+'"></div>';
           otherans = '<input type="hidden" name="otheranswer['+no.toString()+']" value="false">'
-          answer = '<input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Minimum value">\
-          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]*" title="Only numbers" placeholder="Maximum value">\
-          <input type="text" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Step"><br>';
+          answer = '<input id="minrange'+no.toString()+'" type="text" onchange="validrange('+no.toString()+')" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Minimum value">\
+          <input id="maxrange'+no.toString()+'" type="text" onchange="validrange('+no.toString()+')" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Maximum value">\
+          <input id="steprange'+no.toString()+'" type="text" onchange="validrange('+no.toString()+')" name="answer['+no.toString()+']" required pattern="[0-9]+(\.[0-9]+)?" title="Only numbers" placeholder="Step"><br>';
           answertype ='<input type="hidden" name="answertype['+no.toString()+']" value="range">';
         }
         var answerno = "answer"+no.toString();
@@ -159,7 +169,7 @@ block content
         newtype.setAttribute("id", answerno);
         var endanswerno = "endanswer"+no.toString();
         var endanswerdiv = '<div id='+endanswerno+'></div>';
-        newtype.innerHTML = otherans + answer + answertype + endanswerdiv + button;
+        newtype.innerHTML = error + otherans + answertype + answer +  endanswerdiv+ button;
         //alert("quest"+no.toString());
         div = document.getElementById("quest"+no.toString());
         enddiv = document.getElementById("endquest"+no.toString());
@@ -168,18 +178,16 @@ block content
       function addnextanswer(w,no){
         var answer = "";
         if(w=="radio"){
-          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
-          <br>';
+          answer = '<input type="radio" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">';
         }
         else if(w=="checkbox"){
-          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">\
-          <br>';
+          answer = '<input type="checkbox" name="answer" value=""> <input type="text" name="answer['+no.toString()+']" required pattern="[^<>]+" title="Only text" placeholder="Answer">';
         }
         var answerno = "answ"+countanswer.toString();
-        var answerdelete = '<a class="btn btn-default btn-sm" href="javascript:deletequest('+answerno+')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Delete this answer</a>';
+        var answerdelete = '<a class="btn btn-default btn-sm" href="javascript:deletequest('+answerno+')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>';
         var newtype = document.createElement("div");
         newtype.setAttribute("id", answerno);
-        newtype.innerHTML = answer+answerdelete;
+        newtype.innerHTML = '<table><tr><td>'+answer+'&nbsp'+answerdelete+'</td></tr></table>';
         div = document.getElementById("answer"+no.toString());
         enddiv = document.getElementById("endanswer"+no.toString());
         div.insertBefore(newtype, enddiv);
@@ -213,47 +221,90 @@ block content
         var maxr = document.getElementById("maxrange"+no.toString());
         var stepr = document.getElementById("steprange"+no.toString());
         //alert(minr.value);
-        if(Number(maxr.value)<Number(minr.value)){
+        if(minr.value!="" && maxr.value!="" && stepr.value!=""){
+          //alert(maxr.value);
+          if(Number(maxr.value)<Number(minr.value)){
+            var div = document.getElementById("errorinfo"+no.toString());
+            div.removeAttribute("hidden");
+            div.setAttribute("class", "alert alert-danger");
+            div.setAttribute("role","alert");
+            div.innerHTML = "Maximum is less than minimum in range!";
+            validquest[parseInt(no)]=false;
+            return false;
+          }
+          var q = (maxr.value-minr.value)/stepr.value;
+          if(q!=parseInt(q)){
+            var div = document.getElementById("errorinfo"+no.toString());
+            div.removeAttribute("hidden");
+            div.setAttribute("class", "alert alert-danger");
+            div.setAttribute("role","alert");
+            div.innerHTML = "Wrong step in range!";
+            validquest[parseInt(no)]=false;
+            return false;
+          }
+          var div = document.getElementById("errorinfo"+no.toString());
+          div.setAttribute("hidden","hidden");
           var div = document.getElementById("errorinfo");
-          div.removeAttribute("hidden");
-          div.setAttribute("class", "alert alert-danger");
-          div.setAttribute("role","alert");
-          div.innerHTML = "Maximum is less than minimum in range!";
-          return false;
+          div.setAttribute("hidden","hidden");
+          validquest[parseInt(no)]=true;
+          return true;
         }
-        var q = (maxr.value-minr.value)/stepr.value;
-        if(q!=parseInt(q)){
-          var div = document.getElementById("errorinfo");
-          div.removeAttribute("hidden");
-          div.setAttribute("class", "alert alert-danger");
-          div.setAttribute("role","alert");
-          div.innerHTML = "Wrong step in range!";
-          return false;
+      }
+      function validdate(){
+        var sta = document.getElementById("surveystartdate");
+        var end = document.getElementById("surveyenddate");
+        var startdate = new Date(sta.value);
+        var enddate = new Date(end.value);
+        //alert(end.value);
+        if(startdate!="" && enddate != ""){
+          if(startdate=="Invalid Date" || enddate=="Invalid Date"){
+                var div = document.getElementById("errorinfo2");
+                div.removeAttribute("hidden");
+                div.setAttribute("class", "alert alert-danger");
+                div.setAttribute("role","alert");
+                div.innerHTML = "Invalid Date! (1)";
+                return false;
+          }
+          else if(startdate< new Date(new Date()-86400000) || enddate< new Date()){
+                var div = document.getElementById("errorinfo2");
+                div.removeAttribute("hidden");
+                div.setAttribute("class", "alert alert-danger");
+                div.setAttribute("role","alert");
+                div.innerHTML = "Invalid Date! (2)";
+                return false;
+          }
+          else if(startdate>enddate){
+                var div = document.getElementById("errorinfo2");
+                div.removeAttribute("hidden");
+                div.setAttribute("class", "alert alert-danger");
+                div.setAttribute("role","alert");
+                div.innerHTML = "Invalid Date! (3)";
+                return false;
+          }
+          else{
+                var div = document.getElementById("errorinfo2");
+                div.setAttribute("hidden","hidden");
+                return true;
+          }
         }
-        var div = document.getElementById("errorinfo");
-        div.setAttribute("hidden","hidden");
-        return true;
       }
       function validall(){
         var x;
         var y;
-        /*
-        if(areanswers.length!=countquest){
-          var div = document.getElementById("errorinfo");
-          div.removeAttribute("hidden");
-          div.setAttribute("class", "alert alert-danger");
-          div.setAttribute("role","alert");
-          div.innerHTML = "Question without selected type of answer!";
-          return false;
-        }
-        */
-        for(var i=0; i<countquest; i++){
-          x = document.getElementById("minrange"+i.toString());
-          if(x!=null){
-            return validrange(i);
+        //alert(validquest);
+        for(var i=0; i<validquest.length; i++){
+            if(validquest[i]==false){
+              var div = document.getElementById("errorinfo");
+              div.removeAttribute("hidden");
+              div.setAttribute("class", "alert alert-danger");
+              div.setAttribute("role","alert");
+              div.innerHTML = "Check your questions!";
+              return false;
+            }
           }
-        }
-        return valid();
-      } 
+        return valid() && validdate();
+      }
+
+       
 
 
