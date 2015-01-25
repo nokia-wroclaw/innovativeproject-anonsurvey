@@ -1245,9 +1245,8 @@ function result(req, res){
                                     if (docs[0].questions[i].answertype=="date"){
                                         
                                                 if (h<countt){
-                                                        if (h==0) odp[i]+=find[h].answers[i]+"; ";
-                                                        else odp[i]+="\n" +find[h].answers[i]+"; ";
-                                                        h++;
+                                                        odp[i]+=";"+find[h].answers[i];
+                                                          h++;
                                                         CountFunction();
                                                 }
                                                 else h=0;
@@ -1341,7 +1340,7 @@ function result(req, res){
                                            step=parseFloat(docs[0].questions[i].availbeanswers[2]);
                                             coile=parseFloat(p+(n*step));
                                             coile=Math.round(coile*100,2)/100;
-                                            console.log(coile);
+                                           // console.log(coile);
 
                                                 
                                                 if (coile<=docs[0].questions[i].availbeanswers[1]){
@@ -1373,8 +1372,7 @@ function result(req, res){
 
                                     else {
                                                 if (h<countt){
-                                                        if (h==0) odp[i]+=find[h].answers[i]+"; ";
-                                                        else odp[i]+="\n" +find[h].answers[i];
+                                                        odp[i]+=";"+find[h].answers[i];
                                                         h++;
                                                         CountFunction();
                                                 }
