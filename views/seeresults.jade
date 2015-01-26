@@ -54,7 +54,7 @@ block content
 									h3 #{q.questionnumber+1}. #{q.question}
 								div.col-md-6(align='left')
 									if q.answertype=="range"
-										h3 average: #{srednia[q.questionnumber]}	
+										h3 Average: #{srednia[q.questionnumber]}	
 										-var i =(q.availbeanswers[1]-q.availbeanswers[0]+1)/q.availbeanswers[2]
 										-var j=q.availbeanswers[0]
 										-var k=q.availbeanswers[2]
@@ -69,8 +69,8 @@ block content
 																	
 									if ile[q.questionnumber].length>1
 										h3 Select chart to draw
-										button(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Pie Charts	
-										button(onclick='draw(#{q.questionnumber},"column","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})',type='botton') Column Charts
+										button(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Pie Chart	
+										button(onclick='draw(#{q.questionnumber},"column","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})',type='botton') Column Chart
 										if q.answertype=="range"
 											button(onclick='drawHist(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Histogram
 										div(id=q.questionnumber)
@@ -106,14 +106,14 @@ block content
 
 			function funct(tablica,aa){
 
-					var wyswietl="1.";
+					var wyswietl="1. ";
 					j=1;
 					k=2;
 
 					while(j<tablica.length){
 								if (tablica[j]==";") 
 									{wyswietl+="<br />";
-									wyswietl+=k+".";
+									wyswietl+=k+". ";
 									k++
 									j++;}
 								else 
@@ -147,8 +147,8 @@ block content
 						tabco[i]="";
 
 						while(j<co.length){
-							if (co[j]==",") 
-								{j++;
+							if ((co[j]==",") && (co[j+1]==";")) 
+								{j+=2;
 								break;}
 							else 
 								{tabco[i]+=co[j];
@@ -180,7 +180,7 @@ block content
 
 				var liczba=parseInt(ile[0]);
 				data.addColumn('string', 'Topping');
-				data.addColumn('number', 'Slices');
+				data.addColumn('number', 'Answers');
 				
 				if(r==0){
 					for(i=0;i<tabco.length;i++){
