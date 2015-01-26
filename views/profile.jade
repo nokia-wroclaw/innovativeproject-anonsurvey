@@ -43,6 +43,7 @@ block content
                                     else if(survey.whoseeresult == "everybody")
                                         a.btn.btn-medium.btn-primary(href='/result?survey='+survey.surveyid) Results
                                     else if(survey.whoseeresult == "onlyyou")
+                                         a.btn.btn-medium.btn-primary(disabled='disabled', href='/result?survey='+survey.surveyid) Results
                                 td.col-md-1
                                     button.btn.btn-medium.btn-warning(onclick='info('+survey.surveyid+')') Info
                                 td.col-md-1
