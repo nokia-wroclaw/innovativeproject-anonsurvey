@@ -36,7 +36,6 @@ block content
 								hr
 								div(id=question, class='row')
 									l1
-										input(type='hidden' name = question value = q.question form="answer")
 
 										if q.answertype == "radio"
 											div.col-md-6(align='left')
@@ -46,9 +45,10 @@ block content
 												- var ansNumber = "ans" + q.questionnumber.toString();
 													- for (var n=0; n < q.answercount; n++)
 														- var answ = q.availbeanswers[n]
-														input(type="radio" name = ansNumber value = answ form="answer" checked)
-														label=answ
-														br
+														- if (answ!="")
+															input(type="radio" name = ansNumber value = answ form="answer" checked)
+															label=answ
+															br
 													- if(q.otheranswer == "true")
 														- var textFieldName = ansNumber + "User"
 														label Or type your own answer:
@@ -63,9 +63,10 @@ block content
 												- var ansNumber = "ans" + q.questionnumber.toString();
 													- for (var n=0; n < q.answercount; n++)
 														- var answ = q.availbeanswers[n]
-														input(type="checkbox" name=ansNumber value=answ form="answer")
-														label=answ
-														br
+														- if (answ!="")
+															input(type="checkbox" name=ansNumber value=answ form="answer")
+															label=answ
+															br
 													- if(q.otheranswer == "true")
 														- var divId = "question" + q.questionnumber.toString();
 															button( onclick = 'addans("#{divId}","#{ansNumber}"); this.i++;' type='button', placeHolder="Your answer") Add your answers!
