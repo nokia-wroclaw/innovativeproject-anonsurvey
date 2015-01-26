@@ -1274,9 +1274,15 @@ function result(req, res){
                                                 else{
                                                 h=0;
                                                 ile[i][n]=how;
-                                                co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
-                                                if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
-                                                else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                
+                                                if (n==0) {
+                                                    odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                    co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
+                                                }
+                                                else {
+                                                    odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                    co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
+                                                }
                                                 how=0;
                                                 n++;
                                                 CountFunction();
@@ -1315,9 +1321,15 @@ function result(req, res){
                                                 else{
                                                 h=0;
                                                 ile[i][n]=how;
-                                                co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
-                                                if (n==0) odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
-                                                else odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                
+                                                if (n==0) {
+                                                    odp[i] +=docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                    co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
+                                                }
+                                                else {
+                                                    odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+":" + how;
+                                                    co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
+                                                }
                                                 how=0;
                                                 n++;
                                                 CountFunction();
