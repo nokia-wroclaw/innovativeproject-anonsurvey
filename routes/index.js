@@ -89,7 +89,7 @@ function adduserFunction(req, res) {
     var userRepeatPassword = String(req.body.userrepeatpassword);
 
     var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
-    var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+    var regMail = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
 
     if((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (!userPassword=="") && (userPassword==userRepeatPassword) ){
     
@@ -146,7 +146,7 @@ router.get('/forgotpassword', function(req, res) {
 router.post('/forgotpasswordsendemail', function(req, res) {
     
     var youremail = req.body.youremail;
-    var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+    var regMail = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
 
     if(!youremail.match(regMail)){
         var ecom = "Incorrect e-mail address!";
@@ -226,7 +226,7 @@ router.post('/setnewpassword', function(req, res) {
     var userRepeatPassword = req.body.yournewpass2;
 
     var reg = /^[a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹ]{2,20}$/;
-    var regMail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+    var regMail = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
 
     if (!((userName.match(reg)) && (userSurname.match(reg)) && (userEmail.match(regMail)) && (!userPassword=="") && (userPassword==userRepeatPassword))){
         var ecom = "Incorrect data";

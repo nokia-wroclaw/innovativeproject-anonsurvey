@@ -39,7 +39,7 @@ block content
       function addemailaddress(){
           var allinput = "";
           var input = "";
-          var regexmail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+          var regexmail = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
           var emails = document.getElementById("emails").value;
           var res = emails.split(/[-;,' '\n]/);
           for(var i = 0; i< res.length;i++){
