@@ -1,6 +1,15 @@
 extends layout
 
 block content
+	div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+		div.container
+			button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+			a.navbar-brand
+				| Annonymous Survey App
+			div.nav.navbar-nav.navbar-right
+				li
+					a(href="/profile")= "Back"
+		div.collapse.navbar-collapse
 	div(align='center', class='jumbotron')
 		if verifypass
 			h2 Enter your password in order to see results
@@ -8,8 +17,6 @@ block content
 				input(type='hidden', name='yourresultid', value=verifypass)
 				input(type='password', name='yourpassword', placeholder='Enter you password here')
 				button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
-				| 
-				a.btn.btn-medium.btn-warning(href="/profile")= "Back"
 		if results
 			each r in results
 				div.col-md-3(align='left')
@@ -57,7 +64,7 @@ block content
 										-var j=0
 										-var k=0
 									else
-										button(onclick='funct("'+odp[q.questionnumber]+'",#{q.questionnumber})', type='button') Show answerd
+										button(onclick='funct("'+odp[q.questionnumber]+'",#{q.questionnumber})', type='button') Show answers
 										div(id=(q.questionnumber+'odp'),hidden="hidden")
 																	
 									if ile[q.questionnumber].length>1
@@ -72,9 +79,6 @@ block content
 							hr(style='color:#000000')
 		if result
 			.alert.alert-danger(role='alert')= result							
-		br
-		br
-		a.btn.btn-medium.btn-info(href="/profile")= "Back"
 		br
 		br
 		

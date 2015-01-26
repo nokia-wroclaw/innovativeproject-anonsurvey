@@ -20,7 +20,7 @@ block content
             h3 Hi  #{profile.username}!
         hr
         div.row
-            div.col-md-6(align='left')
+            div.col-md-5(align='left')
                 h3 Surveys which you've been invited to:
                 each survey in surveys
                     div(id='field'+survey.surveyid,class="row")
@@ -54,8 +54,8 @@ block content
                         br
                         | Survey owner: #{survey.surveyowner}
                         br 
-                        p    
-            div.col-md-6(align='left')            
+                        p                         
+            div.col-md-6.col-md-offset-1(align='left')            
                 h3 Surveys created by you:
                 each osurvey in surveysowner
                     div(id='ofield'+osurvey.surveyid,class="row")
@@ -67,11 +67,11 @@ block content
                                 th
                                 th
                             tbody    
-                                td.col-md-6
+                                td.col-md-8
                                     h5 #{osurvey.surveyname}    
-                                td.col-md-2
+                                td.col-md-1
                                     a.btn.btn-medium.btn-info(href='/result?survey='+osurvey.surveyid) Result                    
-                                td.col-md-2
+                                td.col-md-1
                                     a.btn.btn-medium.btn-primary(href='/chooseuser?survey='+osurvey.surveyid) Invite more people
                                 td.col-md-1
                                     button.btn.btn-medium.btn-warning(onclick='oinfo('+osurvey.surveyid+')') Info     

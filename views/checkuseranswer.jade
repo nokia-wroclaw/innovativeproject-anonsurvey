@@ -1,5 +1,15 @@
 extends layout
 block content
+	div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+		div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+			div.container
+				button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+				a.navbar-brand
+					| Annonymous Survey App
+				div.nav.navbar-nav.navbar-right
+					li
+						a(href="/profile")= "Back"
+		div.collapse.navbar-collapse
 	div(align='center', class='jumbotron')
 		p You have filled this survey. These are your answers.
 		div(align='center', class='row')
@@ -16,10 +26,5 @@ block content
 							h3= toDisplay
 						div.col-md-6(align='center')
 							h3= q.answers[n]
-		br
-		br
-		a.btn.btn-medium.btn-info(href="/profile")= "Back"
-		br
-		br
 
 
