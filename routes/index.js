@@ -1229,9 +1229,10 @@ function result(req, res){
                             how =0;
                             h=0;
                             l=0;
-                            odp[i]="";
+                            odp[i]=[];
                             ile[i]= [];
                             ile[i][n]="";
+                            odp[i][n]="";
                             co[i]= [];
                             co[i][n]="";
                             
@@ -1245,13 +1246,13 @@ function result(req, res){
                                     if (docs[0].questions[i].answertype=="date"){
                                         
                                                 if (h<countt){
-                                                        odp[i]+=";"+find[h].answers[i];
+                                                        odp[i][0]+=";"+find[h].answers[i];
                                                           h++;
                                                         CountFunction();
                                                 }
                                                 else h=0;
                                                 i++;
-                                                odp[i]="";
+                                                odp[i]=[];
                                                 ile[i]= [];
                                                 co[i]=[];
                                                 srednia[i]=0;
@@ -1276,11 +1277,11 @@ function result(req, res){
                                                 ile[i][n]=how;
                                                 
                                                 if (n==0) {
-                                                    odp[i] +=docs[0].questions[i].availbeanswers[n]+": " + how+';  ';
+                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+": " + how;
                                                     co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 else {
-                                                    odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+": " + how+';  ';
+                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+": " + how;
                                                     co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 how=0;
@@ -1291,7 +1292,7 @@ function result(req, res){
                                         else{
                                         n=0;
                                         i++;
-                                        odp[i]="";
+                                        odp[i]=[];
                                         ile[i]= [];
                                         co[i]=[];
                                         srednia[i]=0;
@@ -1322,11 +1323,11 @@ function result(req, res){
                                                 ile[i][n]=how;
                                                 
                                                 if (n==0) {
-                                                    odp[i] +=docs[0].questions[i].availbeanswers[n]+": " + how+';  ';
+                                                    odp[i][n]=docs[0].questions[i].availbeanswers[n]+": " + how;
                                                     co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 else {
-                                                    odp[i] +="\n" + docs[0].questions[i].availbeanswers[n]+": " + how+';  ';
+                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+": " + how;
                                                     co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 how=0;
@@ -1337,7 +1338,7 @@ function result(req, res){
                                         else{
                                         n=0;
                                         i++;
-                                        odp[i]="";
+                                        odp[i]=[];
                                         srednia[i]=0;
                                         ile[i]= [];
                                         co[i]=[];
@@ -1363,8 +1364,8 @@ function result(req, res){
                                                     else h=0;
                                                     ile[i][n]=how;
                                                     co[i][n]=coile;
-                                                    if (n==0) odp[i] +=coile +":" + how;
-                                                    else odp[i]+="\n" + coile +":" + how;
+                                                    if (n==0) odp[i][n] =coile +":" + how;
+                                                    else odp[i][n]=";" + coile +":" + how;
                                                     srednia[i]+=parseFloat(coile*how);
                                                     how=0;
                                                     n++;
@@ -1377,13 +1378,13 @@ function result(req, res){
                                                 ile[i]= [];
                                                 co[i]=[];
                                                 srednia[i]=0;
-                                                odp[i]="";
+                                                odp[i]=[];
                                                 CountFunction();
                                     }
 
                                     else {
                                                 if (h<countt){
-                                                        odp[i]+=";"+find[h].answers[i];
+                                                        odp[i][0]+=";"+find[h].answers[i];
                                                         h++;
                                                         CountFunction();
                                                 }
@@ -1391,7 +1392,7 @@ function result(req, res){
                                                 i++;
                                                 ile[i]= [];
                                                 co[i]=[];
-                                                odp[i]="";
+                                                odp[i]=[];
                                                 srednia[i]=0;
                                                 CountFunction();
 
