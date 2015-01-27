@@ -96,7 +96,7 @@ block content
 												h4= toDisplay
 											div.col-md-6(align='center')		
 												- var ansNumber = "ans" + q.questionnumber.toString();
-												input(type="date" name=ansNumber required )
+												input(type="date" name=ansNumber required placeHolder = "rrrr-mm-dd" pattern = "[0-9][0-9][0-9][0-9]-((0[1-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01]))" )
 
 										if q.answertype == "textarea"
 											div.col-md-6(align='left')
