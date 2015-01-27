@@ -1265,11 +1265,6 @@ function result(req, res){
                                         var howManyAnswerInQuestion = docs[0].questions[i].answercount;
 
                                         if (n < howManyAnswerInQuestion){ 
-
-                                                 if (String(docs[0].questions[i].availbeanswers[n])=="") {
-                                                    n++;
-                                                    CountFunction();
-                                                }
                                                 
                                                 if (h<countt){
                                                     if (String(find[h].answers[i])==String(docs[0].questions[i].availbeanswers[n])) how++;
@@ -1310,11 +1305,6 @@ function result(req, res){
 
                                         if (n < howManyAnswerInQuestion){
                                                 
-                                                if (String(docs[0].questions[i].availbeanswers[n])=="") {
-                                                    n++;
-                                                    CountFunction();
-                                                }
-
                                                 if (h<countt){
                                                     if (l<find[h].answers[i].length){
                                                         if (String(find[h].answers[i][l])==String(docs[0].questions[i].availbeanswers[n])) how++;
