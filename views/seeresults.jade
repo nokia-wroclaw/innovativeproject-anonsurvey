@@ -63,10 +63,11 @@ block content
 										-var k=q.availbeanswers[2]
 									else if q.answertype=="radio" || q.answertype=="checkbox"
 										- for (var n=0; n < q.answercount; n++)
-											h4 #{odp[q.questionnumber][n]}
-											-var i=q.answercount
-											-var j=0
-											-var k=0
+											if odp[q.questionnumber][n]!=": 0"
+												h4 #{odp[q.questionnumber][n]}
+												-var i=q.answercount
+												-var j=0
+												-var k=0
 									else
 										button.btn.btn-default(onclick='funct("'+odp[q.questionnumber]+'",#{q.questionnumber})', type='button') Show answers
 										div(id=(q.questionnumber+'odp'),hidden="hidden")
