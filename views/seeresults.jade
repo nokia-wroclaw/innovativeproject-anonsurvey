@@ -64,15 +64,21 @@ block content
 										-var j=0
 										-var k=0
 									else
-										button(onclick='funct("'+odp[q.questionnumber]+'",#{q.questionnumber})', type='button') Show answers
+										button.btn.btn-default(onclick='funct("'+odp[q.questionnumber]+'",#{q.questionnumber})', type='button') Show answers
 										div(id=(q.questionnumber+'odp'),hidden="hidden")
 																	
 									if ile[q.questionnumber].length>1
 										h3 Select chart to draw
-										button(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Pie Chart	
-										button(onclick='draw(#{q.questionnumber},"column","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})',type='botton') Column Chart
+										button.btn.btn-default(onclick='draw(#{q.questionnumber},"pie","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') 	
+											span.glyphicon.glyphicon-adjust(aria-hidden='true')
+											|  Pie Chart 
+										button.btn.btn-default(onclick='draw(#{q.questionnumber},"column","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})',type='botton') 
+											span.glyphicon.glyphicon-stats(aria-hidden='true')
+											|  Column Chart 
 										if q.answertype=="range"
-											button(onclick='drawHist(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') Histogram
+											button.btn.btn-default(onclick='drawHist(#{q.questionnumber},"histo","'+ile[q.questionnumber]+'","'+co[q.questionnumber]+'",#{i},#{j},#{k})', type='button') 
+												span.glyphicon.glyphicon-th-large(aria-hidden='true')
+												|  Histogram 
 										div(id=q.questionnumber)
 											div(id=(q.questionnumber+'list'))
 										div(id=q.questionnumber+'chart')
