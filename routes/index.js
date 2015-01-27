@@ -1244,7 +1244,7 @@ function result(req, res){
                             if (i<howManyQuestions){
 
                                     if (docs[0].questions[i].answertype=="date"){
-                                        
+                                                
                                                 if (h<countt){
                                                         odp[i][0]+=";"+find[h].answers[i];
                                                           h++;
@@ -1253,6 +1253,7 @@ function result(req, res){
                                                 else h=0;
                                                 i++;
                                                 odp[i]=[];
+                                                odp[i][0]="";
                                                 ile[i]= [];
                                                 co[i]=[];
                                                 srednia[i]=0;
@@ -1277,11 +1278,11 @@ function result(req, res){
                                                 ile[i][n]=how;
                                                 
                                                 if (n==0) {
-                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+": " + how;
+                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
                                                     co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 else {
-                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+": " + how;
+                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
                                                     co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 how=0;
@@ -1293,6 +1294,7 @@ function result(req, res){
                                         n=0;
                                         i++;
                                         odp[i]=[];
+                                        odp[i][0]="";
                                         ile[i]= [];
                                         co[i]=[];
                                         srednia[i]=0;
@@ -1323,11 +1325,11 @@ function result(req, res){
                                                 ile[i][n]=how;
                                                 
                                                 if (n==0) {
-                                                    odp[i][n]=docs[0].questions[i].availbeanswers[n]+": " + how;
+                                                    odp[i][n]=docs[0].questions[i].availbeanswers[n]+"  : " + how;
                                                     co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 else {
-                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+": " + how;
+                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
                                                     co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
                                                 }
                                                 how=0;
@@ -1339,6 +1341,7 @@ function result(req, res){
                                         n=0;
                                         i++;
                                         odp[i]=[];
+                                        odp[i][0]="";
                                         srednia[i]=0;
                                         ile[i]= [];
                                         co[i]=[];
@@ -1379,6 +1382,7 @@ function result(req, res){
                                                 co[i]=[];
                                                 srednia[i]=0;
                                                 odp[i]=[];
+                                                odp[i][0]="";
                                                 CountFunction();
                                     }
 
@@ -1393,6 +1397,7 @@ function result(req, res){
                                                 ile[i]= [];
                                                 co[i]=[];
                                                 odp[i]=[];
+                                                odp[i][0]="";
                                                 srednia[i]=0;
                                                 CountFunction();
 
