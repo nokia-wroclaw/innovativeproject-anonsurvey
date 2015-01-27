@@ -73,8 +73,9 @@ block content
 															br
 													- if(q.otheranswer == "true")
 														- var divId = "question" + q.questionnumber.toString();
-															button( onclick = 'addans("#{divId}","#{ansNumber}"); this.i++;' type='button', placeHolder="Your answer") Add your answers!
-										
+															button.btn.btn-default( onclick = 'addans("#{divId}","#{ansNumber}"); this.i++;' type='button', placeHolder="Your answer") 
+																span.glyphicon.glyphicon-plus(aria-hidden='true')
+																|  Add your answers!									
 										if q.answertype == "text"
 											div.col-md-6(align='left')
 												- var toDisplay = String(numberToDisplay) + ". " + q.question
@@ -138,6 +139,7 @@ block content
 			var deleteAnswer = document.createElement('input');
 			deleteAnswer.setAttribute('type', 'button');
 			deleteAnswer.setAttribute('value', 'Delete this answer!');
+			deleteAnswer.setAttribute('class', 'btn btn-default');
 
 			uniqueId = answer.childElementCount - 1;
 			var uniqueName2 = name + "_" + String(uniqueId);
