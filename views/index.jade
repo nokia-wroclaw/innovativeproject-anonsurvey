@@ -2,21 +2,22 @@ extends layout
 
 block content
 	.container(ng-app='ng-app')
-		h2.form-signin-heading Please sign in
-		form.signInForm(method='post', action='/profile')
-			input(type='hidden', ng-model='yourSurveyId', name='gotosurveyid', value=gotosurvey)
-			input(type='hidden', ng-model='yourResultId', name='gotoresultid', value=gotoresult)
-			label.sr-only(for='inputEmail') E-mail:
-			input#inputEmail.form-control(type='text', ng-model='yourName', name='useremail', placeholder='Enter your e-mail here')
-			label.sr-only(for='inputPassword') Password:
-			input#inputPassword.form-control(type='password', ng-model='yourPass', name='userpassword', placeholder='Enter your password here')
-			table.table-condensed
-				thead
-					th
-						input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Sign In')
-					th 
-						a.btn.btn-medium.btn-primary(href="/newuser")= "Register"           
-					th 
-						a.btn.btn-medium.btn-warning(href="/forgotpassword")= "Forgot Password"      	
+		div.col-md-6(align='left')
+			h2.form-signin-heading Please sign in
+			form.signInForm(method='post', action='/profile')
+				input(type='hidden', ng-model='yourSurveyId', name='gotosurveyid', value=gotosurvey)
+				input(type='hidden', ng-model='yourResultId', name='gotoresultid', value=gotoresult)
+				label.sr-only(for='inputEmail') E-mail:
+				input#inputEmail.form-control(type='text', ng-model='yourName', name='useremail', placeholder='Enter your e-mail here')
+				label.sr-only(for='inputPassword') Password:
+				input#inputPassword.form-control(type='password', ng-model='yourPass', name='userpassword', placeholder='Enter your password here')
+				table.table-condensed
+					thead
+						th
+							input.btn.btn-medium.btn-success(type='submit', ng-model='yourSubmit', name='submit', value='Sign In')
+						th 
+							a.btn.btn-medium.btn-primary(href="/newuser")= "Register"           
+						th 
+							a.btn.btn-medium.btn-warning(href="/forgotpassword")= "Forgot Password"      	
 		if error
 			.alert.alert-danger(role='alert')= error

@@ -13,9 +13,12 @@ block content
 	div(align='center', class='jumbotron')
 		if verifypass
 			h2 Enter your password in order to see results
-			form#form1(action='/result', method='post')
-				input(type='hidden', name='yourresultid', value=verifypass)
-				input(type='password', name='yourpassword', placeholder='Enter you password here')
+			div.col-md-4(align='left')
+			div.col-md-3(align='center')
+				form#form1(action='/result', method='post')
+					input(type='hidden', name='yourresultid', value=verifypass)
+					input.form-control(type='password', name='yourpassword', placeholder='Enter you password here')
+			div.col-md-1(align='left')
 				button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
 		if results
 			each r in results

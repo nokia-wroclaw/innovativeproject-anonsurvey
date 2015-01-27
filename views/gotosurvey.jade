@@ -1,13 +1,21 @@
 extends layout
 
 block content
-
-    div(align='center', ng-app='ng-app', class='jumbotron')
-      h2 Enter your password in order to fill the survey
-
-      form#form1(action='/fillorcheck', method='post')
-        input(type='hidden', name='yoursurveyid', value=surveyid)
-        input(type='password', name='yourpassword', placeholder='Enter you password here')
-        button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
-        | 
-        a.btn.btn-medium.btn-warning(href="/profile")= "Back"
+	div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+		div.container
+			button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+			a.navbar-brand(href="/profile")
+				| Annonymous Survey App
+			div.nav.navbar-nav.navbar-right    
+				li
+					a(href="/profile")= "Back"		
+		div.collapse.navbar-collapse
+	div(align='center', ng-app='ng-app', class='jumbotron')
+		h2 Enter your password in order to fill the survey
+		div.col-md-4(align='left')
+		div.col-md-3(align='center')
+			form#form1(action='/fillorcheck', method='post')
+				input(type='hidden', name='yoursurveyid', value=surveyid)
+				input.form-control(type='password', name='yourpassword', placeholder='Enter you password here')
+		div.col-md-1(align='left')		
+			button.btn.btn-medium.btn-info(type='submit', form='form1', value='OK') OK
