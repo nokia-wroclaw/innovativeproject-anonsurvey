@@ -18,12 +18,12 @@ block content
 				h2 Questions
 			div.col-md-6(align='center')
 				h2 Answers
+			
 			each q in answerlist
-				div(align='center', class='row')
-					- for(var n = 0; n < q.questionsamount; n++)
-						- var toDisplay = String(n+1) + ". " + questionlist[n]
+				- for(var n = 0; n < q.questionsamount; n++)
+					div(align='center', class='row')
 						div.col-md-6(align='left')
-							h4= toDisplay
+							h4= String(n+1) + ". " + questionlist[n]
 						div.col-md-6(align='center')
 							h4= q.answers[n]
 
