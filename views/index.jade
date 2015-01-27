@@ -19,5 +19,7 @@ block content
 							a.btn.btn-medium.btn-primary(href="/newuser")= "Register"           
 						th 
 							a.btn.btn-medium.btn-warning(href="/forgotpassword")= "Forgot Password"      	
-		if error
-			.alert.alert-danger(role='alert')= error
+	.container(ng-app='ng-app', align='left')
+		div.col-md-6(align='left')
+			if error
+				.alert.alert-danger(role='alert')= error
