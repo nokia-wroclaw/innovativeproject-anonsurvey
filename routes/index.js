@@ -1280,27 +1280,38 @@ function result(req, res){
                                         var howManyAnswerInQuestion = docs[0].questions[i].answercount;
 
                                         if (n < howManyAnswerInQuestion){ 
-                                                
-                                                if (h<countt){
-                                                    if (String(find[h].answers[i])==String(docs[0].questions[i].availbeanswers[n])) how++;
-                                                    h++;
+
+                                                if ((String(docs[0].questions[i].availbeanswers[n])=="") || (String(docs[0].questions[i].availbeanswers[n])=="undefined"))
+                                                    {odp[i][n]="";
+                                                     ile[i][n]="";
+                                                     co[i][n]="";
+                                                    n++;
                                                     CountFunction();
-                                                }
+                                                    }
+
                                                 else{
-                                                h=0;
-                                                ile[i][n]=how;
                                                 
-                                                if (n==0) {
-                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
-                                                    co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
-                                                }
-                                                else {
-                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
-                                                    co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
-                                                }
-                                                how=0;
-                                                n++;
-                                                CountFunction();
+                                                    if (h<countt){
+                                                        if (String(find[h].answers[i])==String(docs[0].questions[i].availbeanswers[n])) how++;
+                                                        h++;
+                                                        CountFunction();
+                                                    }
+                                                    else{
+                                                    h=0;
+                                                    ile[i][n]=how;
+                                                    
+                                                    if (n==0) {
+                                                        odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
+                                                        co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
+                                                    }
+                                                    else {
+                                                        odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
+                                                        co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
+                                                    }
+                                                    how=0;
+                                                    n++;
+                                                    CountFunction();
+                                                    }
                                                 }
                                         }
                                         else{
@@ -1320,39 +1331,45 @@ function result(req, res){
                                         var howManyAnswerInQuestion = docs[0].questions[i].answercount;
 
                                         if (n < howManyAnswerInQuestion){
-                                                
-                                                if (String(docs[0].questions[i].availbeanswers[n])=="") {
+
+
+                                                if ((String(docs[0].questions[i].availbeanswers[n])=="") || (String(docs[0].questions[i].availbeanswers[n])=="undefined"))
+                                                    {odp[i][n]="";
+                                                    ile[i][n]="";
+                                                     co[i][n]="";
                                                     n++;
                                                     CountFunction();
-                                                }
-
-                                                if (h<countt){
-                                                    if (l<find[h].answers[i].length){
-                                                        if (String(find[h].answers[i][l])==String(docs[0].questions[i].availbeanswers[n])) how++;
-                                                        l++;
-                                                        CountFunction();
                                                     }
-                                                    else{ 
-                                                    l=0;
-                                                    h++;
+                                                else{
+                                                
+                                                    if (h<countt){
+                                                        if (l<find[h].answers[i].length){
+                                                            if (String(find[h].answers[i][l])==String(docs[0].questions[i].availbeanswers[n])) how++;
+                                                            l++;
+                                                            CountFunction();
+                                                        }
+                                                        else{ 
+                                                        l=0;
+                                                        h++;
+                                                        CountFunction();
+                                                        }
+                                                    }
+                                                    else{
+                                                    h=0;
+                                                    ile[i][n]=how;
+                                                    
+                                                    if (n==0) {
+                                                        odp[i][n]=docs[0].questions[i].availbeanswers[n]+"  : " + how;
+                                                        co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
+                                                    }
+                                                    else {
+                                                        odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
+                                                        co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
+                                                    }
+                                                    how=0;
+                                                    n++;
                                                     CountFunction();
                                                     }
-                                                }
-                                                else{
-                                                h=0;
-                                                ile[i][n]=how;
-                                                
-                                                if (n==0) {
-                                                    odp[i][n]=docs[0].questions[i].availbeanswers[n]+"  : " + how;
-                                                    co[i][n]=String(docs[0].questions[i].availbeanswers[n]);
-                                                }
-                                                else {
-                                                    odp[i][n] =docs[0].questions[i].availbeanswers[n]+"  : " + how;
-                                                    co[i][n]=";"+String(docs[0].questions[i].availbeanswers[n]);
-                                                }
-                                                how=0;
-                                                n++;
-                                                CountFunction();
                                                 }
                                         }
                                         else{
