@@ -117,16 +117,16 @@ block content
 
 			function funct(tablica,aa){
 
-					var wyswietl="1. ";
-					j=1;
-					k=2;
+					var wyswietl="";
+					j=0;
+					k=1;
 
 					while(j<tablica.length){
-								if (tablica[j]==";") 
+								if ((tablica[j]==";") && (tablica[j+1]=="-") && (tablica[j+2]==";") && (tablica[j+3]=="-")&& (tablica[j+4]==";") )
 									{wyswietl+="<br />";
 									wyswietl+=k+". ";
 									k++
-									j++;}
+									j=j+5;}
 								else 
 									{wyswietl+=tablica[j];
 									j++;}
