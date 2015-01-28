@@ -1259,7 +1259,7 @@ function result(req, res){
                                     if (docs[0].questions[i].answertype=="date"){
                                                 
                                                 if (h<countt){
-                                                        odp[i][0]+=";"+find[h].answers[i];
+                                                        odp[i][0]+=";-;-;"+find[h].answers[i];
                                                           h++;
                                                         CountFunction();
                                                 }
@@ -1406,7 +1406,7 @@ function result(req, res){
 
                                     else {
                                                 if (h<countt){
-                                                        odp[i][0]+=";"+find[h].answers[i];
+                                                        odp[i][0]+=";-;-;"+find[h].answers[i];
                                                         h++;
                                                         CountFunction();
                                                 }
