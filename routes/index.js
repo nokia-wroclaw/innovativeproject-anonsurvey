@@ -966,7 +966,7 @@ router.post('/answertobase', function(req,res){
     
     var answers = []; //Tu będziemy przechowywać pytania i odpowiedzi na nie
 
-    collectionSurvey.find({ "surveyid" : parseInt(surveyid) }, function(err, find){ 
+    collectionSurvey.find({ "surveyid" : parseInt(surveyid)}, function(err, find){ 
 
         for(var i = 0; i < questionsamount; i++){ // pobieranie odpowiedzi do pytań 
 
@@ -1020,8 +1020,12 @@ router.post('/answertobase', function(req,res){
         
 
     var baseName = 'surveyanswers' + surveyid; //sklejanie z numerem, żeby stworzyć bazę odpowiedzi danej ankiety
-    var collection = db.get(baseName);              
-    collection.insert({
+    var collection = db.get(baseName);
+
+    collection.count({"user" : user},function(err, count){
+        if(count==0){
+            
+            collection.insert({
                 "user" : user,
                 "answers" : answers,
                 "questionsamount" : questionsamount
@@ -1032,6 +1036,15 @@ router.post('/answertobase', function(req,res){
                     return;
                 }
             });
+
+        }
+        else{
+            var ecom = "There was a problem during adding the information to the database.";
+            res.render('errorpage', { "error" : ecom, "page" : "/profile" });
+            return;
+        }
+    });              
+
 
 
         var ecom = "Thank you for answering!";
@@ -1305,6 +1318,11 @@ function result(req, res){
 
                                         if (n < howManyAnswerInQuestion){
                                                 
+                                                if (String(docs[0].questions[i].availbeanswers[n])=="") {
+                                                    n++;
+                                                    CountFunction();
+                                                }
+
                                                 if (h<countt){
                                                     if (l<find[h].answers[i].length){
                                                         if (String(find[h].answers[i][l])==String(docs[0].questions[i].availbeanswers[n])) how++;
