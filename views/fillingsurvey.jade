@@ -1,4 +1,5 @@
 extends layout
+
 block content
 	div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
 		div.container
@@ -73,9 +74,10 @@ block content
 															br
 													- if(q.otheranswer == "true")
 														- var divId = "question" + q.questionnumber.toString();
-															button.btn.btn-default( onclick = 'addans("#{divId}","#{ansNumber}"); this.i++;' type='button', placeHolder="Your answer") 
+															button.btn.btn-default(onclick ='addans("#{divId}","#{ansNumber}", "#{q.questionnumber.toString()}"); this.i++;' type='button', placeHolder="Your answer") 
 																span.glyphicon.glyphicon-plus(aria-hidden='true')
-																|  Add your answers!									
+																|  Add your answers!
+															div(id="moreans"+q.questionnumber.toString())								
 										if q.answertype == "text"
 											div.col-md-6(align='left')
 												- var toDisplay = String(numberToDisplay) + ". " + q.question
@@ -114,55 +116,53 @@ block content
 						br
 						
 	script(type='text/javascript').
-		function addans(question, name){
-
+		var nnn = 0;
+		function addans(question, name, no){
+			nnn++;
+			//alert(question+","+name+","+no);
 			var uniqueId = 0;
 			name = name + "User";
-
+			var ansdiv = document.createElement('div');
+			ansdiv.setAttribute('id', nnn.toString() );
 			var znacznik = document.createElement('input');
 			znacznik.setAttribute('type', 'text' );
 			znacznik.setAttribute('name', name);
 			znacznik.setAttribute('style', 'display: block');
-
 			var pattern = "[^<>]+";
 			znacznik.required = true;
 			znacznik.setAttribute('pattern', pattern );
-
 			var answer = document.getElementById(question);
 			
 			uniqueId = answer.childElementCount - 1;
 			uniqueName1 = name + "_" + String(uniqueId);
 			znacznik.setAttribute('id', uniqueName1);
-
-			answer.appendChild(znacznik);
-		
+			//answer.appendChild(znacznik);
+			
+			ansdiv.appendChild(znacznik);
 			var deleteAnswer = document.createElement('input');
 			deleteAnswer.setAttribute('type', 'button');
 			deleteAnswer.setAttribute('value', 'Delete this answer!');
 			deleteAnswer.setAttribute('class', 'btn btn-default');
-
 			uniqueId = answer.childElementCount - 1;
 			var uniqueName2 = name + "_" + String(uniqueId);
 			deleteAnswer.setAttribute('id', uniqueName2);
-			answer.appendChild(deleteAnswer);
-
 			deleteAnswer.onclick = function(){
-
-				var name = this.id;
-				var parentNodeId = this.parentNode.id;
+				//var name = this.id;
+				//var parentNodeId = this.parentNode.id;
 				
-				var number = name.slice(name.indexOf("_")+1);
-				number--;
-
-				var textFieldId = name.slice(0,name.indexOf("_")+1) + String(number);
-
-				var div = document.getElementById(parentNodeId);
-				var textField =  document.getElementById(textFieldId);
-				var button =  document.getElementById(name);
-
-				div.removeChild(textField);
-				div.removeChild(button);
-			}	
+				//var number = name.slice(name.indexOf("_")+1);
+				//number--;
+				//var textFieldId = name.slice(0,name.indexOf("_")+1) + String(number);
+				//var div = document.getElementById("moreans"+no);
+				//var textField =  document.getElementById(nnn.toString());
+				$(this.parentNode).remove();
+				//this.parentNode.parentNode.removeChild(this);
+				//var button =  document.getElementById(uniqueName2);
+				//button.parentNode.removeChild(button);
+			}
+			ansdiv.appendChild(deleteAnswer);
+			var morediv = document.getElementById("moreans"+no);
+			morediv.appendChild(ansdiv);	
 		}	
 		function disableRadioButtons(ans){
 			var textFieldName = ans + "User"
@@ -186,3 +186,5 @@ block content
 			output[0].value = value;
 		}	
 		
+Status API Training Shop Blog About
+© 2015 GitHub, Inc. Terms Privacy Security Contact
