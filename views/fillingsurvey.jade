@@ -68,6 +68,8 @@ block content
 												- var ansNumber = "ans" + q.questionnumber.toString();
 													- for (var n=0; n < q.answercount; n++)
 														- var answ = q.availbeanswers[n]
+														- if (answ)
+														- if (answ!="undefined")
 														- if (answ!="")
 															input(type="checkbox" name=ansNumber value=answ form="answer")
 															label=answ
