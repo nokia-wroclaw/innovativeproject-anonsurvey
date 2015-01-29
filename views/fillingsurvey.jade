@@ -118,14 +118,11 @@ block content
 						br
 						
 	script(type='text/javascript').
-		var nnn = 0;
 		function addans(question, name, no){
-			nnn++;
 			//alert(question+","+name+","+no);
 			var uniqueId = 0;
 			name = name + "User";
 			var ansdiv = document.createElement('div');
-			ansdiv.setAttribute('id', nnn.toString() );
 			var znacznik = document.createElement('input');
 			znacznik.setAttribute('type', 'text' );
 			znacznik.setAttribute('name', name);
@@ -133,25 +130,22 @@ block content
 			var pattern = "[^<>]+";
 			znacznik.required = true;
 			znacznik.setAttribute('pattern', pattern );
-			var answer = document.getElementById(question);
-			
-			uniqueId = answer.childElementCount - 1;
-			uniqueName1 = name + "_" + String(uniqueId);
-			znacznik.setAttribute('id', uniqueName1);
-			//answer.appendChild(znacznik);
-			
+			//var answer = document.getElementById(question);
 			ansdiv.appendChild(znacznik);
+			//uniqueId = answer.childElementCount - 1;
+			//uniqueName1 = name + "_" + String(uniqueId);
+			//znacznik.setAttribute('id', uniqueName1);
+			//answer.appendChild(znacznik);
 			var deleteAnswer = document.createElement('input');
 			deleteAnswer.setAttribute('type', 'button');
 			deleteAnswer.setAttribute('value', 'Delete this answer!');
 			deleteAnswer.setAttribute('class', 'btn btn-default');
-			uniqueId = answer.childElementCount - 1;
-			var uniqueName2 = name + "_" + String(uniqueId);
-			deleteAnswer.setAttribute('id', uniqueName2);
+			//uniqueId = answer.childElementCount - 1;
+			//var uniqueName2 = name + "_" + String(uniqueId);
+			//deleteAnswer.setAttribute('id', uniqueName2);
 			deleteAnswer.onclick = function(){
 				//var name = this.id;
 				//var parentNodeId = this.parentNode.id;
-				
 				//var number = name.slice(name.indexOf("_")+1);
 				//number--;
 				//var textFieldId = name.slice(0,name.indexOf("_")+1) + String(number);

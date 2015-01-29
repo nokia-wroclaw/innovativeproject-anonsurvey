@@ -752,8 +752,9 @@ function sendmail(aemail, asubject, atext) {
     transporter.sendMail(mailOptions, function(error, info){
         if(error){
             console.log(error);
+            setTimeout(sendmail(aemail, asubject, atext),1000);
         }else{
-            console.log('Message sent: ' + info.response);
+            console.log('Message sent: ' + info.response + ' ' + aemail.toString());
         }
     });
     //res.render('helloworld', { title: 'Hello, World!' })
@@ -811,21 +812,24 @@ router.post('/adduserstosurvey', function(req, res) {
     function loop(){
         if(j<emails.length){
             collection2.count({"useremail" : emails[j].toString()},function(err, count){
-            if(count>0){
-                var to = emails[j].toString();
-                var sub = "Magic Survey App - You have a new invitation to fill a survey";
-                var text = "Open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
+                if(count>0){
+                    var to = emails[j].toString();
+                    var sub = "Magic Survey App - You have a new invitation to fill a survey";
+                    var text = "Open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
+                    console.log(j+". send "+emails[j].toString());
+                }
+                else{
+                    //rejestrcyjny
+                    var to = emails[j].toString();
+                    var sub = "Magic Survey App - You have an invitation to fill a survey";
+                    var text = "Register and then open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
+                    console.log(j+". send "+emails[j].toString());
+                    
+                }
                 sendmail(to, sub, text);
-            }
-            else{
-                //rejestrcyjny
-                var to = emails[j].toString();
-                var sub = "Magic Survey App - You have an invitation to fill a survey";
-                var text = "Register and then open this link: \nhttps://magic-survey-app.herokuapp.com/gotosurvey?id="+surveyid.toString()+"\nBye ;)";
-                sendmail(to, sub, text);
-            }
-            j++;
-            loop();
+                j++;
+                loop(); 
+                
             });
         }
     }
